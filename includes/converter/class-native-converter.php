@@ -1179,6 +1179,7 @@ HTML;
 			$els[] = $this->grid_con($card_widgets,$cols,"{$p}-{$type}-grid");
 		}
 
+		$blocks = [];
 		if ( empty( $cards ) ) {
 			$blocks = $this->extract_generic_blocks( $node, $xp );
 			if ( ! empty( $blocks ) ) {
@@ -1214,9 +1215,44 @@ HTML;
 			}
 		}
 
+		if ( empty( $cards ) && empty( $blocks ) ) {
+			$flow_blocks = $this->extract_generic_flow_blocks( $node, $xp );
+			foreach ( $flow_blocks as $i => $block ) {
+				$inner = [];
+				if ( ! empty( $block['title'] ) ) {
+					$inner[] = $this->heading_w($block['title'],'h3',"{$p}-card-title {$p}-d".(($i%3)+1),[
+						'typography_font_family' => $this->f_display,'typography_font_weight'=>'700',
+						'typography_font_size'=>['unit'=>'px','size'=>20],'title_color'=>$this->c_text,
+					]);
+				}
+				if ( ! empty( $block['body'] ) ) {
+					$inner[] = $this->text_w("<p>{$block['body']}</p>","{$p}-card-body");
+				}
+				if ( ! empty( $block['items'] ) ) {
+					$list = $this->icon_list_w( $block['items'], "{$p}-generic-list", (string) ( $block['list_icon'] ?? '' ) );
+					if ( $list ) {
+						$inner[] = $list;
+					}
+				}
+				if ( ! empty( $block['visual_html'] ) ) {
+					$inner[] = $this->w('html',['_css_classes'=>"{$p}-card-visual-widget {$p}-card-visual",'html'=>$block['visual_html']]);
+				}
+				if ( ! empty( $block['cta'] ) ) {
+					$inner[] = $this->btn_w($block['cta'],'#',"{$p}-btn-primary",$this->c_accent,$this->c_bg);
+				}
+				if ( ! empty( $inner ) ) {
+					$els[] = $this->con('column',"{$p}-{$type}-flow {$p}-reveal",'',$inner,[
+						'background_background'=>'classic',
+						'background_color'=>'transparent',
+						'padding'=>$this->pad(0,0,0,0),
+					]);
+				}
+			}
+		}
+
 		// Button fallback.
 		$btn = $this->get_btn($node,$xp,0);
-		if ($btn && empty($cards)) {
+		if ($btn && empty($cards) && empty($blocks)) {
 			$els[] = $this->btn_w($btn,'#',"{$p}-btn-primary",$this->c_accent,$this->c_bg);
 		}
 
@@ -1283,6 +1319,35 @@ HTML;
 		}
 
 		return $groups;
+	}
+
+	private function extract_generic_flow_blocks( \DOMElement $node, \DOMXPath $xp ): array {
+		$blocks = [];
+
+		foreach ( $node->childNodes as $child ) {
+			if ( ! $child instanceof \DOMElement ) {
+				continue;
+			}
+
+			$tag = strtolower( $child->nodeName );
+			if ( in_array( $tag, [ 'script', 'style', 'noscript' ], true ) ) {
+				continue;
+			}
+
+			$block = $this->build_generic_block_payload( $child, $xp );
+			if ( $this->is_generic_block_payload_useful( $block ) ) {
+				$blocks[] = $block;
+			}
+		}
+
+		if ( empty( $blocks ) ) {
+			$block = $this->build_generic_block_payload( $node, $xp );
+			if ( $this->is_generic_block_payload_useful( $block ) ) {
+				$blocks[] = $block;
+			}
+		}
+
+		return $blocks;
 	}
 
 	private function build_generic_block_payload( \DOMElement $node, \DOMXPath $xp ): array {

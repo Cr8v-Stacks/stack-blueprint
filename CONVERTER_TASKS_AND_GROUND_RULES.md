@@ -517,6 +517,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - inline-markup CSS carryover now records its own bridge diagnostics instead of overwriting the main source-selector bridge coverage state
 - Generic native rebuilding has started:
   - low-signal repeated sections can now be rebuilt from repeated generic child/descendant groups using native heading, text, icon-list, button, and preserved visual fragments before falling back to full HTML preservation
+  - mixed-content generic sections can now also rebuild from direct-child flow blocks, so generic fallbacks are no longer limited to obvious repeated card groups
 - Pseudo-content interpretation has started:
   - source `::before` / `::after` content is now being inspected during extraction for list-like native payloads
   - pricing feature lists and footer link columns can now carry inferred source icon intent into native `icon-list` widgets instead of only relying on hardcoded icon choices
