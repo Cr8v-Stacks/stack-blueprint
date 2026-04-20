@@ -674,9 +674,12 @@ HTML;
 			if ( $best_node ) $final_sections[] = ['type' => $type, 'node' => $best_node];
 		}
 
+		$section_type_counts = [];
 		foreach ( $final_sections as $sec ) {
 			$node = $sec['node'];
 			$type = $sec['type'];
+			$section_type_counts[ $type ] = ( $section_type_counts[ $type ] ?? 0 ) + 1;
+			$section_ordinal = (int) $section_type_counts[ $type ];
 
 			// Pass 3: Editability / complexity score for native vs HTML widget.
 			$decision = $this->decide_strategy( $node, $type, $xp );
@@ -709,10 +712,7 @@ HTML;
 			}
 
 			if ( $el ) {
-				// Ensure unique element_id for this section type.
-				if ( empty( $el['settings']['_element_id'] ) ) {
-					$el['settings']['_element_id'] = "{$this->prefix}-{$type}";
-				}
+				$this->assign_top_level_section_anchor( $el, $type, $section_ordinal );
 				$this->elements[] = $el;
 				$this->built_section_types[] = $type;
 				$this->section_payloads[ $type ]['render_mode'] = $render_mode;
@@ -725,6 +725,15 @@ HTML;
 	// ═══════════════════════════════════════════════════════════
 	// PASS 3: CLASSIFIER — Multi-signal scoring
 	// ═══════════════════════════════════════════════════════════
+
+	private function assign_top_level_section_anchor( array &$el, string $type, int $ordinal ): void {
+		if ( ! isset( $el['settings'] ) || ! is_array( $el['settings'] ) ) {
+			$el['settings'] = [];
+		}
+
+		$base_id = "{$this->prefix}-{$type}";
+		$el['settings']['_element_id'] = $ordinal > 1 ? "{$base_id}-{$ordinal}" : $base_id;
+	}
 
 	private function classify_section( \DOMElement $node, \DOMXPath $xp ): string {
 		$tag  = strtolower( $node->nodeName );
@@ -1158,6 +1167,7 @@ HTML;
 					'typography_font_size'=>['unit'=>'px','size'=>20],'title_color'=>$this->c_text,
 				]);
 				if ($card['body'])  $inner[] = $this->text_w("<p>{$card['body']}</p>","{$p}-card-body");
+				if ( ! empty( $card['visual_html'] ) ) $inner[] = $this->w('html',['_css_classes'=>"{$p}-card-visual-widget {$p}-card-visual",'html'=>$card['visual_html']]);
 				$card_widgets[] = $this->con('column',"{$p}-{$type}-card {$p}-reveal",'',$inner,[
 					'background_background'=>'classic','background_color'=>$this->c_surface,
 					'border_border'=>'solid','border_color'=>$this->c_border,
@@ -1167,6 +1177,41 @@ HTML;
 			}
 			$cols = count($cards) <= 2 ? '1fr 1fr' : '1fr 1fr 1fr';
 			$els[] = $this->grid_con($card_widgets,$cols,"{$p}-{$type}-grid");
+		}
+
+		if ( empty( $cards ) ) {
+			$blocks = $this->extract_generic_blocks( $node, $xp );
+			if ( ! empty( $blocks ) ) {
+				$block_widgets = [];
+				foreach ( $blocks as $i => $block ) {
+					$inner = [];
+					if ( ! empty( $block['title'] ) ) $inner[] = $this->heading_w($block['title'],'h3',"{$p}-card-title {$p}-d".(($i%3)+1),[
+						'typography_font_family' => $this->f_display,'typography_font_weight'=>'700',
+						'typography_font_size'=>['unit'=>'px','size'=>20],'title_color'=>$this->c_text,
+					]);
+					if ( ! empty( $block['body'] ) ) $inner[] = $this->text_w("<p>{$block['body']}</p>","{$p}-card-body");
+					if ( ! empty( $block['items'] ) ) {
+						$list = $this->icon_list_w( $block['items'], "{$p}-generic-list", (string) ( $block['list_icon'] ?? '' ) );
+						if ( $list ) {
+							$inner[] = $list;
+						}
+					}
+					if ( ! empty( $block['visual_html'] ) ) $inner[] = $this->w('html',['_css_classes'=>"{$p}-card-visual-widget {$p}-card-visual",'html'=>$block['visual_html']]);
+					if ( ! empty( $block['cta'] ) ) $inner[] = $this->btn_w($block['cta'],'#',"{$p}-btn-primary",$this->c_accent,$this->c_bg);
+					if ( ! empty( $inner ) ) {
+						$block_widgets[] = $this->con('column',"{$p}-{$type}-card {$p}-reveal",'',$inner,[
+							'background_background'=>'classic','background_color'=>$this->c_surface,
+							'border_border'=>'solid','border_color'=>$this->c_border,
+							'border_width'=>$this->bw(1,1,1,1),
+							'padding'=>$this->pad(28,28,28,28),
+						]);
+					}
+				}
+				if ( ! empty( $block_widgets ) ) {
+					$cols = count($block_widgets) <= 2 ? '1fr 1fr' : '1fr 1fr 1fr';
+					$els[] = $this->grid_con($block_widgets,$cols,"{$p}-{$type}-grid");
+				}
+			}
 		}
 
 		// Button fallback.
@@ -1186,6 +1231,91 @@ HTML;
 			'border_width'=>$this->bw(1,0,0,0),
 			'padding'=>$this->pad(120,60,120,60),
 		]);
+	}
+
+	private function extract_generic_blocks( \DOMElement $node, \DOMXPath $xp ): array {
+		$groups = [];
+		$candidate_groups = [];
+
+		$direct = [];
+		foreach ( $node->childNodes as $child ) {
+			if ( $child instanceof \DOMElement && in_array( strtolower( $child->nodeName ), [ 'div', 'section', 'article', 'li' ], true ) ) {
+				$direct[] = $child;
+			}
+		}
+		if ( count( $direct ) >= 2 ) {
+			$candidate_groups[] = $direct;
+		}
+
+		$descendants = $xp->query( './/div | .//section | .//article | .//li', $node );
+		if ( $descendants && $descendants->length > 0 ) {
+			$by_parent = [];
+			foreach ( $descendants as $descendant ) {
+				if ( ! $descendant instanceof \DOMElement ) {
+					continue;
+				}
+				$parent = $descendant->parentNode;
+				if ( ! $parent instanceof \DOMElement || $parent === $node ) {
+					continue;
+				}
+				$key = spl_object_id( $parent );
+				$by_parent[ $key ][] = $descendant;
+			}
+			foreach ( $by_parent as $group ) {
+				if ( count( $group ) >= 2 ) {
+					$candidate_groups[] = $group;
+				}
+			}
+		}
+
+		foreach ( $candidate_groups as $candidate_group ) {
+			$parsed = [];
+			foreach ( $candidate_group as $candidate ) {
+				$block = $this->build_generic_block_payload( $candidate, $xp );
+				if ( $this->is_generic_block_payload_useful( $block ) ) {
+					$parsed[] = $block;
+				}
+			}
+			if ( count( $parsed ) >= 2 ) {
+				$groups = $parsed;
+				break;
+			}
+		}
+
+		return $groups;
+	}
+
+	private function build_generic_block_payload( \DOMElement $node, \DOMXPath $xp ): array {
+		$list_items = [];
+		$list_nodes = $xp->query( './/ul/li | .//ol/li', $node );
+		if ( $list_nodes ) {
+			foreach ( $list_nodes as $li ) {
+				$text = trim( preg_replace( '/\s+/', ' ', (string) $li->textContent ) );
+				if ( '' !== $text && strlen( $text ) <= 160 ) {
+					$list_items[] = $text;
+				}
+			}
+		}
+		$list_icon = $this->infer_list_icon_for_node( $node );
+
+		return [
+			'title'       => $this->get_heading( $node, $xp, [ 'h3', 'h4', 'h2', 'h5', 'strong' ] ),
+			'body'        => $this->get_para( $node, $xp ),
+			'items'       => array_values( array_unique( $list_items ) ),
+			'list_icon'   => $list_icon['icon'] ?? '',
+			'cta'         => $this->get_btn( $node, $xp, 0 ),
+			'visual_html' => $this->extract_complex_visual( $node ),
+			'source_class'=> trim( (string) $node->getAttribute( 'class' ) ),
+			'source_id'   => trim( (string) $node->getAttribute( 'id' ) ),
+		];
+	}
+
+	private function is_generic_block_payload_useful( array $block ): bool {
+		return '' !== trim( (string) ( $block['title'] ?? '' ) )
+			|| '' !== trim( (string) ( $block['body'] ?? '' ) )
+			|| ! empty( $block['items'] )
+			|| '' !== trim( (string) ( $block['cta'] ?? '' ) )
+			|| ! empty( $block['visual_html'] );
 	}
 
 	// ═══════════════════════════════════════════════════════════
@@ -1488,7 +1618,10 @@ HTML;
 			);
 		}
 
-		if ( $dashboard_score >= 8 || $app_shell ) {
+		if (
+			( $dashboard_score >= 12 && count( $strong_keyword_hits ) >= 1 && ! $marketing_page_cues )
+			|| ( $app_shell && ! $marketing_page_cues )
+		) {
 			$this->warnings[] = sprintf(
 				'Input-shape audit: dashboard/app-shell heuristics were triggered (score %d) but not hard-blocked.',
 				$dashboard_score
@@ -2890,18 +3023,21 @@ CSS;
 			return '';
 		}
 
+		$source_hit_analysis = $this->analyze_source_css_bridge_hits( $this->intel->raw_css, $class_map, $id_map );
 		$css = $this->rewrite_source_css_with_maps( $this->intel->raw_css, $class_map, $id_map, true );
-		$this->source_selector_bridge_coverage = [
+		$inline_markup_bridge_coverage = [
 			'has_source_css'     => true,
 			'has_bridge_targets' => true,
+			'has_source_selector_hits' => ! empty( $source_hit_analysis['has_selector_hits'] ),
+			'matched_rule_count' => (int) ( $source_hit_analysis['matched_rule_count'] ?? 0 ),
 			'has_output_css'     => '' !== trim( $css ),
 			'bridged_classes'    => array_keys( $class_map ),
 			'bridged_ids'        => array_keys( $id_map ),
 		];
 		$this->diagnostics[] = [
-			'code'    => 'source_selector_bridge',
-			'message' => 'Source selector bridge analysis recorded.',
-			'context' => $this->source_selector_bridge_coverage,
+			'code'    => 'inline_markup_bridge',
+			'message' => 'Inline markup selector bridge analysis recorded.',
+			'context' => $inline_markup_bridge_coverage,
 		];
 
 		foreach ( $this->css->get_keyframes() as $kf ) {
@@ -2911,7 +3047,11 @@ CSS;
 		}
 
 		if ( '' === trim( $css ) && ! empty( $source_hit_analysis['has_selector_hits'] ) ) {
-			$this->warnings[] = 'Source selector bridge found source CSS hooks but could not emit any retargeted CSS.';
+			$this->diagnostics[] = [
+				'code'    => 'inline_markup_bridge_empty',
+				'message' => 'Inline markup bridge found source selector hits but emitted no CSS.',
+				'context' => $inline_markup_bridge_coverage,
+			];
 		}
 
 		return $css ? "/* â”€â”€ INLINE MARKUP PRESERVATION */\n" . $css : '';
@@ -3003,7 +3143,7 @@ CSS;
 			}
 		}
 
-		if ( '' === trim( $css ) ) {
+		if ( '' === trim( $css ) && ! empty( $source_hit_analysis['has_selector_hits'] ) ) {
 			$this->warnings[] = 'Source selector bridge found source CSS hooks but could not emit any retargeted CSS.';
 		}
 
@@ -5973,6 +6113,44 @@ CSS;
 
 	private function text_w( string $html, string $cls ): array {
 		return $this->w('text-editor',['_css_classes'=>$cls,'editor'=>$html]);
+	}
+
+	private function icon_list_w( array $items, string $cls, string $icon_value ): ?array {
+		$items = array_values( array_filter( array_map( fn( $item ) => trim( (string) $item ), $items ) ) );
+		if ( empty( $items ) ) {
+			return null;
+		}
+
+		$list_items = array_map(
+			function( string $item ) use ( $icon_value ) {
+				$entry = [
+					'text' => $item,
+					'link' => [ 'url' => '#', 'is_external' => false, 'nofollow' => false ],
+				];
+				if ( '' !== $icon_value ) {
+					$entry['selected_icon'] = [ 'value' => $icon_value, 'library' => 'fas' ];
+				}
+				return $entry;
+			},
+			$items
+		);
+
+		return $this->w( 'icon-list', [
+			'_css_classes'          => $cls,
+			'icon_list'             => $list_items,
+			'view'                  => 'traditional',
+			'icon_align'            => 'left',
+			'icon_indent'           => [ 'unit' => 'px', 'size' => 10 ],
+			'text_indent'           => [ 'unit' => 'px', 'size' => 0 ],
+			'divider'               => 'none',
+			'link_click'            => 'none',
+			'icon_color'            => $this->c_accent,
+			'text_color'            => $this->c_text,
+			'typography_typography' => 'custom',
+			'typography_font_family'=> $this->f_body,
+			'typography_font_weight'=> '400',
+			'typography_font_size'  => [ 'unit' => 'px', 'size' => 14 ],
+		] );
 	}
 
 	private function btn_w( string $text, string $url, string $cls, string $bg, string $color ): array {

@@ -502,6 +502,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
 
 - Root namespace model has started:
   - `body.{prefix}-page` is now emitted as the main page isolation anchor.
+  - top-level section anchors are now being assigned deterministically during assembly for repeated same-type sections instead of relying on Pass 9 duplicate-ID repair
   - structural root promotion has started for repeated-family sections, so section fragments can climb to a better ancestor before extraction when the classifier picked a partial slice
   - footer-family sections now score ancestor candidates using footer-specific structure signals like repeated columns, brand identity, and footer-bottom markers
 - CSS retargeting has started:
@@ -513,6 +514,9 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - generic source-script rewriting exists for selector APIs, ID/class lookups, class-state methods, simple jQuery selector calls, delegated jQuery selector methods, common jQuery class/state helpers, and broader traversal-style selector methods
 - Shared inline-markup carryover has started:
   - heading/text/nav extraction now preserves safe inline markup such as `span`, `em`, `strong`, and `br` instead of flattening everything to plain text
+  - inline-markup CSS carryover now records its own bridge diagnostics instead of overwriting the main source-selector bridge coverage state
+- Generic native rebuilding has started:
+  - low-signal repeated sections can now be rebuilt from repeated generic child/descendant groups using native heading, text, icon-list, button, and preserved visual fragments before falling back to full HTML preservation
 - Pseudo-content interpretation has started:
   - source `::before` / `::after` content is now being inspected during extraction for list-like native payloads
   - pricing feature lists and footer link columns can now carry inferred source icon intent into native `icon-list` widgets instead of only relying on hardcoded icon choices
@@ -535,6 +539,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - unexpected cursor/canvas assets in Global Setup now fail honestly
   - Global Setup cursor/canvas injection is now source-driven instead of unconditional
   - orphaned source CSS/JS hook candidates now fail honestly when none map to emitted output hooks
+  - input-shape warnings are now held to a stronger threshold so business/marketing pages with some dashboard-like structure do not generate noisy soft warnings as easily
 
 Still open even after the above:
 
