@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CR8V STACKS — Header Prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   GLOBAL RESET & TOKENS
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black:     #080808;
+  --white:     #FAFAF7;
+  --off:       #F4F3EE;
+  --blue:      #0047E1;
+  --blue-mid:  #0038C0;
+  --blue-lite: #EEF3FF;
+  --blue-dim:  #D6E2FF;
+  --gray:      #6B6B6B;
+  --gray-lite: #E8E7E2;
+  --line:      rgba(8,8,8,0.09);
+  --hh:        68px;
+  --blog-hh:   64px;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--black);
+  background: #EBEBEA;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+
+/* ═══════════════════════════════════════════
+   DEMO SWITCHER UI
+═══════════════════════════════════════════ */
+.demo-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 99999;
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  height: 52px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.demo-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 1.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transition: color 0.2s, background 0.2s;
+}
+.demo-tab:last-child { border-right: none; }
+.demo-tab.active { color: var(--white); background: rgba(0,71,225,0.35); }
+.demo-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+.demo-tab .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION WRAPPERS
+═══════════════════════════════════════════ */
+.demo-section { display: none; min-height: 100vh; }
+.demo-section.active { display: block; }
+
+.page-bg {
+  padding-top: calc(var(--hh) + 80px);
+  padding-bottom: 120px;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.page-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem,6vw,5rem);
+  line-height: 0.9;
+  color: var(--black);
+  margin-bottom: 1.25rem;
+}
+.page-sub { font-size: 16px; color: var(--gray); font-weight: 300; line-height: 1.7; max-width: 520px; }
+
+/* Mobile preview trigger */
+.mobile-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2.5rem;
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--black);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.mobile-trigger:hover { background: var(--blue-lite); border-color: var(--blue-dim); color: var(--blue); }
+.mobile-trigger svg { width: 16px; height: 16px; }
+
+
+/* ═══════════════════════════════════════════
+   SHARED HEADER FOUNDATIONS
+═══════════════════════════════════════════ */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9500;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  transition: box-shadow 0.3s;
+}
+.site-header.scrolled { box-shadow: 0 4px 40px rgba(0,0,0,0.07); }
+
+.hdr-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.logo-box {
+  width: 30px; height: 30px;
+  background: var(--blue);
+  position: relative;
+  flex-shrink: 0;
+}
+.logo-box::before {
+  content: '';
+  position: absolute;
+  top: 5px; left: 5px;
+  width: 12px; height: 12px;
+  border: 1.5px solid var(--white);
+}
+.logo-box::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; right: 4px;
+  width: 9px; height: 9px;
+  background: var(--white);
+}
+.logo-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.1em;
+  color: var(--black);
+  line-height: 1;
+}
+.logo-name span { color: var(--blue); }
+
+/* Primary nav */
+.pnav { display: flex; align-items: center; list-style: none; }
+.pnav-item { position: static; }
+.pnav-link {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13.5px; font-weight: 400;
+  color: var(--black);
+  padding: 0 1rem;
+  height: var(--hh);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  white-space: nowrap;
+  user-select: none;
+}
+.pnav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 1rem; right: 1rem;
+  height: 2px; background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.pnav-link:hover, .pnav-link.is-open { color: var(--blue); }
+.pnav-link:hover::after, .pnav-link.is-open::after { transform: scaleX(1); }
+.nav-chev {
+  width: 11px; height: 11px;
+  opacity: 0.45;
+  transition: transform 0.22s ease, opacity 0.2s;
+  flex-shrink: 0;
+}
+.pnav-link.is-open .nav-chev { transform: rotate(180deg); opacity: 1; }
+
+/* Header right */
+.hdr-right {
+  display: flex; align-items: center;
+  gap: 0.75rem; flex-shrink: 0;
+}
+.hdr-phone {
+  font-size: 12.5px; color: var(--gray);
+  padding: 0 0.75rem; height: 36px;
+  display: flex; align-items: center;
+  transition: color 0.2s;
+}
+.hdr-phone:hover { color: var(--black); }
+.btn-cta {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 500;
+  color: var(--white);
+  background: var(--blue);
+  padding: 0 1.25rem; height: 38px;
+  letter-spacing: 0.025em;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.btn-cta:hover { background: var(--blue-mid); }
+.btn-cta:active { transform: scale(0.98); }
+.btn-cta-arr { transition: transform 0.2s; }
+.btn-cta:hover .btn-cta-arr { transform: translate(2px,-2px); }
+
+/* Hamburger */
+.hbg {
+  display: none;
+  flex-direction: column; gap: 5px;
+  padding: 10px; cursor: pointer;
+  background: none; border: none;
+  margin-left: 0.5rem;
+}
+.hbg span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--black);
+  transition: all 0.25s;
+}
+.hbg.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px,4.5px); }
+.hbg.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hbg.open span:nth-child(3) { transform: rotate(-45deg) translate(4.5px,-4.5px); }
+
+/* ═══════════════════════════════════════════
+   MEGA MENU SHELL
+═══════════════════════════════════════════ */
+.mega-back {
+  position: fixed;
+  top: var(--hh); left: 0; right: 0; bottom: 0;
+  background: rgba(8,8,8,0.22);
+  backdrop-filter: blur(3px);
+  z-index: 9400;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.mega-back.show { opacity: 1; pointer-events: auto; }
+
+.mega {
+  position: fixed;
+  top: var(--hh); left: 0; right: 0;
+  z-index: 9450;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  transform: translateY(-6px);
+  opacity: 0; pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+}
+.mega.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+.mega-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 3.5rem;
+  display: grid;
+}
+/* 3-col layout */
+.mega-wrap.cols-3 { grid-template-columns: 1.1fr 1.5fr 1fr; }
+/* 4-col layout */
+.mega-wrap.cols-4 { grid-template-columns: 1fr 1fr 1fr 1.1fr; }
+
+.mcol {
+  padding: 2.5rem 0;
+  border-right: 1px solid var(--line);
+  padding-right: 2.5rem;
+}
+.mcol:not(:first-child) { padding-left: 2.5rem; }
+.mcol:last-child { border-right: none; }
+.mcol.flush { padding: 0; }
+
+.mcol-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.35em;
+  text-transform: uppercase; color: var(--blue);
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 8px;
+}
+.mcol-label::before {
+  content: ''; width: 16px; height: 1px;
+  background: var(--blue); display: inline-block; flex-shrink: 0;
+}
+
+/* ── Service cards ── */
+.svc-list { display: flex; flex-direction: column; gap: 0; }
+.svc-card {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: start;
+  text-decoration: none;
+  padding: 12px 10px 12px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s, padding-left 0.15s, margin 0.15s;
+}
+.svc-card:last-child { border-bottom: none; }
+.svc-card:hover {
+  background: var(--blue-lite);
+  margin: 0 -12px; padding-left: 12px; padding-right: 12px;
+}
+.svc-ico {
+  width: 32px; height: 32px;
+  background: var(--blue-dim);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+  transition: background 0.2s;
+}
+.svc-card:hover .svc-ico { background: var(--blue); }
+.svc-ico svg { width: 14px; height: 14px; stroke: var(--blue); stroke-width: 1.75; fill: none; transition: stroke 0.2s; }
+.svc-card:hover .svc-ico svg { stroke: var(--white); }
+.svc-body { padding-left: 10px; }
+.svc-name {
+  font-size: 13.5px; font-weight: 500; color: var(--black);
+  margin-bottom: 2px; display: flex; align-items: center;
+  justify-content: space-between; transition: color 0.2s;
+}
+.svc-card:hover .svc-name { color: var(--blue); }
+.svc-arr { font-size: 11px; color: var(--blue); opacity: 0; transform: translate(-5px,2px); transition: all 0.2s; }
+.svc-card:hover .svc-arr { opacity: 1; transform: translate(0,0); }
+.svc-desc { font-size: 11.5px; color: var(--gray); line-height: 1.5; font-weight: 300; }
+
+/* ── Dark feature panel ── */
+.feature-panel {
+  background: var(--black);
+  padding: 2.5rem;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  min-height: 320px;
+  position: relative; overflow: hidden;
+}
+.feature-panel::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(0,71,225,0.4) 0%, transparent 55%),
+    radial-gradient(circle at 15% 75%, rgba(0,56,192,0.25) 0%, transparent 50%);
+}
+.feature-panel::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.fp-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.28em;
+  text-transform: uppercase; color: rgba(0,160,255,0.85);
+  margin-bottom: 12px; position: relative; z-index: 1;
+}
+.fp-stats {
+  display: flex; gap: 1.5rem;
+  margin-bottom: 1.25rem; position: relative; z-index: 1;
+}
+.fp-stat-n {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem; line-height: 1;
+  color: var(--white);
+}
+.fp-stat-n em { font-style: normal; color: #4A9EFF; }
+.fp-stat-l {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; color: rgba(255,255,255,0.4);
+  letter-spacing: 0.1em; margin-top: 2px;
+}
+.fp-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem; line-height: 0.96;
+  color: var(--white); letter-spacing: 0.02em;
+  margin-bottom: 10px; position: relative; z-index: 1;
+}
+.fp-meta { font-size: 11.5px; color: rgba(250,250,247,0.45); margin-bottom: 1.25rem; position: relative; z-index: 1; font-weight: 300; }
+.fp-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500;
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 8px 16px; position: relative; z-index: 1;
+  transition: background 0.2s, border-color 0.2s;
+  width: fit-content;
+}
+.fp-link:hover { background: var(--blue); border-color: var(--blue); }
+
+/* ── Quick links col ── */
+.qlinks { display: flex; flex-direction: column; }
+.qlink {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+  font-size: 13.5px; color: var(--black); font-weight: 400;
+  transition: color 0.2s, padding-left 0.2s;
+}
+.qlink:last-of-type { border-bottom: none; }
+.qlink:hover { color: var(--blue); padding-left: 5px; }
+.qlink-arr { font-size: 11px; opacity: 0.3; transition: opacity 0.2s, transform 0.2s; }
+.qlink:hover .qlink-arr { opacity: 1; transform: translate(3px,-2px); color: var(--blue); }
+
+.contact-box {
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--blue-lite);
+  border: 1px solid var(--blue-dim);
+}
+.contact-box p { font-size: 12px; color: var(--gray); font-weight: 300; line-height: 1.6; margin-bottom: 10px; }
+.contact-box a {
+  font-size: 12px; font-weight: 500; color: var(--blue);
+  display: flex; align-items: center; gap: 6px;
+  transition: text-decoration 0.1s;
+}
+.contact-box a:hover { text-decoration: underline; }
+
+/* ── Case study grid ── */
+.case-grid { display: flex; flex-direction: column; gap: 0; }
+.case-item {
+  display: grid; grid-template-columns: 44px 1fr;
+  align-items: start; padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  transition: padding-left 0.2s, background 0.15s;
+}
+.case-item:last-child { border-bottom: none; }
+.case-item:hover { padding-left: 6px; background: var(--blue-lite); margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
+.case-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem; color: var(--blue-dim);
+  line-height: 1; transition: color 0.2s;
+}
+.case-item:hover .case-num { color: var(--blue); opacity: 0.45; }
+.case-info { padding-left: 10px; }
+.case-ind { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--blue); text-transform: uppercase; margin-bottom: 3px; }
+.case-title { font-size: 13px; font-weight: 500; color: var(--black); line-height: 1.35; margin-bottom: 3px; transition: color 0.2s; }
+.case-item:hover .case-title { color: var(--blue); }
+.case-tags { font-size: 11px; color: var(--gray); font-weight: 300; }
+
+/* Industry tags */
+.ind-list { display: flex; flex-direction: column; gap: 0; }
+.ind-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+  text-decoration: none; transition: padding-left 0.2s;
+}
+.ind-item:last-child { border-bottom: none; }
+.ind-item:hover { padding-left: 5px; }
+.ind-left { display: flex; align-items: center; gap: 10px; }
+.ind-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  border: 1.5px solid var(--blue);
+  background: var(--blue-dim); flex-shrink: 0;
+  transition: background 0.2s;
+}
+.ind-item:hover .ind-dot { background: var(--blue); }
+.ind-name { font-size: 13.5px; color: var(--black); font-weight: 400; transition: color 0.2s; }
+.ind-item:hover .ind-name { color: var(--blue); }
+.ind-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; color: var(--gray);
+  background: var(--gray-lite); padding: 2px 8px;
+}
+
+/* ══════════════════════════════════════════════════
+   MAIN SITE HEADER — #header-main
+══════════════════════════════════════════════════ */
+#header-main { height: var(--hh); }
+#header-main .hdr-inner { height: var(--hh); }
+
+
+/* ══════════════════════════════════════════════════
+   MOBILE DRAWER — SHARED
+══════════════════════════════════════════════════ */
+.mobile-overlay {
+  position: fixed; inset: 0;
+  background: rgba(8,8,8,0.5);
+  z-index: 9600;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.show { opacity: 1; pointer-events: auto; }
+
+.mobile-drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 340px; max-width: 90vw;
+  background: var(--white);
+  z-index: 9700;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.mobile-drawer.open { transform: translateX(0); }
+
+.mob-head {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 60px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.mob-close {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid var(--line); cursor: pointer;
+  transition: background 0.2s;
+}
+.mob-close:hover { background: var(--off); }
+.mob-close svg { width: 14px; height: 14px; stroke: var(--black); stroke-width: 1.5; fill: none; }
+
+.mob-scroll { flex: 1; overflow-y: auto; }
+
+.mob-nav { list-style: none; }
+.mob-nav-item { border-bottom: 1px solid var(--line); }
+.mob-nav-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem; height: 52px;
+  font-size: 14px; font-weight: 400; color: var(--black);
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+  background: none; border: none; width: 100%; text-align: left;
+}
+.mob-nav-link:hover { background: var(--blue-lite); color: var(--blue); }
+.mob-chev {
+  width: 12px; height: 12px;
+  transition: transform 0.22s;
+}
+.mob-nav-item.open > .mob-nav-link { color: var(--blue); background: var(--blue-lite); }
+.mob-nav-item.open .mob-chev { transform: rotate(180deg); }
+
+.mob-submenu {
+  display: none;
+  background: var(--off);
+  padding: 0.5rem 0;
+}
+.mob-nav-item.open .mob-submenu { display: block; }
+.mob-sub-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--blue);
+  padding: 10px 1.5rem 6px;
+}
+.mob-sub-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 1.5rem;
+  font-size: 13px; color: var(--black);
+  transition: color 0.15s, background 0.15s;
+}
+.mob-sub-link:hover { color: var(--blue); background: var(--blue-lite); }
+.mob-sub-link::before {
+  content: ''; width: 4px; height: 4px;
+  border-radius: 50%; background: var(--blue-dim); flex-shrink: 0;
+  transition: background 0.15s;
+}
+.mob-sub-link:hover::before { background: var(--blue); }
+
+.mob-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--line);
+  background: var(--white);
+  flex-shrink: 0;
+}
+.mob-cta-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 46px;
+  background: var(--blue); color: var(--white);
+  font-size: 13px; font-weight: 500; letter-spacing: 0.03em;
+  border: none; cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 10px;
+}
+.mob-cta-btn:hover { background: var(--blue-mid); }
+.mob-phone {
+  text-align: center; font-size: 12px;
+  color: var(--gray); font-weight: 300;
+}
+.mob-phone a { color: var(--black); font-weight: 400; }
+
+/* Mobile trigger in hdr (desktop hide) */
+@media (max-width: 1100px) {
+  .pnav { display: none; }
+  .hdr-phone { display: none; }
+  .hbg { display: flex; }
+  .hdr-inner { padding: 0 1.5rem; }
+}
+
+/* ═══════════════════════════════════════════════
+   BLOG HEADER — separate header, editorial feel
+═══════════════════════════════════════════════ */
+#section-blog { padding-top: 0; }
+
+#header-blog {
+  --bhh: 64px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9500;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Blog top strip */
+.blog-strip {
+  background: var(--black);
+  height: 32px;
+  display: flex; align-items: center;
+  padding: 0 3.5rem;
+  gap: 1.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.blog-strip-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.35em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4);
+}
+.blog-strip-label span { color: #4A9EFF; }
+.blog-strip-sep { width: 1px; height: 12px; background: rgba(255,255,255,0.15); }
+.blog-strip-links {
+  display: flex; gap: 1.25rem; align-items: center;
+  margin-left: auto;
+}
+.blog-strip-links a {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  transition: color 0.2s;
+}
+.blog-strip-links a:hover { color: rgba(255,255,255,0.8); }
+
+.blog-hdr-main {
+  height: 64px;
+  display: flex; align-items: center;
+  max-width: 1440px; margin: 0 auto;
+  padding: 0 3.5rem;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Blog nav */
+.bnav {
+  display: flex; align-items: center; list-style: none;
+  gap: 0;
+}
+.bnav-item { position: static; }
+.bnav-link {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 400;
+  color: var(--black);
+  padding: 0 0.85rem; height: 64px;
+  cursor: pointer; position: relative;
+  transition: color 0.2s; white-space: nowrap;
+  user-select: none;
+}
+.bnav-link::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0.85rem; right: 0.85rem;
+  height: 2px; background: var(--blue);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.bnav-link:hover, .bnav-link.is-open { color: var(--blue); }
+.bnav-link:hover::after, .bnav-link.is-open::after { transform: scaleX(1); }
+.bnav-link .nav-chev { width: 10px; height: 10px; opacity: 0.4; transition: transform 0.22s, opacity 0.2s; }
+.bnav-link.is-open .nav-chev { transform: rotate(180deg); opacity: 1; }
+
+/* Blog right */
+.blog-right {
+  display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;
+}
+.blog-search {
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 1rem; height: 34px;
+  border: 1px solid var(--line);
+  font-size: 12px; color: var(--gray);
+  background: var(--off); cursor: pointer;
+  transition: border-color 0.2s;
+}
+.blog-search:hover { border-color: var(--blue-dim); }
+.blog-search svg { width: 13px; height: 13px; stroke: var(--gray); stroke-width: 1.75; fill: none; }
+.btn-subscribe {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500;
+  color: var(--white); background: var(--blue);
+  padding: 0 1.1rem; height: 34px;
+  transition: background 0.2s;
+}
+.btn-subscribe:hover { background: var(--blue-mid); }
+
+/* Blog mega - top offset accounts for strip + nav */
+.blog-mega {
+  position: fixed;
+  top: 96px; /* 32px strip + 64px nav */
+  left: 0; right: 0;
+  z-index: 9450;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  transform: translateY(-6px); opacity: 0; pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+}
+.blog-mega.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.blog-mega-back {
+  position: fixed;
+  top: 96px; left: 0; right: 0; bottom: 0;
+  background: rgba(8,8,8,0.2);
+  backdrop-filter: blur(3px);
+  z-index: 9400; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.blog-mega-back.show { opacity: 1; pointer-events: auto; }
+
+.blog-mega .mega-wrap { padding: 0 3.5rem; }
+
+/* Blog mega content styles */
+.blog-cat-header {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding-bottom: 1.25rem; margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.blog-cat-icon {
+  width: 38px; height: 38px; background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.blog-cat-icon svg { width: 16px; height: 16px; stroke: var(--white); stroke-width: 1.75; fill: none; }
+.blog-cat-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem; line-height: 1; color: var(--black);
+  letter-spacing: 0.03em; margin-bottom: 4px;
+}
+.blog-cat-desc { font-size: 12px; color: var(--gray); font-weight: 300; line-height: 1.5; }
+
+.blog-sublinks { display: flex; flex-direction: column; gap: 0; }
+.blog-sublink {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+  font-size: 13.5px; color: var(--black); font-weight: 400;
+  transition: color 0.2s, padding-left 0.2s;
+}
+.blog-sublink:last-child { border-bottom: none; }
+.blog-sublink:hover { color: var(--blue); padding-left: 5px; }
+.blog-sublink-arr { font-size: 11px; opacity: 0.25; transition: opacity 0.2s, transform 0.2s; }
+.blog-sublink:hover .blog-sublink-arr { opacity: 1; transform: translate(3px,-2px); color: var(--blue); }
+
+/* Blog mega featured article */
+.blog-feat {
+  background: var(--black);
+  padding: 2rem;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  min-height: 260px;
+}
+.blog-feat::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(0,71,225,0.45) 0%, transparent 60%);
+}
+.blog-feat-ghost {
+  position: absolute; bottom: -10px; right: -10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 7rem; line-height: 1;
+  color: rgba(255,255,255,0.04); pointer-events: none;
+  letter-spacing: -0.02em;
+}
+.blog-feat-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: rgba(100,170,255,0.8);
+  margin-bottom: 10px; position: relative; z-index: 1;
+}
+.blog-feat-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.7rem; line-height: 1;
+  color: var(--white); letter-spacing: 0.02em;
+  margin-bottom: auto; padding-bottom: 1rem;
+  position: relative; z-index: 1;
+}
+.blog-feat-meta {
+  display: flex; align-items: center; gap: 10px;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  position: relative; z-index: 1;
+  margin-bottom: 12px;
+}
+.blog-feat-av {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(0,71,225,0.6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; color: var(--white);
+  flex-shrink: 0;
+}
+.blog-feat-author { font-size: 11.5px; color: rgba(255,255,255,0.7); }
+.blog-feat-date { font-size: 10.5px; color: rgba(255,255,255,0.35); margin-left: auto; font-family: 'Space Mono', monospace; }
+.blog-feat-link {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500; color: var(--white);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px; position: relative; z-index: 1;
+  transition: background 0.2s;
+}
+.blog-feat-link:hover { background: var(--blue); border-color: var(--blue); }
+
+/* More posts col */
+.blog-more-posts { display: flex; flex-direction: column; gap: 0; }
+.blog-post-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+  text-decoration: none; transition: padding-left 0.15s, background 0.15s;
+}
+.blog-post-item:last-of-type { border-bottom: none; }
+.blog-post-item:hover { padding-left: 5px; background: var(--blue-lite); margin: 0 -10px; padding-left: 10px; padding-right: 10px; }
+.bpi-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem; color: var(--blue-dim); line-height: 1;
+  transition: color 0.2s; flex-shrink: 0; min-width: 28px;
+}
+.blog-post-item:hover .bpi-num { color: var(--blue); opacity: 0.5; }
+.bpi-body { }
+.bpi-tag { font-family: 'Space Mono', monospace; font-size: 8.5px; letter-spacing: 0.2em; color: var(--blue); text-transform: uppercase; margin-bottom: 3px; }
+.bpi-title { font-size: 12.5px; font-weight: 500; color: var(--black); line-height: 1.35; transition: color 0.2s; }
+.blog-post-item:hover .bpi-title { color: var(--blue); }
+
+.blog-view-all {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; margin-top: 1rem;
+  border: 1px solid var(--line); font-size: 12.5px;
+  font-weight: 500; color: var(--black);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.blog-view-all:hover { background: var(--blue-lite); border-color: var(--blue-dim); color: var(--blue); }
+.blog-view-all span { font-size: 12px; color: var(--blue); opacity: 0.6; }
+.blog-view-all:hover span { opacity: 1; }
+
+/* ═══════════════════════════════════════════════
+   MOBILE PHONE MOCKUP OVERLAY
+═══════════════════════════════════════════════ */
+.phone-overlay {
+  position: fixed; inset: 0;
+  z-index: 99000;
+  background: rgba(8,8,8,0.7);
+  display: none; align-items: center; justify-content: center;
+}
+.phone-overlay.show { display: flex; }
+.phone-frame {
+  width: 375px; height: 760px;
+  background: var(--white);
+  border-radius: 40px;
+  border: 8px solid #1A1A1A;
+  position: relative; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  display: flex; flex-direction: column;
+}
+.phone-notch {
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 28px;
+  background: #1A1A1A;
+  border-radius: 0 0 18px 18px;
+  z-index: 10;
+}
+.phone-close {
+  position: absolute; top: -14px; right: -14px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--white); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; color: var(--black);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+.phone-wrap { position: relative; width: 375px; height: 760px; overflow: hidden; border-radius: 32px; }
+.phone-screen {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  background: #EAEAE8;
+  padding-top: 60px;
+}
+
+/* Mobile header inside phone */
+.m-header {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 56px; background: var(--white);
+  border-bottom: 1px solid var(--line);
+  z-index: 100;
+  display: flex; align-items: center;
+  padding: 0 1.25rem;
+  justify-content: space-between;
+}
+.m-logo-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; letter-spacing: 0.1em;
+  color: var(--black);
+}
+.m-logo-name span { color: var(--blue); }
+.m-hbg {
+  display: flex; flex-direction: column; gap: 4.5px;
+  padding: 8px; cursor: pointer; background: none; border: none;
+}
+.m-hbg span { display: block; width: 20px; height: 1.5px; background: var(--black); }
+.m-hbg.open span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
+.m-hbg.open span:nth-child(2) { opacity: 0; }
+.m-hbg.open span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
+
+.m-page-content {
+  padding: 2rem 1.25rem;
+}
+.m-page-h {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem; line-height: 0.95;
+  color: var(--black); margin-bottom: 0.75rem;
+}
+.m-page-s { font-size: 13px; color: var(--gray); line-height: 1.6; font-weight: 300; }
+
+/* Mobile drawer inside phone */
+.m-drawer {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 100%;
+  background: var(--white);
+  z-index: 200;
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.m-drawer.open { transform: translateX(0); }
+
+.m-drawer-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.25rem; height: 56px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.m-drawer-close {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); background: none; cursor: pointer;
+}
+.m-drawer-close svg { width: 12px; height: 12px; stroke: var(--black); stroke-width: 1.5; fill: none; }
+
+.m-nav { list-style: none; flex: 1; overflow-y: auto; }
+.m-nav > li { border-bottom: 1px solid var(--line); }
+.m-nav-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 0 1.25rem; height: 52px;
+  background: none; border: none; cursor: pointer;
+  font-size: 14.5px; font-weight: 400; color: var(--black);
+  font-family: 'DM Sans', sans-serif;
+  text-align: left; transition: background 0.15s, color 0.15s;
+}
+.m-nav-btn:hover, li.m-open > .m-nav-btn { background: var(--blue-lite); color: var(--blue); }
+.m-nav-chev { width: 12px; height: 12px; transition: transform 0.22s; opacity: 0.4; }
+li.m-open .m-nav-chev { transform: rotate(180deg); opacity: 1; }
+.m-sub { display: none; background: var(--off); padding: 6px 0; }
+li.m-open .m-sub { display: block; }
+.m-sub-group-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--blue); padding: 8px 1.25rem 4px;
+}
+.m-sub-a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 1.25rem; font-size: 13px; color: var(--black);
+  transition: background 0.15s, color 0.15s;
+}
+.m-sub-a:hover { background: var(--blue-lite); color: var(--blue); }
+.m-sub-a::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--blue-dim); flex-shrink: 0; transition: background 0.15s;
+}
+.m-sub-a:hover::before { background: var(--blue); }
+
+.m-drawer-foot {
+  padding: 1rem 1.25rem; border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.m-cta {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 44px; background: var(--blue);
+  color: var(--white); font-size: 13px; font-weight: 500;
+  border: none; cursor: pointer; margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+}
+.m-cta:hover { background: var(--blue-mid); }
+.m-phone-link {
+  text-align: center; font-size: 12px; color: var(--gray);
+  display: block;
+}
+.m-phone-link a { color: var(--black); font-weight: 400; }
+
+/* Blog mobile strip */
+.m-blog-strip {
+  background: var(--black); padding: 6px 1.25rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4);
+}
+.m-blog-strip span { color: #4A9EFF; }
+
+@media (max-width: 1100px) {
+  .bnav { display: none; }
+  .blog-search { display: none; }
+  .blog-strip { display: none; }
+  .blog-hdr-main { padding: 0 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+   DEMO SWITCHER BAR
+═══════════════════════════════════════ -->
+<div class="demo-bar">
+  <button class="demo-tab active" onclick="switchDemo('main-desktop')">
+    <span class="dot"></span> Main Header — Desktop
+  </button>
+  <button class="demo-tab" onclick="switchDemo('main-mobile')">
+    <span class="dot"></span> Main Header — Mobile
+  </button>
+  <button class="demo-tab" onclick="switchDemo('blog-desktop')">
+    <span class="dot"></span> Blog Header — Desktop
+  </button>
+  <button class="demo-tab" onclick="switchDemo('blog-mobile')">
+    <span class="dot"></span> Blog Header — Mobile
+  </button>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+   SECTION 1: MAIN HEADER — DESKTOP
+═══════════════════════════════════════════════════════ -->
+<div class="demo-section active" id="section-main-desktop">
+
+  <!-- Mega backdrop -->
+  <div class="mega-back" id="main-back"></div>
+
+  <!-- Header -->
+  <header class="site-header" id="header-main">
+    <div class="hdr-inner">
+      <a href="#" class="logo">
+        <div class="logo-box"></div>
+        <span class="logo-name">CR8V <span>STACKS</span></span>
+      </a>
+      <nav>
+        <ul class="pnav" id="main-pnav">
+          <li class="pnav-item" data-mega="mega-services">
+            <span class="pnav-link" tabindex="0">Services
+              <svg class="nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+            </span>
+          </li>
+          <li class="pnav-item"><a href="#" class="pnav-link">Work</a></li>
+          <li class="pnav-item" data-mega="mega-cases">
+            <span class="pnav-link" tabindex="0">Case Studies
+              <svg class="nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+            </span>
+          </li>
+          <li class="pnav-item"><a href="#" class="pnav-link">About</a></li>
+          <li class="pnav-item"><a href="#" class="pnav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="hdr-right">
+        <a href="tel:+2347054963639" class="hdr-phone">+234 705 496 3639</a>
+        <a href="#" class="btn-cta">Book Consultation <span class="btn-cta-arr">↗</span></a>
+        <button class="hbg" id="main-hbg" onclick="openMainMobile()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MEGA: Services -->
+  <div class="mega" id="mega-services">
+    <div class="mega-wrap cols-3">
+      <div class="mcol">
+        <div class="mcol-label">What We Do</div>
+        <div class="svc-list">
+          <a href="#" class="svc-card">
+            <div class="svc-ico"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <div class="svc-body"><div class="svc-name">Brand Strategy <span class="svc-arr">↗</span></div><div class="svc-desc">Positioning, identity systems & messaging that stick in any market.</div></div>
+          </a>
+          <a href="#" class="svc-card">
+            <div class="svc-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+            <div class="svc-body"><div class="svc-name">Content Writing <span class="svc-arr">↗</span></div><div class="svc-desc">SEO-optimised articles, web copy and blog content that convert.</div></div>
+          </a>
+          <a href="#" class="svc-card">
+            <div class="svc-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+            <div class="svc-body"><div class="svc-name">Digital Marketing <span class="svc-arr">↗</span></div><div class="svc-desc">Paid media, social, email and full-funnel growth campaigns.</div></div>
+          </a>
+          <a href="#" class="svc-card">
+            <div class="svc-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+            <div class="svc-body"><div class="svc-name">Web Design & Dev <span class="svc-arr">↗</span></div><div class="svc-desc">Fast, conversion-focused websites — WordPress, Shopify & custom.</div></div>
+          </a>
+          <a href="#" class="svc-card">
+            <div class="svc-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+            <div class="svc-body"><div class="svc-name">SEO & Growth <span class="svc-arr">↗</span></div><div class="svc-desc">Technical SEO, link building and organic growth strategy.</div></div>
+          </a>
+        </div>
+      </div>
+      <div class="mcol flush" style="border-right:1px solid var(--line)">
+        <div class="feature-panel">
+          <div class="fp-tag">↳ Featured Work</div>
+          <div class="fp-stats">
+            <div><div class="fp-stat-n">3<em>×</em></div><div class="fp-stat-l">Revenue Growth</div></div>
+            <div><div class="fp-stat-n">12<em>K</em></div><div class="fp-stat-l">Monthly Leads</div></div>
+            <div><div class="fp-stat-n">8<em>mo</em></div><div class="fp-stat-l">Timeline</div></div>
+          </div>
+          <div class="fp-title">HOW WE TOOK A<br>FINTECH BRAND<br>NATIONAL</div>
+          <div class="fp-meta">Brand Identity · Digital Marketing · Web Design</div>
+          <a href="#" class="fp-link">Read Case Study →</a>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Quick Access</div>
+        <div class="qlinks">
+          <a href="#" class="qlink">Our Work Portfolio <span class="qlink-arr">↗</span></a>
+          <a href="#" class="qlink">Service Packages <span class="qlink-arr">↗</span></a>
+          <a href="#" class="qlink">About the Agency <span class="qlink-arr">↗</span></a>
+          <a href="#" class="qlink">Client Portal <span class="qlink-arr">↗</span></a>
+          <a href="#" class="qlink">Careers <span class="qlink-arr">↗</span></a>
+        </div>
+        <div class="contact-box">
+          <p>Not sure where to start? A free 30-min consultation will get you moving in the right direction.</p>
+          <a href="mailto:info@cr8vstacks.com">info@cr8vstacks.com →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEGA: Case Studies -->
+  <div class="mega" id="mega-cases">
+    <div class="mega-wrap cols-3">
+      <div class="mcol">
+        <div class="mcol-label">Browse by Industry</div>
+        <div class="ind-list">
+          <a href="#" class="ind-item"><div class="ind-left"><span class="ind-dot"></span><span class="ind-name">Fintech & Finance</span></div><span class="ind-count">6</span></a>
+          <a href="#" class="ind-item"><div class="ind-left"><span class="ind-dot"></span><span class="ind-name">E-commerce & Retail</span></div><span class="ind-count">8</span></a>
+          <a href="#" class="ind-item"><div class="ind-left"><span class="ind-dot"></span><span class="ind-name">Healthcare & Wellness</span></div><span class="ind-count">4</span></a>
+          <a href="#" class="ind-item"><div class="ind-left"><span class="ind-dot"></span><span class="ind-name">FMCG & Consumer</span></div><span class="ind-count">5</span></a>
+          <a href="#" class="ind-item"><div class="ind-left"><span class="ind-dot"></span><span class="ind-name">Startups & Tech</span></div><span class="ind-count">7</span></a>
+          <a href="#" class="ind-item"><div class="ind-left"><span class="ind-dot"></span><span class="ind-name">Real Estate</span></div><span class="ind-count">3</span></a>
+        </div>
+      </div>
+      <div class="mcol flush" style="border-right:1px solid var(--line)">
+        <div class="feature-panel">
+          <div class="fp-tag">↳ Latest Case Study</div>
+          <div class="fp-stats">
+            <div><div class="fp-stat-n">4<em>×</em></div><div class="fp-stat-l">ROI</div></div>
+            <div><div class="fp-stat-n">85<em>%</em></div><div class="fp-stat-l">Organic Traffic ↑</div></div>
+            <div><div class="fp-stat-n">6<em>mo</em></div><div class="fp-stat-l">Timeline</div></div>
+          </div>
+          <div class="fp-title">SCALING AN<br>ECOMMERCE BRAND<br>PAST ₦100M</div>
+          <div class="fp-meta">SEO · Web Design · Content Writing</div>
+          <a href="#" class="fp-link">View Full Case →</a>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Recent Work</div>
+        <div class="case-grid">
+          <a href="#" class="case-item">
+            <div class="case-num">01</div>
+            <div class="case-info"><div class="case-ind">Fintech</div><div class="case-title">Lagos Fintech Brand Reaches 50K Users in 8 Months</div><div class="case-tags">Brand · Marketing · Web</div></div>
+          </a>
+          <a href="#" class="case-item">
+            <div class="case-num">02</div>
+            <div class="case-info"><div class="case-ind">E-commerce</div><div class="case-title">How We Doubled Conversion Rate for a Lagos Retailer</div><div class="case-tags">SEO · Web Design</div></div>
+          </a>
+          <a href="#" class="case-item">
+            <div class="case-num">03</div>
+            <div class="case-info"><div class="case-ind">Healthcare</div><div class="case-title">Brand Repositioning for a Growing Wellness Startup</div><div class="case-tags">Brand Strategy · Content</div></div>
+          </a>
+        </div>
+        <a href="#" class="blog-view-all" style="margin-top:1.25rem">View all case studies <span>→</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="page-bg">
+    <div class="demo-label-tag" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gray);display:flex;align-items:center;gap:12px;margin-bottom:1.5rem">
+      <span>Prototype</span>
+      <span style="flex:1;height:1px;background:var(--line);display:block"></span>
+    </div>
+    <div class="page-heading">MAIN SITE<br>HEADER</div>
+    <p class="page-sub">Hover "Services" for the services mega menu. Hover "Case Studies" for the case studies mega menu — complete with industry filters, featured work panel, and recent projects.</p>
+  </div>
+
+</div><!-- /section-main-desktop -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+   SECTION 2: MAIN HEADER — MOBILE PHONE MOCKUP
+═══════════════════════════════════════════════════════ -->
+<div class="demo-section" id="section-main-mobile" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:60px 20px 80px">
+
+  <div style="text-align:center">
+    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gray);margin-bottom:2rem">Main Header — Mobile Prototype</div>
+
+    <div class="phone-frame" style="position:relative;display:inline-block">
+      <div class="phone-notch"></div>
+      <button class="phone-close" onclick="return false" style="display:none"></button>
+      <div class="phone-wrap">
+        <div class="phone-screen" id="main-phone-screen">
+
+          <!-- Mobile main header -->
+          <div class="m-header">
+            <a href="#" class="logo" style="gap:8px">
+              <div class="logo-box" style="width:26px;height:26px"></div>
+              <span class="m-logo-name">CR8V <span style="color:var(--blue)">STACKS</span></span>
+            </a>
+            <button class="m-hbg" id="main-m-hbg" onclick="toggleMainMobDrawer()">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+
+          <!-- Phone page content -->
+          <div class="m-page-content">
+            <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gray);margin-bottom:1rem">Main Site</div>
+            <div class="m-page-h">WEB DESIGN &<br>DIGITAL<br>MARKETING</div>
+            <p class="m-page-s">We help Lagos businesses build powerful digital presences. Tap the menu to explore.</p>
+            <div style="margin-top:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="background:var(--white);padding:1rem;border:1px solid var(--line)">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--black);line-height:1">5+</div>
+                <div style="font-size:11px;color:var(--gray);font-weight:300;margin-top:2px">Services</div>
+              </div>
+              <div style="background:var(--white);padding:1rem;border:1px solid var(--line)">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--blue);line-height:1">30+</div>
+                <div style="font-size:11px;color:var(--gray);font-weight:300;margin-top:2px">Case Studies</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main mobile drawer -->
+          <div class="m-drawer" id="main-m-drawer">
+            <div class="m-drawer-head">
+              <span class="m-logo-name">CR8V <span style="color:var(--blue)">STACKS</span></span>
+              <button class="m-drawer-close" onclick="toggleMainMobDrawer()">
+                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <ul class="m-nav" id="main-m-nav">
+              <li>
+                <button class="m-nav-btn" onclick="toggleMobSub(this)">Services
+                  <svg class="m-nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+                </button>
+                <div class="m-sub">
+                  <div class="m-sub-group-label">All Services</div>
+                  <a href="#" class="m-sub-a">Brand Strategy</a>
+                  <a href="#" class="m-sub-a">Content Writing</a>
+                  <a href="#" class="m-sub-a">Digital Marketing</a>
+                  <a href="#" class="m-sub-a">Web Design & Dev</a>
+                  <a href="#" class="m-sub-a">SEO & Growth</a>
+                </div>
+              </li>
+              <li><button class="m-nav-btn" onclick="location.href='#'">Work</button></li>
+              <li>
+                <button class="m-nav-btn" onclick="toggleMobSub(this)">Case Studies
+                  <svg class="m-nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+                </button>
+                <div class="m-sub">
+                  <div class="m-sub-group-label">Browse by Industry</div>
+                  <a href="#" class="m-sub-a">Fintech & Finance</a>
+                  <a href="#" class="m-sub-a">E-commerce & Retail</a>
+                  <a href="#" class="m-sub-a">Healthcare & Wellness</a>
+                  <a href="#" class="m-sub-a">FMCG & Consumer</a>
+                  <a href="#" class="m-sub-a">Startups & Tech</a>
+                  <a href="#" class="m-sub-a">Real Estate</a>
+                </div>
+              </li>
+              <li><button class="m-nav-btn">About</button></li>
+              <li><button class="m-nav-btn">Contact</button></li>
+            </ul>
+            <div class="m-drawer-foot">
+              <button class="m-cta">Book Free Consultation ↗</button>
+              <span class="m-phone-link">Call us: <a href="tel:+2347054963639">+234 705 496 3639</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:1.5rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.15em;color:var(--gray)">Tap the ≡ icon to open the drawer</p>
+  </div>
+
+</div><!-- /section-main-mobile -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+   SECTION 3: BLOG HEADER — DESKTOP
+═══════════════════════════════════════════════════════ -->
+<div class="demo-section" id="section-blog-desktop">
+
+  <div class="blog-mega-back" id="blog-back"></div>
+
+  <!-- Blog Header -->
+  <header id="header-blog">
+    <!-- Top strip -->
+    <div style="background:var(--black);height:32px;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <div class="blog-strip">
+        <span class="blog-strip-label">CR8V STACKS — <span>The Blog</span></span>
+        <span class="blog-strip-sep"></span>
+        <div class="blog-strip-links">
+          <a href="#">Main Site</a>
+          <a href="#">Subscribe</a>
+          <a href="#">About</a>
+        </div>
+      </div>
+    </div>
+    <!-- Main nav row -->
+    <div class="blog-hdr-main">
+      <a href="#" class="logo">
+        <div class="logo-box"></div>
+        <span class="logo-name" style="font-size:1.2rem">CR8V <span>BLOG</span></span>
+      </a>
+      <nav>
+        <ul class="bnav" id="blog-bnav">
+          <li class="bnav-item" data-bmega="bmega-brand">
+            <span class="bnav-link" tabindex="0">Brand Strategy
+              <svg class="nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+            </span>
+          </li>
+          <li class="bnav-item" data-bmega="bmega-biztips">
+            <span class="bnav-link" tabindex="0">Biz Tips
+              <svg class="nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+            </span>
+          </li>
+          <li class="bnav-item"><a class="bnav-link" href="https://cr8vstacks.com/categories/business-talk/">Biz News</a></li>
+          <li class="bnav-item" data-bmega="bmega-digimkt">
+            <span class="bnav-link" tabindex="0">Digital Marketing
+              <svg class="nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+            </span>
+          </li>
+          <li class="bnav-item"><a class="bnav-link" href="https://cr8vstacks.com/career-planning/">Career Planning</a></li>
+          <li class="bnav-item"><a class="bnav-link" href="https://cr8vstacks.com/content-creation/">Content Creation</a></li>
+          <li class="bnav-item" data-bmega="bmega-webdesign">
+            <span class="bnav-link" tabindex="0">Web Design
+              <svg class="nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+            </span>
+          </li>
+          <li class="bnav-item"><a class="bnav-link" href="https://cr8vstacks.com/tutorials/">Tutorials</a></li>
+        </ul>
+      </nav>
+      <div class="blog-right">
+        <div class="blog-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Search articles
+        </div>
+        <a href="#" class="btn-subscribe">Subscribe ↗</a>
+        <button class="hbg" id="blog-hbg" onclick="openBlogMobile()" style="display:none">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BLOG MEGA: Brand Strategy -->
+  <div class="blog-mega" id="bmega-brand">
+    <div class="mega-wrap cols-3">
+      <div class="mcol">
+        <div class="blog-cat-header">
+          <div class="blog-cat-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <div><div class="blog-cat-title">Brand Strategy</div><div class="blog-cat-desc">Crafting a unique identity for your business.</div></div>
+        </div>
+        <div class="blog-sublinks">
+          <a href="https://cr8vstacks.com/business-brand-strategy/business-marketing/" class="blog-sublink">Business Marketing <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/business-brand-strategy/business-productivity/" class="blog-sublink">Business Productivity <span class="blog-sublink-arr">→</span></a>
+        </div>
+      </div>
+      <div class="mcol flush" style="border-right:1px solid var(--line)">
+        <div class="blog-feat">
+          <div class="blog-feat-ghost">BRAND</div>
+          <div class="blog-feat-tag">↳ Featured · Brand Strategy</div>
+          <div class="blog-feat-title">HOW TO BUILD A BRAND NIGERIANS ACTUALLY TRUST IN 2026</div>
+          <div>
+            <div class="blog-feat-meta">
+              <div class="blog-feat-av">CK</div>
+              <span class="blog-feat-author">Cr8v Editorial</span>
+              <span class="blog-feat-date">Mar 2026</span>
+            </div>
+            <a href="#" class="blog-feat-link">Read Article →</a>
+          </div>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Recent Posts</div>
+        <div class="blog-more-posts">
+          <a href="#" class="blog-post-item"><div class="bpi-num">01</div><div class="bpi-body"><div class="bpi-tag">Marketing</div><div class="bpi-title">5 Brand Mistakes Killing Your Business Growth</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">02</div><div class="bpi-body"><div class="bpi-tag">Productivity</div><div class="bpi-title">How Productive Routines Build Stronger Brands</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">03</div><div class="bpi-body"><div class="bpi-tag">Marketing</div><div class="bpi-title">Positioning Your Lagos Brand to Win Market Share</div></div></a>
+        </div>
+        <a href="#" class="blog-view-all">All Brand Strategy posts <span>→</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOG MEGA: Biz Tips -->
+  <div class="blog-mega" id="bmega-biztips">
+    <div class="mega-wrap cols-3">
+      <div class="mcol">
+        <div class="blog-cat-header">
+          <div class="blog-cat-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <div><div class="blog-cat-title">Business Tips</div><div class="blog-cat-desc">Valuable insights and advice for business success.</div></div>
+        </div>
+        <div class="blog-sublinks">
+          <a href="https://cr8vstacks.com/business-tips/ecommerce-hub/" class="blog-sublink">Ecommerce Hub <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/business-tips/small-business-hub/" class="blog-sublink">Small Business Hub <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/business-tips/product-review/" class="blog-sublink">Product Review <span class="blog-sublink-arr">→</span></a>
+        </div>
+      </div>
+      <div class="mcol flush" style="border-right:1px solid var(--line)">
+        <div class="blog-feat">
+          <div class="blog-feat-ghost">BIZ</div>
+          <div class="blog-feat-tag">↳ Featured · Small Business</div>
+          <div class="blog-feat-title">THE SMALL BUSINESS GROWTH PLAYBOOK FOR LAGOS ENTREPRENEURS</div>
+          <div>
+            <div class="blog-feat-meta">
+              <div class="blog-feat-av">CS</div>
+              <span class="blog-feat-author">Cr8v Staff</span>
+              <span class="blog-feat-date">Feb 2026</span>
+            </div>
+            <a href="#" class="blog-feat-link">Read Article →</a>
+          </div>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Recent Posts</div>
+        <div class="blog-more-posts">
+          <a href="#" class="blog-post-item"><div class="bpi-num">01</div><div class="bpi-body"><div class="bpi-tag">Ecommerce</div><div class="bpi-title">How to Set Up a Profitable Ecommerce Store in Nigeria</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">02</div><div class="bpi-body"><div class="bpi-tag">Product Review</div><div class="bpi-title">Best Accounting Tools for Nigerian Small Businesses</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">03</div><div class="bpi-body"><div class="bpi-tag">Small Biz</div><div class="bpi-title">10 Cost-Cutting Strategies That Don't Kill Growth</div></div></a>
+        </div>
+        <a href="https://cr8vstacks.com/business-tips/" class="blog-view-all">All Biz Tips posts <span>→</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOG MEGA: Digital Marketing -->
+  <div class="blog-mega" id="bmega-digimkt">
+    <div class="mega-wrap cols-4">
+      <div class="mcol">
+        <div class="blog-cat-header">
+          <div class="blog-cat-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div><div class="blog-cat-title">Digital Marketing</div><div class="blog-cat-desc">Strategies to boost online presence and engagement.</div></div>
+        </div>
+        <div class="blog-sublinks">
+          <a href="https://cr8vstacks.com/digital-marketing-news/email-marketing/" class="blog-sublink">Email Marketing <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/digital-marketing-news/seo/" class="blog-sublink">SEO <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/digital-marketing-news/marketing-software/" class="blog-sublink">Marketing Software <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/digital-marketing-news/social-media-management/" class="blog-sublink">Social Media Management <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/digital-marketing-news/sem/" class="blog-sublink">SEM <span class="blog-sublink-arr">→</span></a>
+        </div>
+      </div>
+      <div class="mcol flush" style="border-right:1px solid var(--line)">
+        <div class="blog-feat">
+          <div class="blog-feat-ghost">SEO</div>
+          <div class="blog-feat-tag">↳ Featured · SEO</div>
+          <div class="blog-feat-title">WHY YOUR LAGOS BUSINESS NEEDS A DIGITAL-FIRST STRATEGY IN 2026</div>
+          <div>
+            <div class="blog-feat-meta">
+              <div class="blog-feat-av">DM</div>
+              <span class="blog-feat-author">Digital Team</span>
+              <span class="blog-feat-date">Mar 2026</span>
+            </div>
+            <a href="#" class="blog-feat-link">Read Article →</a>
+          </div>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Recent Posts</div>
+        <div class="blog-more-posts">
+          <a href="#" class="blog-post-item"><div class="bpi-num">01</div><div class="bpi-body"><div class="bpi-tag">SEO</div><div class="bpi-title">How We Ranked a Client #1 on Google in 90 Days</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">02</div><div class="bpi-body"><div class="bpi-tag">Social Media</div><div class="bpi-title">Best Times to Post on Instagram for Nigerian Brands</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">03</div><div class="bpi-body"><div class="bpi-tag">Email</div><div class="bpi-title">Email Marketing Sequences That Actually Convert</div></div></a>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Trending</div>
+        <div class="blog-more-posts">
+          <a href="#" class="blog-post-item"><div class="bpi-num">04</div><div class="bpi-body"><div class="bpi-tag">SEM</div><div class="bpi-title">Google Ads Guide for Small Nigerian Businesses</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">05</div><div class="bpi-body"><div class="bpi-tag">Software</div><div class="bpi-title">Top 5 Marketing Tools for Agencies in 2026</div></div></a>
+        </div>
+        <a href="https://cr8vstacks.com/digital-marketing-news/" class="blog-view-all" style="margin-top:1rem">All Digital Marketing <span>→</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOG MEGA: Web Design -->
+  <div class="blog-mega" id="bmega-webdesign">
+    <div class="mega-wrap cols-3">
+      <div class="mcol">
+        <div class="blog-cat-header">
+          <div class="blog-cat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+          <div><div class="blog-cat-title">Web Design</div><div class="blog-cat-desc">Creating visually appealing and functional websites.</div></div>
+        </div>
+        <div class="blog-sublinks">
+          <a href="https://cr8vstacks.com/web-design-and-development/ecommerce-website/" class="blog-sublink">Ecommerce Website <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/web-design-and-development/website-design-website-design/" class="blog-sublink">Website Design <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/web-design-and-development/shopify/" class="blog-sublink">Shopify <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/web-design-and-development/wordpress/" class="blog-sublink">WordPress <span class="blog-sublink-arr">→</span></a>
+          <a href="https://cr8vstacks.com/web-design-and-development/web-development/" class="blog-sublink">Web Development <span class="blog-sublink-arr">→</span></a>
+        </div>
+      </div>
+      <div class="mcol flush" style="border-right:1px solid var(--line)">
+        <div class="blog-feat">
+          <div class="blog-feat-ghost">WEB</div>
+          <div class="blog-feat-tag">↳ Featured · WordPress</div>
+          <div class="blog-feat-title">THE COMPLETE 2026 WEBSITE AUDIT CHECKLIST FOR BUSINESSES</div>
+          <div>
+            <div class="blog-feat-meta">
+              <div class="blog-feat-av">WD</div>
+              <span class="blog-feat-author">Web Design Team</span>
+              <span class="blog-feat-date">Mar 2026</span>
+            </div>
+            <a href="#" class="blog-feat-link">Read Article →</a>
+          </div>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="mcol-label">Recent Posts</div>
+        <div class="blog-more-posts">
+          <a href="#" class="blog-post-item"><div class="bpi-num">01</div><div class="bpi-body"><div class="bpi-tag">WordPress</div><div class="bpi-title">WordPress vs Webflow: Which Is Right for Your Business?</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">02</div><div class="bpi-body"><div class="bpi-tag">Shopify</div><div class="bpi-title">How to Set Up a Shopify Store in Nigeria Step by Step</div></div></a>
+          <a href="#" class="blog-post-item"><div class="bpi-num">03</div><div class="bpi-body"><div class="bpi-tag">Ecommerce</div><div class="bpi-title">10 Design Mistakes That Kill Your Conversion Rate</div></div></a>
+        </div>
+        <a href="https://cr8vstacks.com/web-design-and-development/" class="blog-view-all">All Web Design posts <span>→</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blog page content -->
+  <div class="page-bg" style="padding-top:calc(96px + 80px)">
+    <div class="demo-label-tag" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gray);display:flex;align-items:center;gap:12px;margin-bottom:1.5rem">
+      <span>Prototype</span>
+      <span style="flex:1;height:1px;background:var(--line);display:block"></span>
+    </div>
+    <div class="page-heading">BLOG-SPECIFIC<br>HEADER</div>
+    <p class="page-sub">This header only appears on blog/editorial pages. Hover Brand Strategy, Biz Tips, Digital Marketing, or Web Design for category mega menus. All sub-links match the real cr8vstacks.com URL structure.</p>
+  </div>
+
+</div><!-- /section-blog-desktop -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+   SECTION 4: BLOG HEADER — MOBILE PHONE MOCKUP
+═══════════════════════════════════════════════════════ -->
+<div class="demo-section" id="section-blog-mobile" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:60px 20px 80px">
+
+  <div style="text-align:center">
+    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gray);margin-bottom:2rem">Blog Header — Mobile Prototype</div>
+
+    <div class="phone-frame" style="position:relative;display:inline-block">
+      <div class="phone-notch"></div>
+      <div class="phone-wrap">
+        <div class="phone-screen" id="blog-phone-screen">
+
+          <!-- Blog mobile header -->
+          <div class="m-header" style="flex-direction:column;align-items:stretch;height:auto;padding:0">
+            <div class="m-blog-strip">CR8V STACKS — <span>The Blog</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.1em;color:var(--black)">CR8V <span style="color:var(--blue)">BLOG</span></span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--off);cursor:pointer">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray)" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                </button>
+                <button class="m-hbg" id="blog-m-hbg" onclick="toggleBlogMobDrawer()">
+                  <span></span><span></span><span></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone page content -->
+          <div class="m-page-content" style="padding-top:4rem">
+            <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gray);margin-bottom:1rem">The Blog</div>
+            <div class="m-page-h">TIPS TO GROW<br>YOUR BUSINESS<br>ONLINE</div>
+            <p class="m-page-s">Tap the menu to explore all categories — from digital marketing to web design and business tips.</p>
+            <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap">
+              <span style="font-size:11px;background:var(--blue-lite);color:var(--blue);padding:5px 10px;border:1px solid var(--blue-dim)">Brand Strategy</span>
+              <span style="font-size:11px;background:var(--off);color:var(--gray);padding:5px 10px;border:1px solid var(--line)">Biz Tips</span>
+              <span style="font-size:11px;background:var(--off);color:var(--gray);padding:5px 10px;border:1px solid var(--line)">Digital Marketing</span>
+              <span style="font-size:11px;background:var(--off);color:var(--gray);padding:5px 10px;border:1px solid var(--line)">Web Design</span>
+            </div>
+          </div>
+
+          <!-- Blog mobile drawer -->
+          <div class="m-drawer" id="blog-m-drawer">
+            <div class="m-drawer-head">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.1em;color:var(--black)">CR8V <span style="color:var(--blue)">BLOG</span></span>
+              <button class="m-drawer-close" onclick="toggleBlogMobDrawer()">
+                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <ul class="m-nav" id="blog-m-nav">
+              <li>
+                <button class="m-nav-btn" onclick="toggleMobSub(this)">Brand Strategy
+                  <svg class="m-nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+                </button>
+                <div class="m-sub">
+                  <div class="m-sub-group-label">Sub-categories</div>
+                  <a href="https://cr8vstacks.com/business-brand-strategy/business-marketing/" class="m-sub-a">Business Marketing</a>
+                  <a href="https://cr8vstacks.com/business-brand-strategy/business-productivity/" class="m-sub-a">Business Productivity</a>
+                </div>
+              </li>
+              <li>
+                <button class="m-nav-btn" onclick="toggleMobSub(this)">Biz Tips
+                  <svg class="m-nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+                </button>
+                <div class="m-sub">
+                  <div class="m-sub-group-label">Sub-categories</div>
+                  <a href="https://cr8vstacks.com/business-tips/ecommerce-hub/" class="m-sub-a">Ecommerce Hub</a>
+                  <a href="https://cr8vstacks.com/business-tips/small-business-hub/" class="m-sub-a">Small Business Hub</a>
+                  <a href="https://cr8vstacks.com/business-tips/product-review/" class="m-sub-a">Product Review</a>
+                </div>
+              </li>
+              <li><button class="m-nav-btn">Biz News</button></li>
+              <li>
+                <button class="m-nav-btn" onclick="toggleMobSub(this)">Digital Marketing
+                  <svg class="m-nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+                </button>
+                <div class="m-sub">
+                  <div class="m-sub-group-label">Sub-categories</div>
+                  <a href="https://cr8vstacks.com/digital-marketing-news/email-marketing/" class="m-sub-a">Email Marketing</a>
+                  <a href="https://cr8vstacks.com/digital-marketing-news/seo/" class="m-sub-a">SEO</a>
+                  <a href="https://cr8vstacks.com/digital-marketing-news/marketing-software/" class="m-sub-a">Marketing Software</a>
+                  <a href="https://cr8vstacks.com/digital-marketing-news/social-media-management/" class="m-sub-a">Social Media Management</a>
+                  <a href="https://cr8vstacks.com/digital-marketing-news/sem/" class="m-sub-a">SEM</a>
+                </div>
+              </li>
+              <li><button class="m-nav-btn">Career Planning</button></li>
+              <li><button class="m-nav-btn">Content Creation</button></li>
+              <li>
+                <button class="m-nav-btn" onclick="toggleMobSub(this)">Web Design
+                  <svg class="m-nav-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+                </button>
+                <div class="m-sub">
+                  <div class="m-sub-group-label">Sub-categories</div>
+                  <a href="https://cr8vstacks.com/web-design-and-development/ecommerce-website/" class="m-sub-a">Ecommerce Website</a>
+                  <a href="https://cr8vstacks.com/web-design-and-development/website-design-website-design/" class="m-sub-a">Website Design</a>
+                  <a href="https://cr8vstacks.com/web-design-and-development/shopify/" class="m-sub-a">Shopify</a>
+                  <a href="https://cr8vstacks.com/web-design-and-development/wordpress/" class="m-sub-a">WordPress</a>
+                  <a href="https://cr8vstacks.com/web-design-and-development/web-development/" class="m-sub-a">Web Development</a>
+                </div>
+              </li>
+              <li><button class="m-nav-btn">Tutorials</button></li>
+            </ul>
+            <div class="m-drawer-foot">
+              <button class="m-cta">Subscribe to Newsletter ↗</button>
+              <span class="m-phone-link"><a href="https://cr8vstacks.com">← Back to Main Site</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:1.5rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.15em;color:var(--gray)">Tap the ≡ icon to open the drawer</p>
+  </div>
+
+</div><!-- /section-blog-mobile -->
+
+
+<script>
+/* ── Demo switcher ── */
+function switchDemo(id) {
+  document.querySelectorAll('.demo-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  closeAllMegas();
+}
+
+/* ── MAIN MEGA LOGIC ── */
+let mainActive = null;
+let mainTimer = null;
+const mainBack = document.getElementById('main-back');
+
+function openMainMega(id) {
+  clearTimeout(mainTimer);
+  const panel = document.getElementById(id);
+  if (mainActive && mainActive !== panel) {
+    mainActive.classList.remove('open');
+    document.querySelectorAll('#main-pnav .pnav-link').forEach(l => l.classList.remove('is-open'));
+  }
+  panel.classList.add('open');
+  mainBack.classList.add('show');
+  mainActive = panel;
+  document.querySelectorAll(`[data-mega="${id}"] .pnav-link`).forEach(l => l.classList.add('is-open'));
+}
+
+function closeMainMega(immediate) {
+  clearTimeout(mainTimer);
+  const fn = () => {
+    if (mainActive) { mainActive.classList.remove('open'); mainActive = null; }
+    mainBack.classList.remove('show');
+    document.querySelectorAll('#main-pnav .pnav-link').forEach(l => l.classList.remove('is-open'));
+  };
+  immediate ? fn() : (mainTimer = setTimeout(fn, 180));
+}
+
+document.querySelectorAll('#main-pnav .pnav-item[data-mega]').forEach(item => {
+  const link = item.querySelector('.pnav-link');
+  link.addEventListener('mouseenter', () => openMainMega(item.dataset.mega));
+  link.addEventListener('click', () => {
+    if (mainActive && mainActive.id === item.dataset.mega) closeMainMega(true);
+    else openMainMega(item.dataset.mega);
+  });
+  item.addEventListener('mouseleave', () => closeMainMega(false));
+});
+
+document.querySelectorAll('#mega-services, #mega-cases').forEach(p => {
+  p.addEventListener('mouseenter', () => clearTimeout(mainTimer));
+  p.addEventListener('mouseleave', () => closeMainMega(false));
+});
+
+mainBack.addEventListener('click', () => closeMainMega(true));
+
+/* ── BLOG MEGA LOGIC ── */
+let blogActive = null;
+let blogTimer = null;
+const blogBack = document.getElementById('blog-back');
+
+function openBlogMega(id) {
+  clearTimeout(blogTimer);
+  const panel = document.getElementById(id);
+  if (blogActive && blogActive !== panel) {
+    blogActive.classList.remove('open');
+    document.querySelectorAll('#blog-bnav .bnav-link').forEach(l => l.classList.remove('is-open'));
+  }
+  panel.classList.add('open');
+  blogBack.classList.add('show');
+  blogActive = panel;
+  document.querySelectorAll(`[data-bmega="${id}"] .bnav-link`).forEach(l => l.classList.add('is-open'));
+}
+
+function closeBlogMega(immediate) {
+  clearTimeout(blogTimer);
+  const fn = () => {
+    if (blogActive) { blogActive.classList.remove('open'); blogActive = null; }
+    blogBack.classList.remove('show');
+    document.querySelectorAll('#blog-bnav .bnav-link').forEach(l => l.classList.remove('is-open'));
+  };
+  immediate ? fn() : (blogTimer = setTimeout(fn, 180));
+}
+
+document.querySelectorAll('#blog-bnav .bnav-item[data-bmega]').forEach(item => {
+  const link = item.querySelector('.bnav-link');
+  link.addEventListener('mouseenter', () => openBlogMega(item.dataset.bmega));
+  link.addEventListener('click', () => {
+    if (blogActive && blogActive.id === item.dataset.bmega) closeBlogMega(true);
+    else openBlogMega(item.dataset.bmega);
+  });
+  item.addEventListener('mouseleave', () => closeBlogMega(false));
+});
+
+document.querySelectorAll('.blog-mega').forEach(p => {
+  p.addEventListener('mouseenter', () => clearTimeout(blogTimer));
+  p.addEventListener('mouseleave', () => closeBlogMega(false));
+});
+
+blogBack.addEventListener('click', () => closeBlogMega(true));
+
+/* ── CLOSE ALL MEGAS ── */
+function closeAllMegas() {
+  closeMainMega(true);
+  closeBlogMega(true);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllMegas(); });
+
+/* ── SCROLL SHADOW ── */
+window.addEventListener('scroll', () => {
+  document.querySelectorAll('.site-header').forEach(h => {
+    h.classList.toggle('scrolled', window.scrollY > 8);
+  });
+});
+
+/* ── MOBILE DRAWERS (phone mockups) ── */
+function toggleMainMobDrawer() {
+  const drawer = document.getElementById('main-m-drawer');
+  const hbg = document.getElementById('main-m-hbg');
+  const open = drawer.classList.toggle('open');
+  hbg.classList.toggle('open', open);
+}
+
+function toggleBlogMobDrawer() {
+  const drawer = document.getElementById('blog-m-drawer');
+  const hbg = document.getElementById('blog-m-hbg');
+  const open = drawer.classList.toggle('open');
+  hbg.classList.toggle('open', open);
+}
+
+function toggleMobSub(btn) {
+  const li = btn.closest('li');
+  const wasOpen = li.classList.contains('m-open');
+  const parentNav = li.closest('.m-nav');
+  parentNav.querySelectorAll('li.m-open').forEach(el => el.classList.remove('m-open'));
+  if (!wasOpen) li.classList.add('m-open');
+}
+</script>
+
+</body>
+</html>
