@@ -509,7 +509,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - generic source-selector rewriting exists
   - selector scoping under the root namespace exists
   - `@media` and `@supports` blocks are now part of the rewrite path
-  - native-widget semantic retargeting has started for `icon-list`, `text-editor`, `heading`, and `button` widgets so source selectors aimed at raw tags can be mapped onto Elementor-rendered DOM
+  - native-widget semantic retargeting has started for `icon-list`, `text-editor`, `heading`, `button`, `image`, and `video` widgets so source selectors aimed at raw tags can be mapped onto Elementor-rendered DOM
 - JS carryover has started:
   - generic source-script rewriting exists for selector APIs, ID/class lookups, class-state methods, simple jQuery selector calls, delegated jQuery selector methods, common jQuery class/state helpers, and broader traversal-style selector methods
 - Shared inline-markup carryover has started:
@@ -533,6 +533,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - Pass 8 now distinguishes between bridge targets that merely exist in theory and source CSS rules that actually matched those targets, so `source_css_bridge_unresolved` only fires when matched source rules existed and still produced no retargeted CSS
   - unresolved source JS bridge now fails honestly
   - Pass 8 now makes the same distinction for JS, so script-bridge failures only fire when the source script actually referenced mappable classes or IDs in selector/state contexts
+  - native-widget semantic coverage and failure paths now extend to image/media families too, not only text/list/button-style widgets
   - unresolved source pseudo/media/supports carryover now fails honestly
   - unresolved source behavior/selector API carryover now fails honestly
   - unresolved native-widget semantic carryover now fails honestly when source selectors used tag semantics for mappable `icon-list`, `text-editor`, `heading`, or `button` hooks but the bridge did not carry them into Elementor-rendered output

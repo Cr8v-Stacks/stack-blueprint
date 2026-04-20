@@ -104,6 +104,8 @@ class NativeConverter {
 			'text'      => [ 'source' => false, 'output' => false ],
 			'heading'   => [ 'source' => false, 'output' => false ],
 			'button'    => [ 'source' => false, 'output' => false ],
+			'image'     => [ 'source' => false, 'output' => false ],
+			'media'     => [ 'source' => false, 'output' => false ],
 		];
 
 		if ( ! Helpers::is_safe_prefix( $this->prefix ) ) {
@@ -1879,6 +1881,10 @@ HTML;
 			'heading_ids'       => [],
 			'button_classes'    => [],
 			'button_ids'        => [],
+			'image_classes'     => [],
+			'image_ids'         => [],
+			'media_classes'     => [],
+			'media_ids'         => [],
 		];
 
 		$walk = function( array $node ) use ( &$walk, &$inventory ): void {
@@ -1952,6 +1958,34 @@ HTML;
 				}
 				if ( '' !== $element_id ) {
 					$inventory['button_ids'][ $element_id ] = true;
+				}
+			}
+
+			if ( in_array( (string) ( $node['widgetType'] ?? '' ), [ 'image', 'image-gallery' ], true ) ) {
+				if ( '' !== $classes ) {
+					foreach ( preg_split( '/\s+/', $classes ) as $class_name ) {
+						$class_name = trim( (string) $class_name );
+						if ( '' !== $class_name ) {
+							$inventory['image_classes'][ $class_name ] = true;
+						}
+					}
+				}
+				if ( '' !== $element_id ) {
+					$inventory['image_ids'][ $element_id ] = true;
+				}
+			}
+
+			if ( 'video' === ( $node['widgetType'] ?? '' ) ) {
+				if ( '' !== $classes ) {
+					foreach ( preg_split( '/\s+/', $classes ) as $class_name ) {
+						$class_name = trim( (string) $class_name );
+						if ( '' !== $class_name ) {
+							$inventory['media_classes'][ $class_name ] = true;
+						}
+					}
+				}
+				if ( '' !== $element_id ) {
+					$inventory['media_ids'][ $element_id ] = true;
 				}
 			}
 
@@ -3657,6 +3691,14 @@ CSS;
 				array_map( fn( $class_name ) => '.' . $class_name, array_keys( (array) ( $inventory['button_classes'] ?? [] ) ) ),
 				array_map( fn( $id_name ) => '#' . $id_name, array_keys( (array) ( $inventory['button_ids'] ?? [] ) ) )
 			),
+			'image' => array_merge(
+				array_map( fn( $class_name ) => '.' . $class_name, array_keys( (array) ( $inventory['image_classes'] ?? [] ) ) ),
+				array_map( fn( $id_name ) => '#' . $id_name, array_keys( (array) ( $inventory['image_ids'] ?? [] ) ) )
+			),
+			'media' => array_merge(
+				array_map( fn( $class_name ) => '.' . $class_name, array_keys( (array) ( $inventory['media_classes'] ?? [] ) ) ),
+				array_map( fn( $id_name ) => '#' . $id_name, array_keys( (array) ( $inventory['media_ids'] ?? [] ) ) )
+			),
 		];
 
 		foreach ( $widget_wrappers['icon-list'] as $wrapper ) {
@@ -3768,6 +3810,54 @@ CSS;
 			}
 		}
 
+		foreach ( $widget_wrappers['image'] as $wrapper ) {
+			if ( ! str_contains( $selector, $wrapper ) ) {
+				continue;
+			}
+
+			$escaped = preg_quote( $wrapper, '/' );
+			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+(?:figure|picture|img)(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
+				$this->native_widget_semantic_coverage['image']['source'] = true;
+			}
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+figure(?=[:\.\[#\s>+~]|$)/i',
+				$wrapper . '$1 .elementor-image',
+				$selector
+			);
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+(?:picture|img)(?=[:\.\[#\s>+~]|$)/i',
+				$wrapper . '$1 .elementor-image img',
+				$selector
+			);
+			if ( $selector !== $original_selector && str_contains( $selector, '.elementor-image' ) ) {
+				$this->native_widget_semantic_coverage['image']['output'] = true;
+			}
+		}
+
+		foreach ( $widget_wrappers['media'] as $wrapper ) {
+			if ( ! str_contains( $selector, $wrapper ) ) {
+				continue;
+			}
+
+			$escaped = preg_quote( $wrapper, '/' );
+			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+(?:video|iframe)(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
+				$this->native_widget_semantic_coverage['media']['source'] = true;
+			}
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+(?:video|iframe)(?=[:\.\[#\s>+~]|$)/i',
+				$wrapper . '$1 .elementor-wrapper iframe',
+				$selector
+			);
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+\.(?:video|embed|player)(?=[:\.\[#\s>+~]|$)/i',
+				$wrapper . '$1 .elementor-wrapper',
+				$selector
+			);
+			if ( $selector !== $original_selector && ( str_contains( $selector, '.elementor-wrapper' ) || str_contains( $selector, '.elementor-custom-embed-image-overlay' ) ) ) {
+				$this->native_widget_semantic_coverage['media']['output'] = true;
+			}
+		}
+
 		return preg_replace( '/\s+/', ' ', trim( $selector ) ) ?? $selector;
 	}
 
@@ -3818,6 +3908,8 @@ CSS;
 					'text'      => [ 'source' => false, 'output' => false ],
 					'heading'   => [ 'source' => false, 'output' => false ],
 					'button'    => [ 'source' => false, 'output' => false ],
+					'image'     => [ 'source' => false, 'output' => false ],
+					'media'     => [ 'source' => false, 'output' => false ],
 				],
 			];
 			return '';
@@ -3848,6 +3940,8 @@ CSS;
 					'text'      => [ 'source' => false, 'output' => false ],
 					'heading'   => [ 'source' => false, 'output' => false ],
 					'button'    => [ 'source' => false, 'output' => false ],
+					'image'     => [ 'source' => false, 'output' => false ],
+					'media'     => [ 'source' => false, 'output' => false ],
 				],
 			];
 			return '';
@@ -3876,6 +3970,8 @@ CSS;
 				'text'      => [ 'source' => false, 'output' => false ],
 				'heading'   => [ 'source' => false, 'output' => false ],
 				'button'    => [ 'source' => false, 'output' => false ],
+				'image'     => [ 'source' => false, 'output' => false ],
+				'media'     => [ 'source' => false, 'output' => false ],
 			],
 		];
 
@@ -3901,6 +3997,8 @@ CSS;
 			'text'      => [ 'source' => false, 'output' => false ],
 			'heading'   => [ 'source' => false, 'output' => false ],
 			'button'    => [ 'source' => false, 'output' => false ],
+			'image'     => [ 'source' => false, 'output' => false ],
+			'media'     => [ 'source' => false, 'output' => false ],
 		];
 
 		$rewrite_selector_literal = function( string $selector ) use ( $class_map, $id_map, $scope_root, &$rewrite_count, &$widget_semantics ): string {
@@ -4109,6 +4207,14 @@ CSS;
 			'button' => [
 				'source' => '/(?:a|button)(?:\s+span)?(?=[:\.\[#\s>+~]|$)/i',
 				'output' => '/\.elementor-button(?:-text)?/i',
+			],
+			'image' => [
+				'source' => '/(?:figure|picture|img)(?=[:\.\[#\s>+~]|$)/i',
+				'output' => '/\.elementor-image(?:\s+img)?/i',
+			],
+			'media' => [
+				'source' => '/(?:video|iframe)(?=[:\.\[#\s>+~]|$)/i',
+				'output' => '/\.elementor-wrapper|\.elementor-custom-embed-image-overlay/i',
 			],
 		];
 
