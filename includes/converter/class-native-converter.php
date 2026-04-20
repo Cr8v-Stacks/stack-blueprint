@@ -80,6 +80,17 @@ class NativeConverter {
 		}
 	}
 
+	private function default_widget_semantic_coverage(): array {
+		return [
+			'icon-list' => [ 'source' => false, 'output' => false, 'pseudo_source' => false, 'pseudo_output' => false ],
+			'text'      => [ 'source' => false, 'output' => false, 'pseudo_source' => false, 'pseudo_output' => false ],
+			'heading'   => [ 'source' => false, 'output' => false, 'pseudo_source' => false, 'pseudo_output' => false ],
+			'button'    => [ 'source' => false, 'output' => false, 'pseudo_source' => false, 'pseudo_output' => false ],
+			'image'     => [ 'source' => false, 'output' => false, 'pseudo_source' => false, 'pseudo_output' => false ],
+			'media'     => [ 'source' => false, 'output' => false, 'pseudo_source' => false, 'pseudo_output' => false ],
+		];
+	}
+
 	public function convert( string $html, array $params = [] ): array|WP_Error {
 		$this->project_name = sanitize_text_field( $params['project_name'] ?? 'my-project' );
 		$this->prefix       = Helpers::generate_prefix( $this->project_name );
@@ -99,14 +110,7 @@ class NativeConverter {
 		$this->companion_css_coverage = [];
 		$this->source_selector_bridge_coverage = [];
 		$this->source_script_bridge_coverage = [];
-		$this->native_widget_semantic_coverage = [
-			'icon-list' => [ 'source' => false, 'output' => false ],
-			'text'      => [ 'source' => false, 'output' => false ],
-			'heading'   => [ 'source' => false, 'output' => false ],
-			'button'    => [ 'source' => false, 'output' => false ],
-			'image'     => [ 'source' => false, 'output' => false ],
-			'media'     => [ 'source' => false, 'output' => false ],
-		];
+		$this->native_widget_semantic_coverage = $this->default_widget_semantic_coverage();
 
 		if ( ! Helpers::is_safe_prefix( $this->prefix ) ) {
 			return $this->fail_conversion(
@@ -2342,6 +2346,24 @@ HTML;
 			];
 		}
 
+		$pseudo_semantic_gaps = [];
+		foreach ( (array) ( $selector_bridge['widget_semantics'] ?? [] ) as $family => $coverage ) {
+			if ( ! empty( $coverage['pseudo_source'] ) && empty( $coverage['pseudo_output'] ) ) {
+				$pseudo_semantic_gaps[] = (string) $family;
+			}
+		}
+		if ( ! empty( $pseudo_semantic_gaps ) ) {
+			return [
+				'code' => 'source_widget_pseudo_semantic_bridge_missing',
+				'message' => 'Source CSS used native-widget pseudo-element hosts for mappable hooks, but the selector bridge did not carry those pseudo hosts into Elementor-rendered output.',
+				'context' => [
+					'pass'     => 8,
+					'families' => $pseudo_semantic_gaps,
+					'coverage' => $selector_bridge['widget_semantics'] ?? [],
+				],
+			];
+		}
+
 		$script_bridge = $this->source_script_bridge_coverage;
 		if (
 			! empty( $script_bridge['has_source_js'] ) &&
@@ -3175,7 +3197,7 @@ CSS;
 				'candidate_ids'       => [],
 				'bridged_classes'     => [],
 				'bridged_ids'         => [],
-				'widget_semantics'    => $this->native_widget_semantic_coverage,
+				'widget_semantics'    => $this->default_widget_semantic_coverage(),
 			];
 			return '';
 		}
@@ -3204,7 +3226,7 @@ CSS;
 				'candidate_ids'       => $candidate_ids,
 				'bridged_classes'     => [],
 				'bridged_ids'         => [],
-				'widget_semantics'    => $this->native_widget_semantic_coverage,
+				'widget_semantics'    => $this->default_widget_semantic_coverage(),
 			];
 			return '';
 		}
@@ -3674,6 +3696,7 @@ CSS;
 	private function rewrite_native_widget_semantics( string $selector ): string {
 		$inventory = $this->get_current_emitted_hook_inventory();
 		$original_selector = $selector;
+		$has_pseudo = (bool) preg_match( '/::(before|after)\b/i', $selector );
 		$widget_wrappers = [
 			'icon-list' => array_merge(
 				array_map( fn( $class_name ) => '.' . $class_name, array_keys( (array) ( $inventory['icon_list_classes'] ?? [] ) ) ),
@@ -3709,6 +3732,9 @@ CSS;
 			$escaped = preg_quote( $wrapper, '/' );
 			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+(?:ul|ol|li|a)(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
 				$this->native_widget_semantic_coverage['icon-list']['source'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['icon-list']['pseudo_source'] = true;
+				}
 			}
 
 			$selector = preg_replace(
@@ -3740,6 +3766,9 @@ CSS;
 			$selector = str_replace( '.elementor-icon-list-icon i::after', '.elementor-icon-list-icon i', $selector );
 			if ( $selector !== $original_selector && str_contains( $selector, '.elementor-icon-list-' ) ) {
 				$this->native_widget_semantic_coverage['icon-list']['output'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['icon-list']['pseudo_output'] = true;
+				}
 			}
 		}
 
@@ -3751,6 +3780,9 @@ CSS;
 			$escaped = preg_quote( $wrapper, '/' );
 			if ( preg_match( '/' . $escaped . '\s*>\s*(?:p|a|ul|ol|blockquote|span)(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
 				$this->native_widget_semantic_coverage['text']['source'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['text']['pseudo_source'] = true;
+				}
 			}
 			$selector = preg_replace(
 				'/' . $escaped . '\s*>\s*(p|a|ul|ol|blockquote)(?=[:\.\[#\s>+~]|$)/i',
@@ -3764,6 +3796,9 @@ CSS;
 			);
 			if ( $selector !== $original_selector && str_contains( $selector, '.elementor-widget-container' ) ) {
 				$this->native_widget_semantic_coverage['text']['output'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['text']['pseudo_output'] = true;
+				}
 			}
 		}
 
@@ -3775,6 +3810,9 @@ CSS;
 			$escaped = preg_quote( $wrapper, '/' );
 			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+h[1-6](?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
 				$this->native_widget_semantic_coverage['heading']['source'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['heading']['pseudo_source'] = true;
+				}
 			}
 			$selector = preg_replace(
 				'/' . $escaped . '((?:[^,{]*)?)\s+h[1-6](?=[:\.\[#\s>+~]|$)/i',
@@ -3783,6 +3821,9 @@ CSS;
 			);
 			if ( $selector !== $original_selector && str_contains( $selector, '.elementor-heading-title' ) ) {
 				$this->native_widget_semantic_coverage['heading']['output'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['heading']['pseudo_output'] = true;
+				}
 			}
 		}
 
@@ -3794,6 +3835,9 @@ CSS;
 			$escaped = preg_quote( $wrapper, '/' );
 			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+(?:a|button)(?:\s+span)?(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
 				$this->native_widget_semantic_coverage['button']['source'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['button']['pseudo_source'] = true;
+				}
 			}
 			$selector = preg_replace(
 				'/' . $escaped . '((?:[^,{]*)?)\s+(?:a|button)(?=[:\.\[#\s>+~]|$)/i',
@@ -3807,6 +3851,9 @@ CSS;
 			);
 			if ( $selector !== $original_selector && ( str_contains( $selector, '.elementor-button' ) || str_contains( $selector, '.elementor-button-text' ) ) ) {
 				$this->native_widget_semantic_coverage['button']['output'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['button']['pseudo_output'] = true;
+				}
 			}
 		}
 
@@ -3818,7 +3865,15 @@ CSS;
 			$escaped = preg_quote( $wrapper, '/' );
 			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+(?:figure|picture|img)(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
 				$this->native_widget_semantic_coverage['image']['source'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['image']['pseudo_source'] = true;
+				}
 			}
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+(?:figure|picture|img)(?=::(?:before|after))/i',
+				$wrapper . '$1 .elementor-image',
+				$selector
+			);
 			$selector = preg_replace(
 				'/' . $escaped . '((?:[^,{]*)?)\s+figure(?=[:\.\[#\s>+~]|$)/i',
 				$wrapper . '$1 .elementor-image',
@@ -3831,6 +3886,9 @@ CSS;
 			);
 			if ( $selector !== $original_selector && str_contains( $selector, '.elementor-image' ) ) {
 				$this->native_widget_semantic_coverage['image']['output'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['image']['pseudo_output'] = true;
+				}
 			}
 		}
 
@@ -3842,7 +3900,20 @@ CSS;
 			$escaped = preg_quote( $wrapper, '/' );
 			if ( preg_match( '/' . $escaped . '((?:[^,{]*)?)\s+(?:video|iframe)(?=[:\.\[#\s>+~]|$)/i', $selector ) ) {
 				$this->native_widget_semantic_coverage['media']['source'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['media']['pseudo_source'] = true;
+				}
 			}
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+(?:video|iframe)(?=::(?:before|after))/i',
+				$wrapper . '$1 .elementor-wrapper',
+				$selector
+			);
+			$selector = preg_replace(
+				'/' . $escaped . '((?:[^,{]*)?)\s+\.(?:video|embed|player)(?=::(?:before|after))/i',
+				$wrapper . '$1 .elementor-wrapper',
+				$selector
+			);
 			$selector = preg_replace(
 				'/' . $escaped . '((?:[^,{]*)?)\s+(?:video|iframe)(?=[:\.\[#\s>+~]|$)/i',
 				$wrapper . '$1 .elementor-wrapper iframe',
@@ -3855,6 +3926,9 @@ CSS;
 			);
 			if ( $selector !== $original_selector && ( str_contains( $selector, '.elementor-wrapper' ) || str_contains( $selector, '.elementor-custom-embed-image-overlay' ) ) ) {
 				$this->native_widget_semantic_coverage['media']['output'] = true;
+				if ( $has_pseudo ) {
+					$this->native_widget_semantic_coverage['media']['pseudo_output'] = true;
+				}
 			}
 		}
 
@@ -3903,14 +3977,7 @@ CSS;
 				'candidate_ids'             => [],
 				'bridged_classes'           => [],
 				'bridged_ids'               => [],
-				'widget_semantics'          => [
-					'icon-list' => [ 'source' => false, 'output' => false ],
-					'text'      => [ 'source' => false, 'output' => false ],
-					'heading'   => [ 'source' => false, 'output' => false ],
-					'button'    => [ 'source' => false, 'output' => false ],
-					'image'     => [ 'source' => false, 'output' => false ],
-					'media'     => [ 'source' => false, 'output' => false ],
-				],
+				'widget_semantics'          => $this->default_widget_semantic_coverage(),
 			];
 			return '';
 		}
@@ -3935,14 +4002,7 @@ CSS;
 				'candidate_ids'             => $candidate_ids,
 				'bridged_classes'           => [],
 				'bridged_ids'               => [],
-				'widget_semantics'          => [
-					'icon-list' => [ 'source' => false, 'output' => false ],
-					'text'      => [ 'source' => false, 'output' => false ],
-					'heading'   => [ 'source' => false, 'output' => false ],
-					'button'    => [ 'source' => false, 'output' => false ],
-					'image'     => [ 'source' => false, 'output' => false ],
-					'media'     => [ 'source' => false, 'output' => false ],
-				],
+				'widget_semantics'          => $this->default_widget_semantic_coverage(),
 			];
 			return '';
 		}
@@ -3965,14 +4025,7 @@ CSS;
 			'candidate_ids'             => $candidate_ids,
 			'bridged_classes'           => array_keys( $class_map ),
 			'bridged_ids'               => array_keys( $id_map ),
-			'widget_semantics'          => $rewrite['widget_semantics'] ?? [
-				'icon-list' => [ 'source' => false, 'output' => false ],
-				'text'      => [ 'source' => false, 'output' => false ],
-				'heading'   => [ 'source' => false, 'output' => false ],
-				'button'    => [ 'source' => false, 'output' => false ],
-				'image'     => [ 'source' => false, 'output' => false ],
-				'media'     => [ 'source' => false, 'output' => false ],
-			],
+			'widget_semantics'          => $rewrite['widget_semantics'] ?? $this->default_widget_semantic_coverage(),
 		];
 
 		$this->diagnostics[] = [
@@ -3992,14 +4045,7 @@ CSS;
 	private function rewrite_source_js_with_maps( string $js, array $class_map, array $id_map, bool $scope_root = true ): array {
 		$rewritten = $js;
 		$rewrite_count = 0;
-		$widget_semantics = [
-			'icon-list' => [ 'source' => false, 'output' => false ],
-			'text'      => [ 'source' => false, 'output' => false ],
-			'heading'   => [ 'source' => false, 'output' => false ],
-			'button'    => [ 'source' => false, 'output' => false ],
-			'image'     => [ 'source' => false, 'output' => false ],
-			'media'     => [ 'source' => false, 'output' => false ],
-		];
+		$widget_semantics = $this->default_widget_semantic_coverage();
 
 		$rewrite_selector_literal = function( string $selector ) use ( $class_map, $id_map, $scope_root, &$rewrite_count, &$widget_semantics ): string {
 			$selector = trim( $selector );

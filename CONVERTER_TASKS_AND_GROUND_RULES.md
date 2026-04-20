@@ -1,6 +1,6 @@
 # Stack Blueprint Converter Tasks And Ground Rules
 
-Last updated: 2026-04-13
+Last updated: 2026-04-20
 Status: Active working tracker
 
 ## Purpose
@@ -14,6 +14,7 @@ References used to build this tracker:
 - `enhancement-implementation-guide.md`
 - `AUDIT.md`
 - `CHANGELOG.md`
+- `ELEMENTOR_FREE_WIDGET_MATRIX.md`
 - `includes/converter/class-native-converter.php`
 
 ## Non-Negotiable Ground Rules
@@ -510,6 +511,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - selector scoping under the root namespace exists
   - `@media` and `@supports` blocks are now part of the rewrite path
   - native-widget semantic retargeting has started for `icon-list`, `text-editor`, `heading`, `button`, `image`, and `video` widgets so source selectors aimed at raw tags can be mapped onto Elementor-rendered DOM
+  - host-level pseudo retargeting has started for native widget families, so source pseudo hosts like heading tags, button anchors, text children, image hosts, and media hosts can map onto Elementor-rendered wrappers instead of dropping out of the bridge as soon as the DOM shape changes
 - JS carryover has started:
   - generic source-script rewriting exists for selector APIs, ID/class lookups, class-state methods, simple jQuery selector calls, delegated jQuery selector methods, common jQuery class/state helpers, and broader traversal-style selector methods
 - Shared inline-markup carryover has started:
@@ -537,6 +539,7 @@ This section is only for broad-spectrum engine work already started. Do not log 
   - unresolved source pseudo/media/supports carryover now fails honestly
   - unresolved source behavior/selector API carryover now fails honestly
   - unresolved native-widget semantic carryover now fails honestly when source selectors used tag semantics for mappable `icon-list`, `text-editor`, `heading`, or `button` hooks but the bridge did not carry them into Elementor-rendered output
+  - unresolved native-widget pseudo-host carryover now fails honestly when source selectors used pseudo-bearing hosts on mappable heading/button/text/image/media families but the bridge did not carry those pseudo hosts into Elementor-rendered output
   - unresolved native-widget semantic carryover now fails honestly for JS too when source behavior code targeted widget-family tag semantics but the script bridge did not carry them into Elementor-rendered output
   - unexpected cursor/canvas assets in Global Setup now fail honestly
   - Global Setup cursor/canvas injection is now source-driven instead of unconditional
@@ -575,6 +578,7 @@ How the converter should use it:
 
 Implementation note:
 - because “latest Elementor free widgets” can change over time, this matrix should be verified against current official Elementor free capabilities when we formalize it, rather than frozen from memory
+- initial working matrix now lives in `ELEMENTOR_FREE_WIDGET_MATRIX.md` and should be kept aligned with Pass 3 / Pass 7 decisions as the engine grows
 
 ## Known Problem Families To Keep In Scope
 
@@ -606,3 +610,4 @@ If those answers are not clear, the fix is probably still too local.
 - `AUDIT.md`
 - `CHANGELOG.md`
 - `CONVERTER_GROUND_RULES.md`
+- `ELEMENTOR_FREE_WIDGET_MATRIX.md`
