@@ -1,6 +1,6 @@
 # Converter Rebuild Execution Plan (Ground-Up)
 
-Last updated: 2026-04-21  
+Last updated: 2026-04-23  
 Status: Active implementation plan
 
 ## Purpose
@@ -1127,3 +1127,54 @@ Not done means:
 - Track advancement note:
   - Track A: improves V2 native baseline assembly behavior and diagnostics for native-vs-preserve outcomes.
   - Track B: reduces monolith pressure by extracting reusable decision and primitive-extraction logic.
+
+### 2026-04-23 — Step 19 (Completed): RULE-005 Fragment-Level Hybrid Preserve
+
+- Pass: priority-rule narrowing + V2 native/hybrid routing + dynamic primitive extraction
+- Rule/Capability:
+  - RULE-005 no longer treats `grid-template-columns` as CSS Columns:
+    - introduced real CSS column/masonry declaration detection so normal CSS grid does not trigger full-section preservation.
+  - Added focused helper module:
+    - `includes/converter/helpers/class-v2-hybrid-preserve-helper.php`
+    - centralizes CSS columns/masonry declaration checks and local fragment-root discovery.
+  - V2 RULE-005 behavior changed from whole-section preserve to native rebuild plus in-place hybrid fragment where supported:
+    - affected native-favored section families include hero, features, pricing, footer, cta, generic, process, and testimonials.
+    - diagnostics now distinguish `priority_rule_fragment_hybrid`, `rule_005_fragment_isolated`, and `rule_005_fragment_unavailable`.
+  - Existing hybrid widget attachment path now receives columns/masonry fragment candidates instead of letting the priority rule short-circuit to `fully_preserved_source`.
+  - Fixed CTA template override for behavior-locked fixed CTA bars:
+    - fixed-position CTA remains honest `fully_preserved_source` instead of being forced into an empty native CTA template.
+  - Dynamic feature grids now extract JS data arrays into native feature cards:
+    - `includes/converter/helpers/class-v2-primitive-assembler-helper.php` can parse common `const features = [...]` data and emit editable cards.
+  - Structural fidelity counting now recognizes emitted feature bento cards and footer nav columns so validation measures the real native output shape.
+- Files touched:
+  - `includes/converter/class-native-converter.php`
+  - `includes/converter/skills/class-priority-rules-engine.php`
+  - `includes/converter/helpers/class-v2-hybrid-preserve-helper.php` (new)
+  - `includes/converter/helpers/class-v2-primitive-assembler-helper.php`
+  - `CONVERTER_REBUILD_EXECUTION_PLAN.md`
+- Validation evidence:
+  - `php -l includes/converter/helpers/class-v2-hybrid-preserve-helper.php` passed.
+  - `php -l includes/converter/helpers/class-v2-primitive-assembler-helper.php` passed.
+  - `php -l includes/converter/skills/class-priority-rules-engine.php` passed.
+  - `php -l includes/converter/class-native-converter.php` passed.
+  - Targeted SaaS check passed for the custom file:
+    - `php tools/verify-native-converter-cli.php --file "training-files/inline css/05-saas-complex-full-interactive(1).html" --strategy v2`
+    - result: `REPORT_OK` for `custom_file`.
+    - render modes: fixed CTA `fully_preserved_source`; hero/features/generic/pricing/footer `native_hybrid_fragment`.
+  - Full balanced floor still executes:
+    - `php tools/run-training-suite-cli.php --quality-floor --floor-profile=balanced --trend-report`
+    - bridge ratios now meet balanced thresholds, but floor still fails on run success.
+- Remaining blockers:
+  - Balanced floor status: failed.
+  - Remaining fail codes after this pass:
+    - `generic_repeated_structure_degraded`: 2
+    - `process_step_count_degraded`: 2
+    - `pricing_cards_unresolved`: 2
+    - `feature_cards_unresolved`: 2
+    - `footer_columns_unresolved`: 1
+    - `pricing_card_count_degraded`: 1
+  - The next pass should target broad extractor coverage for process/pricing/features/footer, not RULE-005.
+- Result: done (RULE-005 pass completed; global quality floor still blocked by separate extraction failures)
+- Track advancement note:
+  - Track A: unlocks the remaining SaaS V2 sections toward native containers/widgets while keeping behavior islands in place.
+  - Track B: further reduces monolith pressure by moving CSS columns/masonry detection into a dedicated helper.
