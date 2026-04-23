@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veltro — Pipeline Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;font-family:'DM Sans',sans-serif;background:#F7F5F0;color:#1A1A2E;overflow-x:hidden;">
+
+  <!-- NAV -->
+  <nav id="navbar" style="position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 60px;display:flex;align-items:center;justify-content:space-between;transition:background 0.3s,box-shadow 0.3s;">
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;">
+      veltro<span style="color:#E85D26;">.</span>
+    </div>
+    <ul style="list-style:none;margin:0;padding:0;display:flex;gap:36px;">
+      <li><a href="#features" style="text-decoration:none;color:#1A1A2E;font-size:14px;font-weight:500;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">Features</a></li>
+      <li><a href="#how" style="text-decoration:none;color:#1A1A2E;font-size:14px;font-weight:500;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">How it works</a></li>
+      <li><a href="#pricing" style="text-decoration:none;color:#1A1A2E;font-size:14px;font-weight:500;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">Pricing</a></li>
+    </ul>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <a href="#" style="text-decoration:none;color:#1A1A2E;font-size:14px;font-weight:500;opacity:0.7;">Log in</a>
+      <a href="#" style="text-decoration:none;background:#E85D26;color:#fff;font-size:14px;font-weight:600;padding:10px 22px;border-radius:6px;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(232,93,38,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Get started free</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="min-height:100vh;display:flex;align-items:center;padding:120px 60px 80px;position:relative;overflow:hidden;">
+    <!-- Background geometry -->
+    <div style="position:absolute;top:-100px;right:-100px;width:600px;height:600px;border-radius:50%;background:linear-gradient(135deg,#E85D26 0%,#F5A87C 100%);opacity:0.08;pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-150px;left:-80px;width:400px;height:400px;border:2px solid #E85D26;border-radius:50%;opacity:0.07;pointer-events:none;"></div>
+
+    <div style="max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+      <div id="hero-text" style="opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#FFF;border:1px solid #E0DDD6;padding:7px 14px;border-radius:100px;font-size:12px;font-weight:600;color:#E85D26;margin-bottom:28px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#E85D26;display:inline-block;animation:pulse 2s infinite;"></span>
+          Now in public beta
+        </div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:58px;font-weight:800;line-height:1.05;margin:0 0 24px;letter-spacing:-2px;">
+          Revenue<br/>pipeline that<br/><em style="font-style:italic;color:#E85D26;">thinks ahead.</em>
+        </h1>
+        <p style="font-size:17px;line-height:1.7;color:#5A5A72;margin:0 0 40px;max-width:420px;">
+          Veltro connects your CRM signals, call recordings, and deal activity into one intelligence layer — so your team closes faster, not harder.
+        </p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="#" style="text-decoration:none;background:#E85D26;color:#fff;font-size:15px;font-weight:600;padding:14px 30px;border-radius:8px;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(232,93,38,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Start for free</a>
+          <a href="#" style="text-decoration:none;background:transparent;color:#1A1A2E;font-size:15px;font-weight:500;padding:14px 30px;border-radius:8px;border:1.5px solid #D0CCC4;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#E85D26'" onmouseout="this.style.borderColor='#D0CCC4'">Watch demo →</a>
+        </div>
+        <p style="font-size:13px;color:#9A9A9A;margin-top:16px;">No credit card required. 14-day free trial.</p>
+      </div>
+
+      <!-- Hero visual: animated dashboard card -->
+      <div id="hero-visual" style="opacity:0;transform:translateX(30px);transition:opacity 0.8s 0.3s ease,transform 0.8s 0.3s ease;">
+        <div style="background:#FFF;border-radius:20px;padding:28px;box-shadow:0 20px 80px rgba(0,0,0,0.08);border:1px solid #ECEAE4;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <span style="font-size:13px;font-weight:600;color:#1A1A2E;">Pipeline Overview</span>
+            <span style="font-size:12px;color:#9A9A9A;background:#F7F5F0;padding:4px 10px;border-radius:20px;">This week</span>
+          </div>
+          <!-- Bars -->
+          <div id="chart-bars" style="display:flex;align-items:flex-end;gap:10px;height:120px;margin-bottom:24px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div class="bar" data-h="45" style="width:100%;height:0%;background:#E85D26;border-radius:5px 5px 0 0;transition:height 1s ease;"></div>
+              <span style="font-size:11px;color:#9A9A9A;">Mon</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div class="bar" data-h="70" style="width:100%;height:0%;background:#E85D26;border-radius:5px 5px 0 0;transition:height 1s 0.1s ease;opacity:0.8;"></div>
+              <span style="font-size:11px;color:#9A9A9A;">Tue</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div class="bar" data-h="55" style="width:100%;height:0%;background:#E85D26;border-radius:5px 5px 0 0;transition:height 1s 0.2s ease;opacity:0.6;"></div>
+              <span style="font-size:11px;color:#9A9A9A;">Wed</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div class="bar" data-h="88" style="width:100%;height:0%;background:#E85D26;border-radius:5px 5px 0 0;transition:height 1s 0.3s ease;"></div>
+              <span style="font-size:11px;color:#9A9A9A;">Thu</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div class="bar" data-h="62" style="width:100%;height:0%;background:#E85D26;border-radius:5px 5px 0 0;transition:height 1s 0.4s ease;opacity:0.75;"></div>
+              <span style="font-size:11px;color:#9A9A9A;">Fri</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div class="bar" data-h="30" style="width:100%;height:0%;background:#E85D26;border-radius:5px 5px 0 0;transition:height 1s 0.5s ease;opacity:0.4;"></div>
+              <span style="font-size:11px;color:#9A9A9A;">Sat</span>
+            </div>
+          </div>
+          <!-- Stats row -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;border-top:1px solid #ECEAE4;padding-top:20px;">
+            <div>
+              <p style="margin:0;font-size:11px;color:#9A9A9A;font-weight:500;">Deals won</p>
+              <p id="stat-deals" style="margin:4px 0 0;font-size:22px;font-weight:700;font-family:'Syne',sans-serif;">0</p>
+            </div>
+            <div>
+              <p style="margin:0;font-size:11px;color:#9A9A9A;font-weight:500;">Revenue</p>
+              <p id="stat-rev" style="margin:4px 0 0;font-size:22px;font-weight:700;font-family:'Syne',sans-serif;">$0</p>
+            </div>
+            <div>
+              <p style="margin:0;font-size:11px;color:#9A9A9A;font-weight:500;">Win rate</p>
+              <p id="stat-rate" style="margin:4px 0 0;font-size:22px;font-weight:700;font-family:'Syne',sans-serif;color:#E85D26;">0%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS BAR -->
+  <section style="padding:40px 60px;border-top:1px solid #E0DDD6;border-bottom:1px solid #E0DDD6;background:#FFF;">
+    <p style="text-align:center;font-size:12px;font-weight:600;color:#AAAAB0;letter-spacing:2px;text-transform:uppercase;margin:0 0 28px;">Trusted by teams at</p>
+    <div style="display:flex;justify-content:center;align-items:center;gap:60px;flex-wrap:wrap;">
+      <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#CCCCCC;">Axiom</span>
+      <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#CCCCCC;">Fluxora</span>
+      <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#CCCCCC;">Draftly</span>
+      <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#CCCCCC;">Nuvio</span>
+      <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#CCCCCC;">Stackline</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" style="padding:120px 60px;max-width:1200px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:72px;">
+      <p style="font-size:13px;font-weight:600;color:#E85D26;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px;">What Veltro does</p>
+      <h2 style="font-family:'Syne',sans-serif;font-size:44px;font-weight:800;margin:0;letter-spacing:-1.5px;">Intelligence at every stage</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;">
+      <!-- Feature Card -->
+      <div class="feature-card" style="background:#FFF;border-radius:16px;padding:36px;border:1px solid #ECEAE4;transition:transform 0.25s,box-shadow 0.25s;cursor:default;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="width:48px;height:48px;background:#FFF0E8;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;">📡</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin:0 0 12px;">Signal capture</h3>
+        <p style="font-size:14px;line-height:1.7;color:#5A5A72;margin:0;">Automatically ingests CRM data, email threads, and call transcripts into a unified intelligence graph.</p>
+      </div>
+      <div class="feature-card" style="background:#FFF;border-radius:16px;padding:36px;border:1px solid #ECEAE4;transition:transform 0.25s,box-shadow 0.25s;cursor:default;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(0,0,0,0.07)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="width:48px;height:48px;background:#FFF0E8;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;">🧠</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin:0 0 12px;">Deal scoring</h3>
+        <p style="font-size:14px;line-height:1.7;color:#5A5A72;margin:0;">Each deal receives a live health score based on engagement patterns, timeline risks, and competitive signals.</p>
+      </div>
+      <div class="feature-card" style="background:#E85D26;border-radius:16px;padding:36px;border:1px solid transparent;transition:transform 0.25s,box-shadow 0.25s;cursor:default;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(232,93,38,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;">⚡</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin:0 0 12px;color:#FFF;">Forecast engine</h3>
+        <p style="font-size:14px;line-height:1.7;color:rgba(255,255,255,0.8);margin:0;">Predictive close dates and revenue projections updated in real time — so you commit to numbers with confidence.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" style="padding:100px 60px;background:#1A1A2E;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:72px;">
+        <p style="font-size:13px;font-weight:600;color:#E85D26;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px;">Process</p>
+        <h2 style="font-family:'Syne',sans-serif;font-size:44px;font-weight:800;margin:0;letter-spacing:-1.5px;color:#FFF;">Three steps to clarity</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#2E2E45;">
+        <div style="background:#1A1A2E;padding:48px 40px;">
+          <div style="font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:#2E2E45;margin-bottom:16px;">01</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#FFF;margin:0 0 14px;">Connect your stack</h3>
+          <p style="font-size:14px;line-height:1.7;color:#8888A0;margin:0;">One-click integrations with Salesforce, HubSpot, Gong, Outreach and 40+ tools.</p>
+        </div>
+        <div style="background:#1A1A2E;padding:48px 40px;border-left:1px solid #2E2E45;border-right:1px solid #2E2E45;">
+          <div style="font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:#2E2E45;margin-bottom:16px;">02</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#FFF;margin:0 0 14px;">Train on your data</h3>
+          <p style="font-size:14px;line-height:1.7;color:#8888A0;margin:0;">Veltro calibrates its models against your historical deals to learn what winning looks like for your team.</p>
+        </div>
+        <div style="background:#1A1A2E;padding:48px 40px;">
+          <div style="font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:#2E2E45;margin-bottom:16px;">03</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#FFF;margin:0 0 14px;">Act on insights</h3>
+          <p style="font-size:14px;line-height:1.7;color:#8888A0;margin:0;">Your reps see prioritised actions in their existing workflow — no new tab, no new habit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" style="padding:120px 60px;max-width:1200px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:72px;">
+      <p style="font-size:13px;font-weight:600;color:#E85D26;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px;">Pricing</p>
+      <h2 style="font-family:'Syne',sans-serif;font-size:44px;font-weight:800;margin:0 0 16px;letter-spacing:-1.5px;">Simple, transparent plans</h2>
+      <!-- Toggle -->
+      <div style="display:inline-flex;background:#ECEAE4;border-radius:100px;padding:4px;margin-top:20px;">
+        <button id="btn-monthly" onclick="setPricing('monthly')" style="padding:8px 20px;border-radius:100px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#1A1A2E;color:#FFF;transition:all 0.2s;">Monthly</button>
+        <button id="btn-annual" onclick="setPricing('annual')" style="padding:8px 20px;border-radius:100px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:transparent;color:#666;transition:all 0.2s;">Annual <span style="color:#E85D26;">–20%</span></button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+      <div style="background:#FFF;border-radius:20px;padding:40px;border:1px solid #ECEAE4;">
+        <p style="font-size:13px;font-weight:600;color:#E85D26;margin:0 0 12px;">Starter</p>
+        <p style="font-family:'Syne',sans-serif;font-size:40px;font-weight:800;margin:0 0 4px;"><span class="price" data-monthly="$29" data-annual="$23">$29</span><span style="font-size:16px;font-weight:400;color:#9A9A9A;">/mo</span></p>
+        <p style="font-size:13px;color:#9A9A9A;margin:0 0 32px;">per user</p>
+        <ul style="list-style:none;padding:0;margin:0 0 36px;display:flex;flex-direction:column;gap:12px;">
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Up to 5 users</li>
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> CRM sync</li>
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Basic deal scoring</li>
+          <li style="font-size:14px;color:#9A9A9A;display:flex;gap:10px;align-items:flex-start;"><span style="opacity:0.3;">✓</span> Forecast engine</li>
+        </ul>
+        <a href="#" style="display:block;text-align:center;text-decoration:none;border:1.5px solid #D0CCC4;color:#1A1A2E;font-size:14px;font-weight:600;padding:13px;border-radius:8px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#E85D26'" onmouseout="this.style.borderColor='#D0CCC4'">Get started</a>
+      </div>
+      <div style="background:#1A1A2E;border-radius:20px;padding:40px;border:1px solid transparent;transform:scale(1.04);box-shadow:0 20px 60px rgba(0,0,0,0.12);">
+        <p style="font-size:13px;font-weight:600;color:#E85D26;margin:0 0 12px;">Pro <span style="background:#E85D26;color:#FFF;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;">Most popular</span></p>
+        <p style="font-family:'Syne',sans-serif;font-size:40px;font-weight:800;margin:0 0 4px;color:#FFF;"><span class="price" data-monthly="$79" data-annual="$63">$79</span><span style="font-size:16px;font-weight:400;color:#666;">/mo</span></p>
+        <p style="font-size:13px;color:#666;margin:0 0 32px;">per user</p>
+        <ul style="list-style:none;padding:0;margin:0 0 36px;display:flex;flex-direction:column;gap:12px;">
+          <li style="font-size:14px;color:#CCC;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Unlimited users</li>
+          <li style="font-size:14px;color:#CCC;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> All integrations</li>
+          <li style="font-size:14px;color:#CCC;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Advanced deal scoring</li>
+          <li style="font-size:14px;color:#CCC;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Forecast engine</li>
+        </ul>
+        <a href="#" style="display:block;text-align:center;text-decoration:none;background:#E85D26;color:#FFF;font-size:14px;font-weight:600;padding:13px;border-radius:8px;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 6px 20px rgba(232,93,38,0.5)'" onmouseout="this.style.boxShadow=''">Get started</a>
+      </div>
+      <div style="background:#FFF;border-radius:20px;padding:40px;border:1px solid #ECEAE4;">
+        <p style="font-size:13px;font-weight:600;color:#E85D26;margin:0 0 12px;">Enterprise</p>
+        <p style="font-family:'Syne',sans-serif;font-size:40px;font-weight:800;margin:0 0 4px;">Custom</p>
+        <p style="font-size:13px;color:#9A9A9A;margin:0 0 32px;">contact us</p>
+        <ul style="list-style:none;padding:0;margin:0 0 36px;display:flex;flex-direction:column;gap:12px;">
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Everything in Pro</li>
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> SSO & compliance</li>
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Dedicated CSM</li>
+          <li style="font-size:14px;color:#5A5A72;display:flex;gap:10px;align-items:flex-start;"><span style="color:#E85D26;font-weight:700;">✓</span> Custom AI training</li>
+        </ul>
+        <a href="#" style="display:block;text-align:center;text-decoration:none;border:1.5px solid #D0CCC4;color:#1A1A2E;font-size:14px;font-weight:600;padding:13px;border-radius:8px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#E85D26'" onmouseout="this.style.borderColor='#D0CCC4'">Talk to sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding:100px 60px;background:#E85D26;text-align:center;">
+    <h2 style="font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:#FFF;margin:0 0 20px;letter-spacing:-1.5px;">Ready to close smarter?</h2>
+    <p style="font-size:17px;color:rgba(255,255,255,0.8);margin:0 0 40px;">Join 1,200+ revenue teams already using Veltro.</p>
+    <a href="#" style="display:inline-block;text-decoration:none;background:#FFF;color:#E85D26;font-size:15px;font-weight:700;padding:16px 36px;border-radius:8px;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Start your free trial →</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:48px 60px;background:#1A1A2E;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#FFF;">veltro<span style="color:#E85D26;">.</span></div>
+    <p style="font-size:13px;color:#555568;margin:0;">© 2025 Veltro Inc. All rights reserved.</p>
+    <div style="display:flex;gap:24px;">
+      <a href="#" style="font-size:13px;color:#555568;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#555568'">Privacy</a>
+      <a href="#" style="font-size:13px;color:#555568;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#555568'">Terms</a>
+      <a href="#" style="font-size:13px;color:#555568;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#555568'">Contact</a>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+    html { scroll-behavior: smooth; }
+  </style>
+
+  <script>
+    // Navbar scroll
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (window.scrollY > 40) {
+        nav.style.background = 'rgba(247,245,240,0.95)';
+        nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.06)';
+        nav.style.backdropFilter = 'blur(12px)';
+      } else {
+        nav.style.background = 'transparent';
+        nav.style.boxShadow = 'none';
+      }
+    });
+
+    // Hero entrance
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('hero-text').style.opacity = '1';
+        document.getElementById('hero-text').style.transform = 'translateY(0)';
+        document.getElementById('hero-visual').style.opacity = '1';
+        document.getElementById('hero-visual').style.transform = 'translateX(0)';
+      }, 200);
+
+      // Animate bars
+      setTimeout(() => {
+        document.querySelectorAll('.bar').forEach(bar => {
+          bar.style.height = bar.dataset.h + '%';
+        });
+      }, 700);
+
+      // Count up stats
+      setTimeout(() => animateCounter('stat-deals', 0, 47, 0), 1000);
+      setTimeout(() => animateCounter('stat-rev', 0, 284, 1, '$', 'k'), 1000);
+      setTimeout(() => animateCounter('stat-rate', 0, 68, 0, '', '%'), 1100);
+    });
+
+    function animateCounter(id, from, to, decimals, prefix = '', suffix = '') {
+      const el = document.getElementById(id);
+      const duration = 1200;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        const val = from + (to - from) * ease;
+        el.textContent = prefix + val.toFixed(decimals) + suffix;
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // Pricing toggle
+    function setPricing(mode) {
+      const btnM = document.getElementById('btn-monthly');
+      const btnA = document.getElementById('btn-annual');
+      document.querySelectorAll('.price').forEach(el => {
+        el.textContent = el.dataset[mode];
+      });
+      if (mode === 'monthly') {
+        btnM.style.cssText += 'background:#1A1A2E;color:#FFF;';
+        btnA.style.cssText += 'background:transparent;color:#666;';
+      } else {
+        btnA.style.cssText += 'background:#1A1A2E;color:#FFF;';
+        btnM.style.cssText += 'background:transparent;color:#666;';
+      }
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(24px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+  </script>
+</body>
+</html>

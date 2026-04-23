@@ -467,7 +467,7 @@
 			sc.innerHTML = '';
 			const entries = Object.entries(tokens.colors);
 			if (!entries.length) {
-				sc.innerHTML = '<p style="font-size:11px;color:var(--sb-text-3)">No CSS custom property colours detected.</p>';
+				sc.innerHTML = '<p style="font-size:11px;color:var(--sb-text-3)">No colours detected in CSS variables or direct style declarations.</p>';
 			} else {
 				entries.slice(0, 20).forEach(([name, val]) => {
 					const d = document.createElement('div');
@@ -557,9 +557,9 @@
 	};
 
 	async function apiFetch(url, options = {}) {
-		const res = await fetch(url, options);
+		const res = await fetch(url, { credentials: 'same-origin', ...options });
 		if (!res.ok) {
-			const err = await res.json().catch(() => ({ message: 'Request failed' }));
+			const err = await readApiError(res);
 			throw new Error(err.message || 'Request failed');
 		}
 		return res.json();
@@ -790,6 +790,7 @@
 	function extractTokens(html) {
 		const colors = {};
 		const fonts  = [];
+		const discovered = new Set();
 
 		const re = /--([\w-]+)\s*:\s*([^;}{]+)/g;
 		let m;
@@ -798,7 +799,24 @@
 			const val  = m[2].trim();
 			if (/^(#[0-9a-f]{3,8}|rgba?\(|hsla?\(|transparent)/i.test(val)) {
 				colors[name] = val;
+				discovered.add(normColor(val));
 			}
+		}
+
+		// Fallback: collect direct color declarations when CSS vars are absent.
+		// This keeps token extraction useful for raw CSS that does not define --vars.
+		const colorDeclRe = /(?:^|[;{\s])(color|background(?:-color)?|border(?:-color)?|outline-color|fill|stroke)\s*:\s*([^;}{]+)/gi;
+		let colorIdx = 1;
+		while ((m = colorDeclRe.exec(html)) !== null) {
+			const raw = String(m[2] || '').trim();
+			const first = raw.split(/\s+/)[0];
+			if (!isColorValue(first)) continue;
+			const normalized = normColor(first);
+			if (discovered.has(normalized)) continue;
+			discovered.add(normalized);
+			colors[`--detected-color-${colorIdx}`] = first;
+			colorIdx++;
+			if (colorIdx > 30) break;
 		}
 
 		const fr = /family=([^&"')\s]+)/g;
@@ -808,6 +826,14 @@
 		}
 
 		return { colors, fonts };
+	}
+
+	function isColorValue(value) {
+		return /^(#[0-9a-f]{3,8}|rgba?\(|hsla?\(|hwb\(|lab\(|lch\(|oklab\(|oklch\(|transparent|currentColor|[a-z]{3,})/i.test(String(value || '').trim());
+	}
+
+	function normColor(value) {
+		return String(value || '').trim().toLowerCase().replace(/\s+/g, '');
 	}
 
 	function suggestTokenName(slug) {
@@ -839,12 +865,38 @@
 		if (json && !(opts.body instanceof FormData)) {
 			headers['Content-Type'] = 'application/json';
 		}
-		const res = await fetch(url, { ...opts, headers: { ...headers, ...(opts.headers || {}) } });
+		const res = await fetch(url, {
+			...opts,
+			credentials: 'same-origin',
+			headers: { ...headers, ...(opts.headers || {}) },
+		});
 		if (!res.ok) {
-			const err = await res.json().catch(() => ({ message: 'Request failed' }));
+			const err = await readApiError(res);
 			throw new Error(err.message || 'Request failed');
 		}
 		return res.json();
+	}
+
+	async function readApiError(res) {
+		const fallback = { message: 'Request failed' };
+		const text = await res.text().catch(() => '');
+		if (!text) return fallback;
+		try {
+			const parsed = JSON.parse(text);
+			if (parsed && parsed.message) return parsed;
+		} catch (_) {
+			// Not JSON, continue with heuristic handling.
+		}
+		if (/cookie check failed/i.test(text)) {
+			return { message: 'Cookie/session check failed. Reload WordPress admin and try again.' };
+		}
+		if (/nonce|rest_cookie_invalid_nonce|invalid_nonce/i.test(text)) {
+			return { message: 'Security token expired. Reload the admin page to refresh nonce/cookie.' };
+		}
+		if (/<html/i.test(text) && /wp-login|login/i.test(text)) {
+			return { message: 'Authentication expired. Log in again, then retry conversion.' };
+		}
+		return fallback;
 	}
 
 	// ── Toast ─────────────────────────────────────────────────

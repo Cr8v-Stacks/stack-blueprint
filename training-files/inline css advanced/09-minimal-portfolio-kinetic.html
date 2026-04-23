@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seun Adeyemi — Art Director & Type Designer</title>
+  <link href="https://fonts.googleapis.com/css2?family=PP+Mori:wght@400;600&family=Fragment+Mono:ital@0;1&family=Gloock:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; padding:0; background:#0C0C0A; color:#F5F2EA; overflow-x:hidden; font-family: 'Fragment Mono', monospace; }
+    ::selection { background: #E8C84A; color: #0C0C0A; }
+
+    /* Horizontal scroll section */
+    #h-scroll-outer { overflow: hidden; position: relative; }
+    #h-scroll-track { display: flex; will-change: transform; }
+    .h-panel { flex-shrink: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; padding: 80px; }
+
+    /* Kinetic text */
+    .char { display: inline-block; transition: color 0.3s, transform 0.3s; }
+
+    /* Section reveal */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Nav */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 24px 60px; display: flex; justify-content: space-between; align-items: center; mix-blend-mode: difference; }
+    nav a { color: #F5F2EA; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: opacity 0.2s; }
+    nav a:hover { opacity: 0.4; }
+
+    /* Section separators */
+    .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #444; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 2px; } ::-webkit-scrollbar-track { background: #0C0C0A; } ::-webkit-scrollbar-thumb { background: #E8C84A; }
+  </style>
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <canvas id="noise-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.04;mix-blend-mode:screen;"></canvas>
+
+  <!-- LOADING SCREEN -->
+  <div id="loader" style="position:fixed;inset:0;z-index:9000;background:#0C0C0A;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity 0.6s 0.2s ease;">
+    <div id="loader-num" style="font-size:64px;font-family:'Gloock',serif;font-weight:400;color:#F5F2EA;letter-spacing:-2px;line-height:1;">0</div>
+    <div style="width:200px;height:1px;background:#1E1E1E;position:relative;overflow:hidden;">
+      <div id="loader-bar" style="position:absolute;top:0;left:0;height:100%;background:#E8C84A;width:0%;transition:width 0.05s linear;"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <span style="font-size:13px;letter-spacing:1px;font-weight:600;color:#F5F2EA;">SA</span>
+    <div style="display:flex;gap:32px;">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO: full viewport, kinetic headline -->
+  <section style="height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:60px;position:relative;overflow:hidden;border-bottom:1px solid #1E1E1A;">
+
+    <!-- Background grid lines -->
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;" xmlns="http://www.w3.org/2000/svg">
+      <defs><pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M 80 0 L 0 0 0 80" fill="none" stroke="#F5F2EA" stroke-width="0.5"/></pattern></defs>
+      <rect width="100%" height="100%" fill="url(#grid)"/>
+    </svg>
+
+    <!-- Floating info top-right -->
+    <div style="position:absolute;top:100px;right:60px;text-align:right;">
+      <p class="section-label" style="margin:0 0 8px;">Art Director</p>
+      <p class="section-label" style="margin:0 0 8px;">Type Designer</p>
+      <p class="section-label" style="margin:0;">Lagos, Nigeria</p>
+    </div>
+
+    <!-- Availability pill -->
+    <div style="position:absolute;top:100px;left:60px;display:flex;align-items:center;gap:8px;border:1px solid #2A2A26;padding:8px 16px;">
+      <div style="width:6px;height:6px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;"></div>
+      <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#666;">Available for projects</span>
+    </div>
+
+    <!-- Main headline: kinetic chars -->
+    <div style="margin-bottom:40px;">
+      <div style="overflow:hidden;margin-bottom:8px;">
+        <h1 id="k1" style="font-family:'Gloock',serif;font-size:clamp(56px,9vw,130px);font-weight:400;margin:0;line-height:0.9;letter-spacing:-3px;transform:translateY(110%);transition:transform 1.2s cubic-bezier(0.16,1,0.3,1);">Seun</h1>
+      </div>
+      <div style="overflow:hidden;margin-bottom:8px;">
+        <h1 id="k2" style="font-family:'Gloock',serif;font-size:clamp(56px,9vw,130px);font-weight:400;margin:0;line-height:0.9;letter-spacing:-3px;font-style:italic;color:#E8C84A;transform:translateY(110%);transition:transform 1.2s 0.12s cubic-bezier(0.16,1,0.3,1);">Adeyemi</h1>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid #1E1E1A;padding-top:28px;">
+      <div id="hero-bio" style="opacity:0;transition:opacity 0.8s 0.8s ease;">
+        <p style="font-size:14px;line-height:1.7;color:#888;max-width:460px;margin:0;">I create visual systems that communicate clearly and remember long. Twelve years of practice across identity, editorial, and motion design for clients on four continents.</p>
+      </div>
+      <div id="hero-scroll" style="opacity:0;transition:opacity 0.8s 1s ease;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;">Scroll to explore</span>
+        <div style="width:1px;height:48px;background:linear-gradient(to bottom,#E8C84A,transparent);animation:lengthen 2s ease-in-out infinite;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE: services -->
+  <div style="border-bottom:1px solid #1E1E1A;overflow:hidden;padding:16px 0;background:#0C0C0A;">
+    <div id="marquee" style="display:inline-block;white-space:nowrap;animation:marq 18s linear infinite;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#444;">
+      Brand Identity &nbsp;·&nbsp; Type Design &nbsp;·&nbsp; Art Direction &nbsp;·&nbsp; Editorial &nbsp;·&nbsp; Motion &nbsp;·&nbsp; Print &nbsp;·&nbsp; Environmental Graphics &nbsp;·&nbsp;
+      Brand Identity &nbsp;·&nbsp; Type Design &nbsp;·&nbsp; Art Direction &nbsp;·&nbsp; Editorial &nbsp;·&nbsp; Motion &nbsp;·&nbsp; Print &nbsp;·&nbsp; Environmental Graphics &nbsp;·&nbsp;
+    </div>
+  </div>
+
+  <!-- WORK: horizontal scroll section -->
+  <section id="work" style="position:relative;">
+    <div style="padding:60px 60px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1E1E1A;">
+      <h2 class="section-label reveal">Selected Work</h2>
+      <span class="section-label reveal" style="transition-delay:0.1s;">2019–2025</span>
+    </div>
+    <div id="h-scroll-outer" style="overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;">
+      <div id="h-scroll-track" style="display:flex;width:max-content;">
+
+        <!-- Project panel 1 -->
+        <div style="width:100vw;height:90vh;flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;scroll-snap-align:start;border-bottom:1px solid #1E1E1A;">
+          <div style="padding:60px;border-right:1px solid #1E1E1A;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <span class="section-label" style="display:block;margin-bottom:24px;">01 / 05</span>
+              <h3 style="font-family:'Gloock',serif;font-size:clamp(32px,4vw,60px);font-weight:400;margin:0 0 20px;letter-spacing:-1.5px;line-height:1.05;">Obirin Typeface</h3>
+              <p style="font-size:13px;line-height:1.8;color:#888;max-width:380px;margin:0 0 32px;">A variable typeface built from the stroke structures of Yoruba calligraphy. Available in three optical sizes with 800 glyphs covering Latin, Yoruba, and Igbo character sets.</p>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;">
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Type Design</span>
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Variable Font</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <span class="section-label">2024</span>
+              <a href="#" style="color:#E8C84A;text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #E8C84A;padding-bottom:2px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">View project →</a>
+            </div>
+          </div>
+          <div style="background:#151510;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+            <div id="type-demo" style="font-family:'Gloock',serif;font-size:80px;color:#F5F2EA;opacity:0.08;position:absolute;white-space:nowrap;letter-spacing:-3px;user-select:none;">AaBbCcDdEeFfGg</div>
+            <div style="position:relative;z-index:2;text-align:center;">
+              <div style="font-family:'Gloock',serif;font-size:100px;font-weight:400;color:#E8C84A;line-height:1;letter-spacing:-4px;">Ọbirin</div>
+              <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#444;margin:16px 0 0;">Variable Typeface</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project panel 2 -->
+        <div style="width:100vw;height:90vh;flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;scroll-snap-align:start;border-bottom:1px solid #1E1E1A;">
+          <div style="background:#1A140A;display:flex;align-items:center;justify-content:center;overflow:hidden;border-right:1px solid #1E1E1A;">
+            <div style="text-align:center;">
+              <div style="font-family:'Gloock',serif;font-size:64px;font-weight:400;color:#E8C84A;letter-spacing:-2px;margin-bottom:8px;font-style:italic;">Kessler</div>
+              <div style="font-size:10px;letter-spacing:5px;text-transform:uppercase;color:#666;">& Sons Est. 1947</div>
+              <div style="width:60px;height:1px;background:#E8C84A;margin:16px auto;opacity:0.4;"></div>
+              <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#444;">Fine Spirits</div>
+            </div>
+          </div>
+          <div style="padding:60px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <span class="section-label" style="display:block;margin-bottom:24px;">02 / 05</span>
+              <h3 style="font-family:'Gloock',serif;font-size:clamp(32px,4vw,60px);font-weight:400;margin:0 0 20px;letter-spacing:-1.5px;line-height:1.05;">Kessler & Sons</h3>
+              <p style="font-size:13px;line-height:1.8;color:#888;max-width:380px;margin:0 0 32px;">Full brand identity for a third-generation German spirits producer entering international markets. Logo, packaging, retail materials, and digital presence.</p>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;">
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Identity</span>
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Packaging</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <span class="section-label">2023</span>
+              <a href="#" style="color:#E8C84A;text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #E8C84A;padding-bottom:2px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">View project →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project panel 3 -->
+        <div style="width:100vw;height:90vh;flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;scroll-snap-align:start;border-bottom:1px solid #1E1E1A;">
+          <div style="padding:60px;border-right:1px solid #1E1E1A;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <span class="section-label" style="display:block;margin-bottom:24px;">03 / 05</span>
+              <h3 style="font-family:'Gloock',serif;font-size:clamp(32px,4vw,60px);font-weight:400;margin:0 0 20px;letter-spacing:-1.5px;line-height:1.05;">Rhizome Literary Journal</h3>
+              <p style="font-size:13px;line-height:1.8;color:#888;max-width:380px;margin:0 0 32px;">Art direction for a bi-annual literary magazine distributed in Lagos, London, and New York. Full typographic system, layout templates, and cover design for 12 issues.</p>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Editorial</span>
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Art Direction</span>
+                <span style="border:1px solid #2A2A26;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;">Print</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <span class="section-label">2022–ongoing</span>
+              <a href="#" style="color:#E8C84A;text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #E8C84A;padding-bottom:2px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">View project →</a>
+            </div>
+          </div>
+          <div style="background:#0A0E0C;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <div style="position:relative;width:200px;height:260px;background:#151510;box-shadow:20px 20px 60px rgba(0,0,0,0.6);">
+              <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#E8C84A;"></div>
+              <div style="padding:24px;">
+                <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#444;margin:0 0 40px;">Rhizome — Vol. 12</p>
+                <p style="font-family:'Gloock',serif;font-size:26px;font-weight:400;color:#F5F2EA;margin:0 0 10px;font-style:italic;line-height:1.1;">Voices from the Margins</p>
+                <div style="width:30px;height:1px;background:#E8C84A;margin:20px 0;"></div>
+                <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;">Spring / Summer 2025</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- Scroll hint -->
+    <div style="padding:16px 60px;border-top:1px solid #1E1E1A;display:flex;justify-content:space-between;align-items:center;">
+      <button onclick="scrollHPanel(-1)" style="background:none;border:1px solid #2A2A26;color:#F5F2EA;padding:10px 20px;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Fragment Mono',monospace;transition:all 0.2s;" onmouseover="this.style.borderColor='#F5F2EA'" onmouseout="this.style.borderColor='#2A2A26'">← Prev</button>
+      <div id="h-dots" style="display:flex;gap:8px;align-items:center;"></div>
+      <button onclick="scrollHPanel(1)" style="background:none;border:1px solid #2A2A26;color:#F5F2EA;padding:10px 20px;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Fragment Mono',monospace;transition:all 0.2s;" onmouseover="this.style.borderColor='#F5F2EA'" onmouseout="this.style.borderColor='#2A2A26'">Next →</button>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #1E1E1A;">
+    <div style="padding:80px 60px;border-right:1px solid #1E1E1A;">
+      <h2 class="section-label reveal" style="margin:0 0 40px;">About</h2>
+      <p class="reveal" style="font-family:'Gloock',serif;font-size:28px;font-weight:400;line-height:1.4;margin:0 0 32px;letter-spacing:-0.5px;transition-delay:0.1s;">I believe design is an act of translation — taking complex ideas and making them impossible to misread.</p>
+      <p class="reveal" style="font-size:13px;line-height:1.9;color:#888;margin:0 0 24px;transition-delay:0.2s;">Twelve years ago I started with letterpress printing in Ibadan. Today I work at the scale of complete visual identities, but the same question drives every project: what is the clearest, most honest way to say this?</p>
+      <p class="reveal" style="font-size:13px;line-height:1.9;color:#888;margin:0;transition-delay:0.3s;">I have worked for publishers, distilleries, financial institutions, and cultural organisations. The sector changes; the discipline doesn't.</p>
+    </div>
+    <div style="padding:80px 60px;display:flex;flex-direction:column;justify-content:space-between;">
+      <div>
+        <h3 class="section-label reveal" style="margin:0 0 28px;">Recognition</h3>
+        <div id="awards-list" style="display:flex;flex-direction:column;gap:0;"></div>
+      </div>
+      <div class="reveal" style="transition-delay:0.4s;">
+        <h3 class="section-label" style="margin:0 0 20px;">Currently reading</h3>
+        <p style="font-family:'Gloock',serif;font-size:16px;font-style:italic;color:#888;margin:0;line-height:1.5;"><em>Graphic Design: A History</em> — Stephen J. Eskilson</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="padding:120px 60px;border-top:1px solid #1E1E1A;text-align:center;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+      <span style="font-family:'Gloock',serif;font-size:300px;color:rgba(232,200,74,0.03);font-weight:400;line-height:1;letter-spacing:-10px;white-space:nowrap;">HELLO</span>
+    </div>
+    <div style="position:relative;z-index:2;">
+      <p class="section-label reveal" style="margin:0 0 24px;">Let's work together</p>
+      <h2 class="reveal" style="font-family:'Gloock',serif;font-size:clamp(40px,7vw,100px);font-weight:400;margin:0 0 40px;letter-spacing:-3px;line-height:0.95;transition-delay:0.1s;">Have a brief?<br/><em style="color:#E8C84A;">Let's talk.</em></h2>
+      <a id="email-cta" href="mailto:hello@seunadeyemi.com" class="reveal" style="display:inline-block;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#E8C84A;text-decoration:none;border:1px solid rgba(232,200,74,0.3);padding:16px 40px;transition:all 0.3s;transition-delay:0.2s;" onmouseover="this.style.background='#E8C84A';this.style.color='#0C0C0A'" onmouseout="this.style.background='transparent';this.style.color='#E8C84A'">hello@seunadeyemi.com</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:28px 60px;border-top:1px solid #1E1E1A;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:11px;letter-spacing:1px;color:#444;">© 2025 Seun Adeyemi</span>
+    <div style="display:flex;gap:24px;">
+      <a href="#" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#F5F2EA'" onmouseout="this.style.color='#444'">Instagram</a>
+      <a href="#" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#F5F2EA'" onmouseout="this.style.color='#444'">LinkedIn</a>
+      <a href="#" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#F5F2EA'" onmouseout="this.style.color='#444'">Are.na</a>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(1.6)} }
+    @keyframes lengthen { 0%,100%{height:20px;opacity:0.2} 50%{height:48px;opacity:1} }
+    @keyframes marq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  </style>
+
+  <script>
+    // Loading screen
+    let prog = 0;
+    const loaderNum = document.getElementById('loader-num');
+    const loaderBar = document.getElementById('loader-bar');
+    const loader = document.getElementById('loader');
+    function tick() {
+      prog += Math.random() * 4 + 1;
+      if (prog >= 100) {
+        prog = 100;
+        loaderNum.textContent = '100';
+        loaderBar.style.width = '100%';
+        setTimeout(() => {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.style.display = 'none', 700);
+          // Trigger hero entrance
+          document.getElementById('k1').style.transform = 'translateY(0)';
+          document.getElementById('k2').style.transform = 'translateY(0)';
+          document.getElementById('hero-bio').style.opacity = '1';
+          document.getElementById('hero-scroll').style.opacity = '1';
+        }, 300);
+        return;
+      }
+      loaderNum.textContent = Math.floor(prog);
+      loaderBar.style.width = prog + '%';
+      setTimeout(tick, 25 + Math.random() * 40);
+    }
+    setTimeout(tick, 200);
+
+    // Noise canvas
+    const canvas = document.getElementById('noise-canvas');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function drawNoise() {
+      resizeCanvas();
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const v = Math.random() * 255;
+        imageData.data[i] = imageData.data[i+1] = imageData.data[i+2] = v;
+        imageData.data[i+3] = 255;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      requestAnimationFrame(drawNoise);
+    }
+    drawNoise();
+
+    // Scroll reveal
+    const revObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+    // Horizontal scroll panels nav
+    const hOuter = document.getElementById('h-scroll-outer');
+    const panels = hOuter.querySelectorAll('[style*="scroll-snap-align"]');
+    let hIdx = 0;
+
+    // Dots
+    const hDots = document.getElementById('h-dots');
+    panels.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.style.cssText = `width:${i===0?'20px':'6px'};height:6px;border-radius:3px;background:${i===0?'#E8C84A':'#2A2A26'};transition:all 0.3s;cursor:pointer;`;
+      dot.addEventListener('click', () => goHPanel(i));
+      hDots.appendChild(dot);
+    });
+
+    function goHPanel(i) {
+      hIdx = Math.max(0, Math.min(panels.length - 1, i));
+      hOuter.scrollTo({ left: hIdx * window.innerWidth, behavior: 'smooth' });
+      hDots.querySelectorAll('div').forEach((d, idx) => {
+        d.style.width = idx === hIdx ? '20px' : '6px';
+        d.style.background = idx === hIdx ? '#E8C84A' : '#2A2A26';
+      });
+    }
+    function scrollHPanel(dir) { goHPanel(hIdx + dir); }
+
+    // Awards list
+    const awards = [
+      { name:'D&AD Yellow Pencil', year:'2024', cat:'Type Design' },
+      { name:'ADC Gold Cube', year:'2023', cat:'Identity' },
+      { name:'Cannes Lions Silver', year:'2022', cat:'Print & Publishing' },
+      { name:'One Show Merit', year:'2022', cat:'Typography' },
+      { name:'AIGA 50 Books/50 Covers', year:'2021', cat:'Editorial' },
+    ];
+    const awardsList = document.getElementById('awards-list');
+    awards.forEach(a => {
+      const row = document.createElement('div');
+      row.className = 'reveal';
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1E1E1A;';
+      row.innerHTML = `<div><p style="font-size:13px;font-weight:500;margin:0 0 2px;color:#F5F2EA;">${a.name}</p><p style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#444;margin:0;">${a.cat}</p></div><span style="font-size:11px;color:#444;font-family:'Fragment Mono',monospace;">${a.year}</span>`;
+      awardsList.appendChild(row);
+      revObs.observe(row);
+    });
+
+    // Parallax type demo on mouse move
+    document.addEventListener('mousemove', e => {
+      const td = document.getElementById('type-demo');
+      if (td) {
+        const x = (e.clientX / window.innerWidth - 0.5) * 40;
+        td.style.transform = `translateX(${x}px)`;
+      }
+    });
+  </script>
+</body>
+</html>

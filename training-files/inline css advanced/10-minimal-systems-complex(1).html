@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumen — Space & Systems Design Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Neue+Haas+Grotesk:wght@300;400;500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #E8E4DC;
+      --fg: #1C1B18;
+      --accent: #2D5BE3;
+      --muted: #9A9890;
+      --border: rgba(28,27,24,0.12);
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background: var(--bg); color: var(--fg); font-family: 'EB Garamond', serif; overflow-x: hidden; }
+    ::selection { background: var(--accent); color: #FFF; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* Nav */
+    #nav { position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 64px; display: flex; align-items: center; padding: 0 60px; border-bottom: 1px solid var(--border); background: rgba(232,228,220,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .nav-logo { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 400; letter-spacing: 0.5px; }
+    .nav-links { display: flex; gap: 40px; margin-left: auto; }
+    .nav-links a { text-decoration: none; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--fg); }
+    #live-clock { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-left: 40px; }
+
+    /* Canvas hero */
+    #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    /* Magnetic button */
+    .mag-btn { display: inline-flex; align-items: center; gap: 10px; position: relative; cursor: pointer; text-decoration: none; transition: none; }
+    .mag-btn-inner { padding: 14px 32px; background: var(--fg); color: var(--bg); font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; display: inline-block; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .mag-btn:hover .mag-btn-inner { transform: translate(var(--mx,0), var(--my,0)) scale(1.04); }
+
+    /* Split text */
+    .split-word { display: inline-block; overflow: hidden; }
+    .split-word-inner { display: inline-block; transform: translateY(110%); transition: transform 1.1s cubic-bezier(0.16,1,0.3,1); }
+    .split-word.visible .split-word-inner { transform: translateY(0); }
+
+    /* Stagger children */
+    .stagger > * { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .stagger.visible > * { opacity: 1; transform: translateY(0); }
+    .stagger.visible > *:nth-child(1) { transition-delay: 0s; }
+    .stagger.visible > *:nth-child(2) { transition-delay: 0.08s; }
+    .stagger.visible > *:nth-child(3) { transition-delay: 0.16s; }
+    .stagger.visible > *:nth-child(4) { transition-delay: 0.24s; }
+    .stagger.visible > *:nth-child(5) { transition-delay: 0.32s; }
+
+    /* Section */
+    section { position: relative; }
+    .section-tag { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+    /* Lines */
+    .rule { border: none; border-top: 1px solid var(--border); }
+
+    /* Service card hover */
+    .svc-card { border-top: 1px solid var(--border); padding: 28px 0; cursor: default; transition: padding 0.3s ease; }
+    .svc-card:hover { padding-left: 24px; border-top-color: var(--accent); }
+    .svc-card:hover .svc-num { color: var(--accent); }
+    .svc-card:hover .svc-arrow { opacity: 1; transform: translateX(0); color: var(--accent); }
+
+    /* Work card */
+    .work-card { position: relative; overflow: hidden; cursor: pointer; }
+    .work-card-overlay { position: absolute; inset: 0; background: var(--accent); transform: scaleY(0); transform-origin: bottom; transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); display: flex; align-items: center; justify-content: center; }
+    .work-card:hover .work-card-overlay { transform: scaleY(1); }
+
+    /* Testimonial */
+    .testimonial-q { font-size: 22px; line-height: 1.6; font-style: italic; color: var(--fg); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-logo">Lumen</div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#studio">Studio</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div id="live-clock">00:00:00</div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="height:100vh;position:relative;overflow:hidden;border-bottom:1px solid var(--border);">
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Floating corner labels -->
+    <div style="position:absolute;top:80px;left:60px;z-index:10;">
+      <p class="section-tag" style="margin:0 0 4px;">Space & Systems</p>
+      <p class="section-tag">Design Studio</p>
+    </div>
+    <div style="position:absolute;top:80px;right:60px;z-index:10;text-align:right;">
+      <p class="section-tag" style="margin:0 0 4px;">Est. 2014</p>
+      <p class="section-tag">Amsterdam · Lagos</p>
+    </div>
+
+    <!-- Main content, bottom-aligned -->
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 60px 60px;">
+      <div style="max-width:1000px;">
+        <p class="split-word" id="hw0" style="margin:0 0 8px;"><span class="split-word-inner" style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">We design spaces that work.</span></p>
+        <div>
+          <div class="split-word" id="hw1" style="display:block;overflow:hidden;"><h1 class="split-word-inner" style="font-size:clamp(48px,8vw,110px);font-weight:400;line-height:0.92;letter-spacing:-3px;margin:0;">Architecture for</h1></div>
+          <div class="split-word" id="hw2" style="display:block;overflow:hidden;"><h1 class="split-word-inner" style="font-size:clamp(48px,8vw,110px);font-weight:400;line-height:0.92;letter-spacing:-3px;margin:0;font-style:italic;color:var(--accent);">ideas that last.</h1></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;padding-top:32px;border-top:1px solid var(--border);">
+        <p id="hero-p" style="font-size:16px;line-height:1.8;color:var(--muted);max-width:460px;opacity:0;transition:opacity 0.8s 1s ease;">Lumen is a cross-disciplinary studio working at the intersection of spatial design, systems thinking, and communication. We partner with institutions, brands, and cities.</p>
+        <div id="hero-cta-wrap" style="opacity:0;transition:opacity 0.8s 1.2s ease;">
+          <a href="#work" class="mag-btn" id="mag1">
+            <span class="mag-btn-inner">Explore our work</span>
+            <span style="font-size:18px;transition:transform 0.3s ease;display:inline-block;" id="mag1-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS ROW -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);" class="stagger" id="stats-row">
+    <div style="padding:36px 48px;border-right:1px solid var(--border);">
+      <p style="font-size:52px;font-weight:500;line-height:1;letter-spacing:-2px;margin:0 0 6px;" id="s1">0</p>
+      <p class="section-tag">Projects completed</p>
+    </div>
+    <div style="padding:36px 48px;border-right:1px solid var(--border);">
+      <p style="font-size:52px;font-weight:500;line-height:1;letter-spacing:-2px;margin:0 0 6px;color:var(--accent);" id="s2">0</p>
+      <p class="section-tag">Years of practice</p>
+    </div>
+    <div style="padding:36px 48px;border-right:1px solid var(--border);">
+      <p style="font-size:52px;font-weight:500;line-height:1;letter-spacing:-2px;margin:0 0 6px;" id="s3">0</p>
+      <p class="section-tag">Countries active</p>
+    </div>
+    <div style="padding:36px 48px;">
+      <p style="font-size:52px;font-weight:500;line-height:1;letter-spacing:-2px;margin:0 0 6px;" id="s4">0</p>
+      <p class="section-tag">Design awards</p>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services" style="padding:100px 60px;border-bottom:1px solid var(--border);">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start;">
+      <div style="position:sticky;top:80px;">
+        <p class="section-tag split-word"><span class="split-word-inner">What we do</span></p>
+        <h2 style="font-size:44px;font-weight:400;line-height:1.05;letter-spacing:-1.5px;margin:16px 0 24px;" class="split-word"><span class="split-word-inner">Services built around your reality.</span></h2>
+        <p style="font-size:16px;line-height:1.8;color:var(--muted);">Every engagement starts with understanding how you actually work — then we design systems that make that work better, cleaner, and more durable.</p>
+      </div>
+      <div id="services-list" class="stagger"></div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work" style="padding:0;border-bottom:1px solid var(--border);">
+    <div style="padding:60px 60px 40px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);">
+      <h2 class="split-word" style="font-size:44px;font-weight:400;letter-spacing:-1.5px;"><span class="split-word-inner">Selected work</span></h2>
+      <a href="#" class="section-tag" style="color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:3px;transition:color 0.2s;border-color:var(--border);" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Full portfolio →</a>
+    </div>
+    <div id="work-grid" style="display:grid;grid-template-columns:1fr 1fr;"></div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section style="padding:100px 60px;border-bottom:1px solid var(--border);background:var(--fg);color:var(--bg);">
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:80px;align-items:start;max-width:1000px;margin:0 auto;">
+      <div>
+        <p class="section-tag" style="color:rgba(232,228,220,0.3);">Client words</p>
+        <div style="display:flex;gap:8px;margin-top:32px;" id="testi-dots"></div>
+      </div>
+      <div>
+        <div id="testi-quote"></div>
+        <div id="testi-author" style="margin-top:28px;display:flex;align-items:center;gap:16px;"></div>
+        <div style="display:flex;gap:12px;margin-top:32px;">
+          <button onclick="prevTesti()" style="width:40px;height:40px;background:rgba(232,228,220,0.08);border:1px solid rgba(232,228,220,0.15);color:var(--bg);font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(232,228,220,0.16)'" onmouseout="this.style.background='rgba(232,228,220,0.08)'">←</button>
+          <button onclick="nextTesti()" style="width:40px;height:40px;background:rgba(232,228,220,0.08);border:1px solid rgba(232,228,220,0.15);color:var(--bg);font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(232,228,220,0.16)'" onmouseout="this.style.background='rgba(232,228,220,0.08)'">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);">
+    <div style="padding:80px 60px;border-right:1px solid var(--border);">
+      <p class="section-tag split-word" style="margin:0 0 20px;"><span class="split-word-inner">Start a conversation</span></p>
+      <h2 class="split-word" style="font-size:clamp(36px,5vw,72px);font-weight:400;letter-spacing:-2px;line-height:0.95;margin:0 0 32px;"><span class="split-word-inner">Good design starts with a good question.</span></h2>
+      <a href="mailto:studio@lumen.design" class="mag-btn" id="mag2" style="margin-top:16px;">
+        <span class="mag-btn-inner" style="background:var(--accent);">studio@lumen.design</span>
+        <span style="font-size:18px;">→</span>
+      </a>
+    </div>
+    <div style="padding:80px 60px;">
+      <p class="section-tag" style="margin:0 0 32px;">Office hours</p>
+      <div id="office-hours" style="display:flex;flex-direction:column;gap:0;"></div>
+      <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--border);">
+        <p class="section-tag" style="margin:0 0 16px;">Find us</p>
+        <p style="font-size:14px;line-height:1.8;color:var(--muted);">Keizersgracht 452<br/>Amsterdam, NL 1017 EG<br/><br/>Victoria Island<br/>Lagos, Nigeria</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:28px 60px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">© 2025 Lumen Studio</span>
+    <div style="display:flex;gap:24px;">
+      <a href="#" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Instagram</a>
+      <a href="#" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">LinkedIn</a>
+      <a href="#" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Privacy</a>
+    </div>
+  </footer>
+
+  <script>
+    // LIVE CLOCK
+    function updateClock() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      document.getElementById('live-clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} CET`;
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    // CANVAS PARTICLE SYSTEM
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [], mouse = { x: -999, y: -999 };
+
+    function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+    resize();
+    window.addEventListener('resize', () => { resize(); initParticles(); });
+
+    function initParticles() {
+      particles = [];
+      const count = Math.floor((W * H) / 8000);
+      for (let i = 0; i < count; i++) {
+        particles.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, r: Math.random() * 1.5 + 0.5, alpha: Math.random() * 0.4 + 0.1 });
+      }
+    }
+    initParticles();
+
+    canvas.addEventListener('mousemove', e => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+    canvas.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        // Mouse repulsion
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) { p.vx += (dx / dist) * 0.08; p.vy += (dy / dist) * 0.08; }
+
+        p.vx *= 0.99; p.vy *= 0.99;
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(28,27,24,${p.alpha})`;
+        ctx.fill();
+      });
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(28,27,24,${0.06 * (1 - d / 100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateCanvas);
+    }
+    animateCanvas();
+
+    // HERO ENTRANCE
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        ['hw0','hw1','hw2'].forEach(id => document.getElementById(id).classList.add('visible'));
+        document.getElementById('hero-p').style.opacity = '1';
+        document.getElementById('hero-cta-wrap').style.opacity = '1';
+      }, 300);
+    });
+
+    // MAGNETIC BUTTONS
+    document.querySelectorAll('.mag-btn').forEach(btn => {
+      const inner = btn.querySelector('.mag-btn-inner');
+      const arrow = btn.querySelector('span:last-child');
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width / 2) * 0.3;
+        const y = (e.clientY - r.top - r.height / 2) * 0.3;
+        inner.style.transform = `translate(${x}px,${y}px)`;
+        if (arrow) arrow.style.transform = `translate(${x * 1.5}px,${y * 1.5}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        inner.style.transform = '';
+        if (arrow) arrow.style.transform = '';
+      });
+    });
+
+    // INTERSECTION OBSERVER
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.split-word, .stagger').forEach(el => obs.observe(el));
+
+    // COUNT-UP (stats)
+    const statsTargets = [{ id:'s1', val:94 }, { id:'s2', val:11 }, { id:'s3', val:22 }, { id:'s4', val:37 }];
+    const statsObs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        statsTargets.forEach(({ id, val }) => {
+          const el = document.getElementById(id);
+          const start = performance.now();
+          const dur = 1800;
+          function update(now) {
+            const t = Math.min((now - start) / dur, 1);
+            const ease = 1 - Math.pow(1 - t, 4);
+            el.textContent = Math.round(ease * val);
+            if (t < 1) requestAnimationFrame(update);
+            else el.textContent = val;
+          }
+          requestAnimationFrame(update);
+        });
+        statsObs.disconnect();
+      }
+    }, { threshold: 0.3 });
+    statsObs.observe(document.getElementById('stats-row'));
+
+    // SERVICES
+    const services = [
+      { num:'01', title:'Spatial Design', desc:'Interior architecture, environmental graphics, and wayfinding systems for public, cultural, and commercial spaces.' },
+      { num:'02', title:'Brand Systems', desc:'Complete visual identity systems built for longevity — from strategic foundation to finished guidelines.' },
+      { num:'03', title:'Exhibition Design', desc:'Concept, narrative structure, and spatial realisation for museum and gallery exhibitions worldwide.' },
+      { num:'04', title:'Digital Environments', desc:'Web presence and interactive experiences that extend your spatial brand into the digital dimension.' },
+      { num:'05', title:'Design Research', desc:'Structured research programmes that ground every design decision in evidence, context, and use.' },
+    ];
+    const sList = document.getElementById('services-list');
+    services.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'svc-card';
+      div.style.cssText = 'display:grid;grid-template-columns:60px 1fr auto;gap:20px;align-items:center;transition:padding 0.3s ease,border-top-color 0.3s ease;border-top:1px solid var(--border);padding:28px 0;';
+      div.innerHTML = `
+        <span class="svc-num section-tag" style="transition:color 0.3s;">${s.num}</span>
+        <div>
+          <h3 style="font-size:22px;font-weight:400;margin:0 0 6px;letter-spacing:-0.3px;">${s.title}</h3>
+          <p style="font-size:14px;line-height:1.7;color:var(--muted);margin:0;">${s.desc}</p>
+        </div>
+        <span class="svc-arrow" style="font-size:18px;opacity:0;transform:translateX(-12px);transition:all 0.3s;">→</span>
+      `;
+      div.addEventListener('mouseenter', () => { div.style.paddingLeft = '24px'; div.style.borderTopColor = 'var(--accent)'; div.querySelector('.svc-num').style.color = 'var(--accent)'; div.querySelector('.svc-arrow').style.opacity = '1'; div.querySelector('.svc-arrow').style.transform = 'translateX(0)'; div.querySelector('.svc-arrow').style.color = 'var(--accent)'; });
+      div.addEventListener('mouseleave', () => { div.style.paddingLeft = '0'; div.style.borderTopColor = 'var(--border)'; div.querySelector('.svc-num').style.color = 'var(--muted)'; div.querySelector('.svc-arrow').style.opacity = '0'; div.querySelector('.svc-arrow').style.transform = 'translateX(-12px)'; });
+      sList.appendChild(div);
+    });
+
+    // WORK GRID
+    const works = [
+      { title:'Kigali Cultural Centre', cat:'Spatial Design', year:'2024', bg:'#2D5BE3', textCol:'#FFF' },
+      { title:'Verdanta Annual Report', cat:'Editorial', year:'2024', bg:'#1C1B18', textCol:'#E8E4DC' },
+      { title:'The Forest Pavilion', cat:'Exhibition Design', year:'2023', bg:'#3D6B3A', textCol:'#FFF' },
+      { title:'Null Type Foundry', cat:'Brand System', year:'2023', bg:'#8B3A2C', textCol:'#FFF' },
+    ];
+    const wGrid = document.getElementById('work-grid');
+    works.forEach((w, i) => {
+      const card = document.createElement('div');
+      card.className = 'work-card';
+      const borderRight = i % 2 === 0 ? 'border-right:1px solid var(--border);' : '';
+      card.style.cssText = `${borderRight}border-bottom:1px solid var(--border);min-height:320px;display:flex;align-items:flex-end;padding:40px;position:relative;background:${w.bg};overflow:hidden;`;
+      card.innerHTML = `
+        <div class="work-card-overlay" style="background:rgba(45,91,227,0.9);">
+          <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#FFF;">View project →</span>
+        </div>
+        <div style="position:relative;z-index:2;">
+          <p style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 0 8px;">${w.cat} · ${w.year}</p>
+          <h3 style="font-size:26px;font-weight:400;letter-spacing:-0.5px;color:${w.textCol};margin:0;">${w.title}</h3>
+        </div>
+        <div style="position:absolute;top:40px;right:40px;font-size:48px;opacity:0.06;color:#FFF;font-weight:500;font-style:italic;line-height:1;">0${i+1}</div>
+      `;
+      wGrid.appendChild(card);
+    });
+
+    // TESTIMONIALS
+    const testimonials = [
+      { quote:'Lumen didn\'t just design our space — they reframed how we thought about what the space was for. The result speaks for itself and to every visitor who walks through.', name:'Amara Diallo', role:'Director, Kigali Cultural Centre', initials:'AD', color:'#2D5BE3' },
+      { quote:'Every other studio we spoke to wanted to redesign our brand. Lumen was the first to ask why we\'d built it the way we had. That question changed the entire brief.', name:'Thomas Rieger', role:'CEO, Verdanta Group', initials:'TR', color:'#3D6B3A' },
+      { quote:'The exhibition design exceeded what I thought was architecturally possible on our budget. It didn\'t look like a compromise — it looked like a choice.', name:'Yuki Sato', role:'Curator, The Forest Pavilion', initials:'YS', color:'#8B3A2C' },
+    ];
+    let tIdx = 0;
+    const tDots = document.getElementById('testi-dots');
+    testimonials.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.style.cssText = `width:${i===0?'20px':'6px'};height:6px;border-radius:3px;background:${i===0?'rgba(232,228,220,0.8)':'rgba(232,228,220,0.15)'};transition:all 0.3s;cursor:pointer;`;
+      d.addEventListener('click', () => showTesti(i));
+      tDots.appendChild(d);
+    });
+    function showTesti(i) {
+      tIdx = i;
+      const t = testimonials[i];
+      const qEl = document.getElementById('testi-quote');
+      const aEl = document.getElementById('testi-author');
+      qEl.style.opacity = '0'; qEl.style.transform = 'translateY(10px)';
+      aEl.style.opacity = '0';
+      setTimeout(() => {
+        qEl.innerHTML = `<p class="testimonial-q" style="color:var(--bg);">"${t.quote}"</p>`;
+        aEl.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:${t.color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#FFF;font-family:'Space Mono',monospace;">${t.initials}</div><div><p style="font-size:14px;font-weight:500;margin:0;color:var(--bg);">${t.name}</p><p style="font-size:12px;color:rgba(232,228,220,0.5);margin:0;">${t.role}</p></div>`;
+        qEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; qEl.style.opacity = '1'; qEl.style.transform = 'translateY(0)';
+        aEl.style.transition = 'opacity 0.5s 0.1s ease'; aEl.style.opacity = '1';
+      }, 200);
+      tDots.querySelectorAll('div').forEach((d, idx) => {
+        d.style.width = idx === i ? '20px' : '6px';
+        d.style.background = idx === i ? 'rgba(232,228,220,0.8)' : 'rgba(232,228,220,0.15)';
+      });
+    }
+    showTesti(0);
+    function prevTesti() { showTesti((tIdx - 1 + testimonials.length) % testimonials.length); }
+    function nextTesti() { showTesti((tIdx + 1) % testimonials.length); }
+    setInterval(() => nextTesti(), 6000);
+
+    // OFFICE HOURS
+    const hours = [
+      { day:'Monday — Thursday', time:'09:00 — 18:00' },
+      { day:'Friday', time:'09:00 — 16:00' },
+      { day:'Saturday — Sunday', time:'Closed' },
+    ];
+    const ohList = document.getElementById('office-hours');
+    hours.forEach(h => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);';
+      row.innerHTML = `<span style="font-size:14px;">${h.day}</span><span style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">${h.time}</span>`;
+      ohList.appendChild(row);
+    });
+  </script>
+</body>
+</html>

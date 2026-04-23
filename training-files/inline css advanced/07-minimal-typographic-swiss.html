@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Null Studio — Typographic Design Practice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;font-family:'Inconsolata',monospace;background:#F0EEE8;color:#111;overflow-x:hidden;">
+
+  <!-- CURSOR (minimal) -->
+  <div id="csr" style="position:fixed;width:4px;height:4px;background:#111;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.05s;"></div>
+  <div id="csr2" style="position:fixed;width:32px;height:32px;border:1px solid #111;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left 0.15s ease,top 0.15s ease;"></div>
+
+  <!-- NAV -->
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:500;padding:0;display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #111;background:#F0EEE8;">
+    <div style="padding:18px 32px;border-right:1px solid #111;display:flex;align-items:center;">
+      <span id="nav-logo" style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;letter-spacing:1px;cursor:default;">NULL</span>
+    </div>
+    <div style="padding:18px 32px;border-right:1px solid #111;display:flex;align-items:center;justify-content:center;gap:32px;">
+      <a href="#work" style="text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#111;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.4'" onmouseout="this.style.opacity='1'">Work</a>
+      <a href="#process" style="text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#111;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.4'" onmouseout="this.style.opacity='1'">Process</a>
+      <a href="#info" style="text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#111;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.4'" onmouseout="this.style.opacity='1'">Info</a>
+    </div>
+    <div style="padding:18px 32px;display:flex;align-items:center;justify-content:flex-end;">
+      <a href="#contact" style="text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#111;border-bottom:1px solid #111;padding-bottom:2px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.4'" onmouseout="this.style.opacity='1'">Start a project</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:57px;border-bottom:1px solid #111;">
+    <!-- Left: huge type -->
+    <div style="padding:80px 32px;border-right:1px solid #111;display:flex;flex-direction:column;justify-content:space-between;">
+      <div>
+        <div style="overflow:hidden;margin-bottom:4px;"><h1 id="h1a" style="font-family:'Unbounded',sans-serif;font-size:clamp(48px,7vw,96px);font-weight:900;margin:0;line-height:0.9;letter-spacing:-2px;transform:translateY(110%);transition:transform 1s cubic-bezier(0.16,1,0.3,1);">TYPE</h1></div>
+        <div style="overflow:hidden;margin-bottom:4px;"><h1 id="h1b" style="font-family:'Unbounded',sans-serif;font-size:clamp(48px,7vw,96px);font-weight:300;margin:0;line-height:0.9;letter-spacing:-2px;font-style:italic;transform:translateY(110%);transition:transform 1s 0.1s cubic-bezier(0.16,1,0.3,1);">IS</h1></div>
+        <div style="overflow:hidden;"><h1 id="h1c" style="font-family:'Unbounded',sans-serif;font-size:clamp(48px,7vw,96px);font-weight:900;margin:0;line-height:0.9;letter-spacing:-2px;transform:translateY(110%);transition:transform 1s 0.2s cubic-bezier(0.16,1,0.3,1);">THOUGHT.</h1></div>
+      </div>
+      <div id="hero-desc" style="opacity:0;transition:opacity 0.8s 0.8s ease;">
+        <div style="width:32px;height:1px;background:#111;margin-bottom:20px;"></div>
+        <p style="font-size:13px;line-height:1.8;color:#555;max-width:320px;margin:0;">Null Studio is a typographic design practice working at the intersection of language, space, and printed matter. We make things that say exactly what they mean.</p>
+      </div>
+    </div>
+
+    <!-- Right: scramble counter + grid ornament -->
+    <div style="display:grid;grid-template-rows:1fr 1fr;border-left:0;">
+      <div style="padding:80px 40px;border-bottom:1px solid #111;display:flex;flex-direction:column;justify-content:space-between;">
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#999;">Currently available for</div>
+        <div id="scramble-target" style="font-family:'Unbounded',sans-serif;font-size:clamp(24px,3vw,40px);font-weight:700;letter-spacing:-0.5px;line-height:1.1;">Brand Identity</div>
+        <div style="font-size:11px;letter-spacing:1px;color:#999;font-family:'Inconsolata',monospace;">projects in 2025 ↗</div>
+      </div>
+      <div style="padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#111;">
+        <div id="cell-00" style="background:#F0EEE8;padding:24px;display:flex;flex-direction:column;justify-content:space-between;min-height:120px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#111';this.querySelector('span').style.color='#F0EEE8'" onmouseout="this.style.background='#F0EEE8';this.querySelector('span').style.color='#111'">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#999;">Projects</span>
+          <span style="font-family:'Unbounded',sans-serif;font-size:32px;font-weight:900;transition:color 0.2s;">47</span>
+        </div>
+        <div id="cell-01" style="background:#F0EEE8;padding:24px;display:flex;flex-direction:column;justify-content:space-between;min-height:120px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#111';this.querySelector('span').style.color='#F0EEE8'" onmouseout="this.style.background='#F0EEE8';this.querySelector('span').style.color='#111'">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#999;">Years</span>
+          <span style="font-family:'Unbounded',sans-serif;font-size:32px;font-weight:900;transition:color 0.2s;">09</span>
+        </div>
+        <div id="cell-10" style="background:#F0EEE8;padding:24px;display:flex;flex-direction:column;justify-content:space-between;min-height:120px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#111';this.querySelector('span').style.color='#F0EEE8'" onmouseout="this.style.background='#F0EEE8';this.querySelector('span').style.color='#111'">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#999;">Countries</span>
+          <span style="font-family:'Unbounded',sans-serif;font-size:32px;font-weight:900;transition:color 0.2s;">18</span>
+        </div>
+        <div id="cell-11" style="background:#111;padding:24px;display:flex;flex-direction:column;justify-content:space-between;min-height:120px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#111'">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;">Awards</span>
+          <span style="font-family:'Unbounded',sans-serif;font-size:32px;font-weight:900;color:#F0EEE8;">31</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK GRID -->
+  <section id="work" style="border-bottom:1px solid #111;">
+    <div style="padding:48px 32px;border-bottom:1px solid #111;display:flex;justify-content:space-between;align-items:center;">
+      <h2 style="font-family:'Unbounded',sans-serif;font-size:11px;font-weight:400;letter-spacing:4px;text-transform:uppercase;margin:0;">Selected Work</h2>
+      <span style="font-size:11px;letter-spacing:1px;color:#999;font-family:'Inconsolata',monospace;">2019–2025</span>
+    </div>
+
+    <!-- Alternating full-width work entries -->
+    <div id="work-entries" style="display:flex;flex-direction:column;">
+
+      <div class="work-entry" style="display:grid;grid-template-columns:80px 1fr 200px;border-bottom:1px solid #111;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#111';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#F0EEE8')" onmouseout="this.style.background='transparent';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#111')">
+        <div style="padding:32px;border-right:1px solid #111;display:flex;align-items:center;justify-content:center;">
+          <span data-inv style="font-size:11px;letter-spacing:1px;color:#999;font-family:'Inconsolata',monospace;writing-mode:vertical-rl;transform:rotate(180deg);">01</span>
+        </div>
+        <div style="padding:32px 40px;display:flex;flex-direction:column;justify-content:center;gap:10px;">
+          <h3 data-inv style="font-family:'Unbounded',sans-serif;font-size:clamp(20px,2.5vw,36px);font-weight:700;margin:0;letter-spacing:-0.5px;transition:color 0.3s;">Verdanta — Annual Report</h3>
+          <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#999;margin:0;font-family:'Inconsolata',monospace;">Print · Editorial · Typography</p>
+        </div>
+        <div style="padding:32px;border-left:1px solid #111;display:flex;align-items:center;justify-content:flex-end;">
+          <span data-inv style="font-size:22px;transition:color 0.3s;color:#111;">→</span>
+        </div>
+      </div>
+
+      <div class="work-entry" style="display:grid;grid-template-columns:80px 1fr 200px;border-bottom:1px solid #111;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#111';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#F0EEE8')" onmouseout="this.style.background='transparent';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#111')">
+        <div style="padding:32px;border-right:1px solid #111;display:flex;align-items:center;justify-content:center;">
+          <span data-inv style="font-size:11px;letter-spacing:1px;color:#999;font-family:'Inconsolata',monospace;writing-mode:vertical-rl;transform:rotate(180deg);transition:color 0.3s;">02</span>
+        </div>
+        <div style="padding:32px 40px;display:flex;flex-direction:column;justify-content:center;gap:10px;">
+          <h3 data-inv style="font-family:'Unbounded',sans-serif;font-size:clamp(20px,2.5vw,36px);font-weight:700;margin:0;letter-spacing:-0.5px;transition:color 0.3s;">Kessler & Sons — Brand System</h3>
+          <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#999;margin:0;font-family:'Inconsolata',monospace;">Identity · Print · Packaging</p>
+        </div>
+        <div style="padding:32px;border-left:1px solid #111;display:flex;align-items:center;justify-content:flex-end;">
+          <span data-inv style="font-size:22px;transition:color 0.3s;color:#111;">→</span>
+        </div>
+      </div>
+
+      <div class="work-entry" style="display:grid;grid-template-columns:80px 1fr 200px;border-bottom:1px solid #111;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#111';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#F0EEE8')" onmouseout="this.style.background='transparent';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#111')">
+        <div style="padding:32px;border-right:1px solid #111;display:flex;align-items:center;justify-content:center;">
+          <span data-inv style="font-size:11px;letter-spacing:1px;color:#999;font-family:'Inconsolata',monospace;writing-mode:vertical-rl;transform:rotate(180deg);transition:color 0.3s;">03</span>
+        </div>
+        <div style="padding:32px 40px;display:flex;flex-direction:column;justify-content:center;gap:10px;">
+          <h3 data-inv style="font-family:'Unbounded',sans-serif;font-size:clamp(20px,2.5vw,36px);font-weight:700;margin:0;letter-spacing:-0.5px;transition:color 0.3s;">Rhizome Literary Magazine — Vol. 12</h3>
+          <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#999;margin:0;font-family:'Inconsolata',monospace;">Editorial · Print · Art Direction</p>
+        </div>
+        <div style="padding:32px;border-left:1px solid #111;display:flex;align-items:center;justify-content:flex-end;">
+          <span data-inv style="font-size:22px;transition:color 0.3s;color:#111;">→</span>
+        </div>
+      </div>
+
+      <div class="work-entry" style="display:grid;grid-template-columns:80px 1fr 200px;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#111';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#F0EEE8')" onmouseout="this.style.background='transparent';this.querySelectorAll('[data-inv]').forEach(e=>e.style.color='#111')">
+        <div style="padding:32px;border-right:1px solid #111;display:flex;align-items:center;justify-content:center;">
+          <span data-inv style="font-size:11px;letter-spacing:1px;color:#999;font-family:'Inconsolata',monospace;writing-mode:vertical-rl;transform:rotate(180deg);transition:color 0.3s;">04</span>
+        </div>
+        <div style="padding:32px 40px;display:flex;flex-direction:column;justify-content:center;gap:10px;">
+          <h3 data-inv style="font-family:'Unbounded',sans-serif;font-size:clamp(20px,2.5vw,36px);font-weight:700;margin:0;letter-spacing:-0.5px;transition:color 0.3s;">Heliodor Spirits — Complete Identity</h3>
+          <p style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#999;margin:0;font-family:'Inconsolata',monospace;">Identity · Packaging · Environmental</p>
+        </div>
+        <div style="padding:32px;border-left:1px solid #111;display:flex;align-items:center;justify-content:flex-end;">
+          <span data-inv style="font-size:22px;transition:color 0.3s;color:#111;">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process" style="border-bottom:1px solid #111;">
+    <div style="padding:48px 32px;border-bottom:1px solid #111;display:flex;justify-content:space-between;align-items:center;">
+      <h2 style="font-family:'Unbounded',sans-serif;font-size:11px;font-weight:400;letter-spacing:4px;text-transform:uppercase;margin:0;">Process</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+      <div style="padding:48px 32px;border-right:1px solid #111;" class="proc-step">
+        <div style="font-family:'Unbounded',sans-serif;font-size:48px;font-weight:900;color:#E0DDD6;margin-bottom:24px;line-height:1;">01</div>
+        <h3 style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;margin:0 0 12px;letter-spacing:-0.3px;">Listen</h3>
+        <p style="font-size:12px;line-height:1.8;color:#666;margin:0;">We begin by reading everything — briefs, competitors, history — and saying very little. Good design starts with understanding, not opinions.</p>
+      </div>
+      <div style="padding:48px 32px;border-right:1px solid #111;" class="proc-step">
+        <div style="font-family:'Unbounded',sans-serif;font-size:48px;font-weight:900;color:#E0DDD6;margin-bottom:24px;line-height:1;">02</div>
+        <h3 style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;margin:0 0 12px;letter-spacing:-0.3px;">Reduce</h3>
+        <p style="font-size:12px;line-height:1.8;color:#666;margin:0;">We remove everything unnecessary. What remains is the essence of the message — stripped of decoration, left only with purpose.</p>
+      </div>
+      <div style="padding:48px 32px;border-right:1px solid #111;" class="proc-step">
+        <div style="font-family:'Unbounded',sans-serif;font-size:48px;font-weight:900;color:#E0DDD6;margin-bottom:24px;line-height:1;">03</div>
+        <h3 style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;margin:0 0 12px;letter-spacing:-0.3px;">Compose</h3>
+        <p style="font-size:12px;line-height:1.8;color:#666;margin:0;">Type, space, weight, and silence are placed in deliberate relationship to one another. Every decision is intentional, every detail earns its place.</p>
+      </div>
+      <div style="padding:48px 32px;" class="proc-step">
+        <div style="font-family:'Unbounded',sans-serif;font-size:48px;font-weight:900;color:#E0DDD6;margin-bottom:24px;line-height:1;">04</div>
+        <h3 style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;margin:0 0 12px;letter-spacing:-0.3px;">Release</h3>
+        <p style="font-size:12px;line-height:1.8;color:#666;margin:0;">We let the work go when it's right — not when the brief is exhausted. Client relationships outlast individual projects.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFO / CAPABILITIES -->
+  <section id="info" style="border-bottom:1px solid #111;display:grid;grid-template-columns:1fr 1fr;">
+    <div style="padding:80px 40px;border-right:1px solid #111;">
+      <h2 style="font-family:'Unbounded',sans-serif;font-size:11px;font-weight:400;letter-spacing:4px;text-transform:uppercase;margin:0 0 40px;">Capabilities</h2>
+      <div id="cap-list" style="display:flex;flex-direction:column;gap:0;"></div>
+    </div>
+    <div style="padding:80px 40px;">
+      <h2 style="font-family:'Unbounded',sans-serif;font-size:11px;font-weight:400;letter-spacing:4px;text-transform:uppercase;margin:0 0 40px;">Clients include</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:0;" id="client-grid"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT / CTA -->
+  <section id="contact" style="padding:0;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #111;">
+    <div style="padding:80px 40px;border-right:1px solid #111;background:#111;">
+      <h2 style="font-family:'Unbounded',sans-serif;font-size:clamp(28px,4vw,56px);font-weight:900;color:#F0EEE8;margin:0 0 24px;letter-spacing:-1.5px;line-height:0.95;">Let's make<br/>something<br/>worth reading.</h2>
+      <p style="font-size:13px;line-height:1.8;color:rgba(240,238,232,0.5);margin:0 0 40px;">We take two to three new projects per quarter. If your brief is interesting, we want to hear it.</p>
+      <a href="mailto:hello@null.studio" id="contact-link" style="text-decoration:none;display:inline-flex;align-items:center;gap:12px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#F0EEE8;border-bottom:1px solid rgba(240,238,232,0.3);padding-bottom:4px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.5'" onmouseout="this.style.opacity='1'">hello@null.studio <span>→</span></a>
+    </div>
+    <div style="padding:80px 40px;display:flex;flex-direction:column;justify-content:space-between;">
+      <div>
+        <h3 style="font-family:'Unbounded',sans-serif;font-size:11px;font-weight:400;letter-spacing:4px;text-transform:uppercase;margin:0 0 28px;">Send a brief</h3>
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <input type="text" placeholder="Your name" style="padding:14px 0;background:transparent;border:none;border-bottom:1px solid #111;font-size:14px;font-family:'Inconsolata',monospace;outline:none;margin-bottom:1px;transition:border-color 0.2s;" onfocus="this.style.borderColor='#111';this.style.borderBottomWidth='2px'" onblur="this.style.borderBottomWidth='1px'" />
+          <input type="email" placeholder="Email address" style="padding:14px 0;background:transparent;border:none;border-bottom:1px solid #111;font-size:14px;font-family:'Inconsolata',monospace;outline:none;margin-bottom:1px;transition:border-color 0.2s;" onfocus="this.style.borderBottomWidth='2px'" onblur="this.style.borderBottomWidth='1px'" />
+          <textarea placeholder="Tell us about the project..." rows="4" style="padding:14px 0;background:transparent;border:none;border-bottom:1px solid #111;font-size:14px;font-family:'Inconsolata',monospace;outline:none;resize:none;margin-bottom:32px;transition:border-color 0.2s;" onfocus="this.style.borderBottomWidth='2px'" onblur="this.style.borderBottomWidth='1px'"></textarea>
+          <button id="send-btn" onclick="submitForm(this)" style="align-self:flex-start;padding:14px 32px;background:#111;color:#F0EEE8;border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Inconsolata',monospace;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Send →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:0;">
+    <div style="padding:24px 32px;border-right:1px solid #111;">
+      <span style="font-family:'Unbounded',sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;">NULL STUDIO</span>
+    </div>
+    <div style="padding:24px 32px;border-right:1px solid #111;display:flex;gap:24px;justify-content:center;">
+      <a href="#" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#111'" onmouseout="this.style.color='#999'">Instagram</a>
+      <a href="#" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#111'" onmouseout="this.style.color='#999'">Are.na</a>
+      <a href="#" style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#111'" onmouseout="this.style.color='#999'">Behance</a>
+    </div>
+    <div style="padding:24px 32px;display:flex;justify-content:flex-end;">
+      <span style="font-size:11px;color:#999;font-family:'Inconsolata',monospace;">© 2025 Null Studio</span>
+    </div>
+  </footer>
+
+  <style>
+    html { scroll-behavior: smooth; cursor: none; }
+    * { cursor: none !important; }
+    ::placeholder { color: #BBB; }
+    .proc-step { transition: background 0.25s; }
+    .proc-step:hover { background: #E8E5DF; }
+  </style>
+
+  <script>
+    // Custom cursor
+    const csr = document.getElementById('csr');
+    const csr2 = document.getElementById('csr2');
+    let mx = 0, my = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      csr.style.left = mx + 'px';
+      csr.style.top = my + 'px';
+    });
+    function followRing() {
+      csr2.style.left = mx + 'px';
+      csr2.style.top = my + 'px';
+      requestAnimationFrame(followRing);
+    }
+    followRing();
+    document.querySelectorAll('a,button,input,textarea,.work-entry').forEach(el => {
+      el.addEventListener('mouseenter', () => { csr2.style.transform = 'translate(-50%,-50%) scale(2)'; csr2.style.opacity = '0.3'; });
+      el.addEventListener('mouseleave', () => { csr2.style.transform = 'translate(-50%,-50%) scale(1)'; csr2.style.opacity = '1'; });
+    });
+
+    // Hero entrance
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        ['h1a','h1b','h1c'].forEach(id => {
+          document.getElementById(id).style.transform = 'translateY(0)';
+        });
+        document.getElementById('hero-desc').style.opacity = '1';
+      }, 100);
+
+      // Scramble text
+      startScramble();
+    });
+
+    // Text scramble
+    const scrambleWords = ['Brand Identity', 'Type Systems', 'Print Design', 'Editorial Work', 'Book Covers', 'Annual Reports', 'Wayfinding'];
+    let sIdx = 0;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    function scrambleTo(el, target, cb) {
+      const duration = 800;
+      const start = performance.now();
+      function update(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const revealed = Math.floor(t * target.length);
+        let result = '';
+        for (let i = 0; i < target.length; i++) {
+          if (i < revealed) result += target[i];
+          else result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        el.textContent = result;
+        if (t < 1) requestAnimationFrame(update);
+        else { el.textContent = target; if (cb) cb(); }
+      }
+      requestAnimationFrame(update);
+    }
+    function startScramble() {
+      const el = document.getElementById('scramble-target');
+      sIdx = (sIdx + 1) % scrambleWords.length;
+      scrambleTo(el, scrambleWords[sIdx], () => {
+        setTimeout(startScramble, 2500);
+      });
+    }
+
+    // Capabilities list
+    const caps = ['Brand Identity Systems', 'Typographic Design', 'Editorial & Print', 'Packaging Design', 'Book & Publication', 'Environmental Graphics', 'Motion Typography', 'Art Direction'];
+    const capList = document.getElementById('cap-list');
+    caps.forEach((c, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'padding:16px 0;border-bottom:1px solid #E0DDD6;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:padding 0.2s;';
+      row.innerHTML = `<span style="font-size:13px;letter-spacing:0.3px;">${c}</span><span style="font-size:11px;color:#999;font-family:'Inconsolata',monospace;transition:color 0.2s;">0${i+1}</span>`;
+      row.addEventListener('mouseenter', () => { row.style.paddingLeft = '12px'; row.querySelector('span:last-child').style.color = '#111'; });
+      row.addEventListener('mouseleave', () => { row.style.paddingLeft = '0'; row.querySelector('span:last-child').style.color = '#999'; });
+      capList.appendChild(row);
+    });
+
+    // Client grid
+    const clients = ['Rhizome Press', 'Verdanta Group', 'Kessler & Sons', 'Studio Ama', 'Heliodor Spirits', 'Caravel Books', 'Null Type Foundry', 'The Meridian', 'Axiom Finance', 'Lucent Gallery'];
+    const cg = document.getElementById('client-grid');
+    clients.forEach(c => {
+      const div = document.createElement('div');
+      div.style.cssText = 'width:50%;padding:16px 0;border-bottom:1px solid #E0DDD6;box-sizing:border-box;font-size:12px;color:#444;transition:color 0.2s;cursor:default;';
+      div.textContent = c;
+      div.addEventListener('mouseenter', () => div.style.color = '#111');
+      div.addEventListener('mouseleave', () => div.style.color = '#444');
+      cg.appendChild(div);
+    });
+
+    // Form submit
+    function submitForm(btn) {
+      btn.textContent = 'Sending...';
+      btn.style.opacity = '0.5';
+      setTimeout(() => {
+        btn.textContent = 'Sent ✓';
+        btn.style.opacity = '1';
+        btn.style.background = '#3D6B3A';
+      }, 1200);
+    }
+
+    // Scroll reveal for process steps
+    const procObs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+          }, i * 80);
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.proc-step').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease, background 0.25s';
+      procObs.observe(el);
+    });
+  </script>
+</body>
+</html>

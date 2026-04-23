@@ -1,0 +1,59 @@
+/*
+ * ══════════════════════════════════════════════════════
+ *  Stack Blueprint — Companion CSS
+ *  Engine: Native Converter | Strategy: v2
+ *  Project: my-project-saas | Prefix: my-project-s-
+ *
+ *  Add to: Elementor → Site Settings → Custom CSS
+ *
+ *  CLASS MAP  (CSS ID → Elementor location)
+ *  ─────────────────────────────────────────────────
+ *  .my-project-s-global-setup → Global Setup → HTML widget — do not delete or move
+ *  .my-project-s-nav → Navigation → HTML widget — fixed position + JS
+ *  .my-project-s-hero → Hero section → Container — CSS ID: Advanced tab
+ *  .my-project-s-marquee → Marquee strip → HTML widget — scrolling ticker
+ *  .my-project-s-stats → Stats section → Container — CSS ID: Advanced tab
+ *  .my-project-s-features → Features / Bento → Container — CSS ID
+ *  .my-project-s-process → Process / How it Works → Container — CSS ID
+ *  .my-project-s-testimonials → Testimonials → Container — CSS ID
+ *  .my-project-s-pricing → Pricing → Container — CSS ID
+ *  .my-project-s-cta → CTA section → Container — CSS ID
+ *  .my-project-s-footer → Footer → Container — CSS ID
+ *  .my-project-s-generic → Generic section → Advanced tab → CSS ID
+ * ══════════════════════════════════════════════════════
+ */
+
+/* ── TOKENS */
+:root {
+  --my-project-s-bg:      #0a0a12;
+  --my-project-s-accent:  #c8ff00;
+  --my-project-s-text:    #f5f3ee;
+  --my-project-s-surface: rgba(255,255,255,0.03);
+  --my-project-s-border:  rgba(255,255,255,0.1);
+  --my-project-s-fd: 'Syne', sans-serif;
+  --my-project-s-fb: 'Epilogue', sans-serif;
+  --my-project-s-fm: 'Space Mono', monospace;
+}
+
+/* ── PAGE */
+body, .elementor-page, #page, .site { background: #0a0a12 !important; }
+.elementor-section-wrap, .e-con-inner { max-width: 100%; }
+
+/* ── SCROLL REVEAL */
+.my-project-s-reveal { opacity: 1; transform: none; transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+html.my-project-s-motion-ready .my-project-s-reveal { opacity: 0; transform: translateY(40px); }
+html.my-project-s-motion-ready .my-project-s-reveal.my-project-s-visible { opacity: 1; transform: translateY(0); }
+.my-project-s-d1 { transition-delay: .1s; } .my-project-s-d2 { transition-delay: .2s; } .my-project-s-d3 { transition-delay: .3s; }
+
+
+/* â”€â”€ STRUCTURAL ALIASES */
+[id^="my-project-s-stat-"], .my-project-s-stat-cell { position: relative; }
+[id^="my-project-s-bento-card-"], .my-project-s-bento-card { transition: border-color .3s, background .3s, transform .3s; }
+[id^="my-project-s-bento-card-"]:hover, .my-project-s-bento-card:hover { border-color: rgba(200,255,0,.25) !important; background: rgba(255,255,255,.05) !important; transform: translateY(-3px); }
+[id^="my-project-s-price-card-"], .my-project-s-price-card { position: relative; }
+[id^="my-project-s-price-card-"]:not(.my-project-s-price-featured):hover, .my-project-s-price-card:not(.my-project-s-price-featured):hover { border-color: rgba(200,255,0,.4) !important; transform: translateY(-4px); }
+[id^="my-project-s-process-step-"], .my-project-s-process-step { transition: all .3s; }
+[id^="my-project-s-testi-card-"], .my-project-s-testi-card { transition: border-color .3s, background .3s, transform .3s; }
+[id^="my-project-s-testi-card-"]:hover, .my-project-s-testi-card:hover { border-color: rgba(200,255,0,.25) !important; background: rgba(255,255,255,.05) !important; transform: translateY(-3px); }
+.my-project-s-bento-grid { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; grid-auto-rows: 80px !important; }
+.my-project-s-step-visual-widget, .my-project-s-testi-visual-widget, .my-project-s-price-visual-widget, .my-project-s-card-visual-widget { width: 100%; }

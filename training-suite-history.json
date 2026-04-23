@@ -1,0 +1,375 @@
+[
+    {
+        "timestamp": "2026-04-22T16:28:36+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.18181818181818182,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 0.9090909090909091
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-22T16:28:40+00:00",
+        "profile": "strict",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.18181818181818182,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 0.9090909090909091
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "selector_output_css_ratio_min",
+                "script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-22T16:34:17+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 0,
+            "fail": 22
+        },
+        "quality_metrics": {
+            "run_success_rate": 0,
+            "selector_output_css_ratio": 1,
+            "script_rewrite_ratio": 1,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-22T16:34:56+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 14,
+            "fail": 8
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.6363636363636364,
+            "selector_output_css_ratio": 0.14285714285714285,
+            "script_rewrite_ratio": 0.5714285714285714,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "selector_output_css_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-22T16:35:28+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 14,
+            "fail": 8
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.6363636363636364,
+            "selector_output_css_ratio": 0.14285714285714285,
+            "script_rewrite_ratio": 0.5714285714285714,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "selector_output_css_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-22T17:06:42+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 0,
+            "fail": 22
+        },
+        "quality_metrics": {
+            "run_success_rate": 0,
+            "selector_output_css_ratio": 1,
+            "script_rewrite_ratio": 1,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": false,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-22T17:07:30+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 16,
+            "fail": 6
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.7272727272727273,
+            "selector_output_css_ratio": 0.125,
+            "script_rewrite_ratio": 0.625,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": false,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "selector_output_css_ratio_min",
+                "v2.selector_output_css_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-22T17:23:08+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 15,
+            "fail": 7
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.6818181818181818,
+            "selector_output_css_ratio": 0.13333333333333333,
+            "script_rewrite_ratio": 0.6,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": false,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "selector_output_css_ratio_min",
+                "v2.selector_output_css_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T09:10:27+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": false,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T09:24:23+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T09:37:48+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T09:39:53+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T09:40:57+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T11:57:50+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T11:58:38+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 13,
+            "fail": 9
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5909090909090909,
+            "selector_output_css_ratio": 0.15384615384615385,
+            "script_rewrite_ratio": 0.5384615384615384,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    }
+]

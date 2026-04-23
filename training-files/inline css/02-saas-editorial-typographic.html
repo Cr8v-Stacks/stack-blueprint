@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phaero — Team Writing OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;font-family:'IBM Plex Sans',sans-serif;background:#FAFAF7;color:#141412;overflow-x:hidden;">
+
+  <!-- TICKER -->
+  <div style="background:#141412;color:#FFF;padding:10px 0;overflow:hidden;white-space:nowrap;">
+    <div id="ticker" style="display:inline-block;animation:ticker 30s linear infinite;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1px;opacity:0.6;">
+      WRITE FASTER &nbsp;·&nbsp; COLLABORATE BETTER &nbsp;·&nbsp; SHIP CONTENT DAILY &nbsp;·&nbsp; AI-ASSISTED DRAFTS &nbsp;·&nbsp; VERSION HISTORY &nbsp;·&nbsp; BRAND VOICE LOCK &nbsp;·&nbsp; WRITE FASTER &nbsp;·&nbsp; COLLABORATE BETTER &nbsp;·&nbsp; SHIP CONTENT DAILY &nbsp;·&nbsp; AI-ASSISTED DRAFTS &nbsp;·&nbsp;
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav style="padding:22px 80px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E8E8E2;background:#FAFAF7;position:sticky;top:0;z-index:100;">
+    <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:900;letter-spacing:-0.5px;">Phaero</div>
+    <div style="display:flex;gap:32px;align-items:center;">
+      <a href="#features" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Product</a>
+      <a href="#use-cases" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Use cases</a>
+      <a href="#faq" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">FAQ</a>
+      <a href="#" style="text-decoration:none;background:#141412;color:#FAFAF7;font-size:13px;font-weight:600;padding:10px 22px;border-radius:4px;letter-spacing:0.3px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Try free →</a>
+    </div>
+  </nav>
+
+  <!-- HERO: editorial split -->
+  <section style="padding:80px 80px 60px;display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1400px;margin:0 auto;align-items:start;">
+    <div>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;text-transform:uppercase;margin:0 0 20px;">The writing OS for teams</p>
+      <h1 style="font-family:'Playfair Display',serif;font-size:72px;font-weight:900;line-height:0.95;margin:0 0 30px;letter-spacing:-2px;">
+        One place.<br/><em style="font-style:italic;color:#3D6B3A;">Every word.</em>
+      </h1>
+      <div style="width:60px;height:3px;background:#3D6B3A;margin-bottom:30px;"></div>
+      <p style="font-size:16px;line-height:1.75;color:#444;margin:0 0 40px;max-width:440px;">
+        Phaero is the writing workspace for modern content teams — with AI drafts, inline collaboration, brand voice enforcement, and one-click publishing built in.
+      </p>
+      <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
+        <input type="email" placeholder="Enter your work email" style="flex:1;padding:14px 18px;border:1.5px solid #E8E8E2;border-radius:4px;font-size:14px;font-family:'IBM Plex Sans',sans-serif;background:#FFF;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#3D6B3A'" onblur="this.style.borderColor='#E8E8E2'" />
+        <button style="padding:14px 24px;background:#3D6B3A;color:#FFF;border:none;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'IBM Plex Sans',sans-serif;transition:background 0.2s;" onmouseover="this.style.background='#2D5230'" onmouseout="this.style.background='#3D6B3A'">Get early access</button>
+      </div>
+      <p style="font-size:12px;color:#AAA;font-family:'IBM Plex Mono',monospace;">No CC. Cancel anytime. Teams of all sizes.</p>
+    </div>
+
+    <!-- Editorial word cloud / feature visual -->
+    <div style="position:relative;padding-top:20px;">
+      <div style="background:#FFF;border:1px solid #E8E8E2;border-radius:8px;overflow:hidden;">
+        <!-- Mock editor -->
+        <div style="background:#F0EFE8;padding:14px 20px;border-bottom:1px solid #E8E8E2;display:flex;align-items:center;gap:8px;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF6057;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#28CA41;"></div>
+          <span style="margin-left:10px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:#888;">Q3 campaign brief.phaero</span>
+        </div>
+        <div style="padding:36px 40px;min-height:340px;">
+          <p style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin:0 0 20px;">Q3 Campaign Brief</p>
+          <div id="typed-text" style="font-size:14px;line-height:1.8;color:#444;min-height:120px;"></div>
+          <div id="cursor" style="display:inline-block;width:2px;height:18px;background:#3D6B3A;animation:blink 1s step-end infinite;vertical-align:middle;"></div>
+          <!-- AI suggestion pill -->
+          <div id="ai-pill" style="margin-top:24px;background:#F0F7F0;border:1px solid #C8DFC8;border-radius:6px;padding:14px 18px;display:none;">
+            <p style="font-size:11px;font-weight:600;color:#3D6B3A;margin:0 0 6px;font-family:'IBM Plex Mono',monospace;">✦ AI SUGGESTION</p>
+            <p style="font-size:13px;color:#3D6B3A;margin:0;line-height:1.6;">Consider adding a competitive differentiation statement in paragraph two to strengthen the positioning.</p>
+          </div>
+          <!-- Collaborator avatars -->
+          <div style="margin-top:20px;display:flex;align-items:center;gap:-8px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#3D6B3A;display:inline-flex;align-items:center;justify-content:center;color:#FFF;font-size:11px;font-weight:600;border:2px solid #FFF;z-index:3;">MK</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#E85D26;display:inline-flex;align-items:center;justify-content:center;color:#FFF;font-size:11px;font-weight:600;border:2px solid #FFF;z-index:2;margin-left:-8px;">JS</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#141412;display:inline-flex;align-items:center;justify-content:center;color:#FFF;font-size:11px;font-weight:600;border:2px solid #FFF;z-index:1;margin-left:-8px;">+4</div>
+            <span style="font-size:12px;color:#888;margin-left:10px;font-family:'IBM Plex Mono',monospace;">6 editors online</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div style="padding:48px 80px;background:#141412;display:grid;grid-template-columns:repeat(4,1fr);">
+    <div style="text-align:center;border-right:1px solid #2A2A28;padding:20px;">
+      <p style="font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:#FFF;margin:0;">8×</p>
+      <p style="font-size:13px;color:#666;margin:8px 0 0;font-family:'IBM Plex Mono',monospace;">faster content output</p>
+    </div>
+    <div style="text-align:center;border-right:1px solid #2A2A28;padding:20px;">
+      <p style="font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:#3D6B3A;margin:0;">40k+</p>
+      <p style="font-size:13px;color:#666;margin:8px 0 0;font-family:'IBM Plex Mono',monospace;">writers and teams</p>
+    </div>
+    <div style="text-align:center;border-right:1px solid #2A2A28;padding:20px;">
+      <p style="font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:#FFF;margin:0;">98%</p>
+      <p style="font-size:13px;color:#666;margin:8px 0 0;font-family:'IBM Plex Mono',monospace;">retention rate</p>
+    </div>
+    <div style="text-align:center;padding:20px;">
+      <p style="font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:#FFF;margin:0;">4.9★</p>
+      <p style="font-size:13px;color:#666;margin:8px 0 0;font-family:'IBM Plex Mono',monospace;">avg review score</p>
+    </div>
+  </div>
+
+  <!-- FEATURES TABS -->
+  <section id="features" style="padding:120px 80px;max-width:1400px;margin:0 auto;">
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;margin:0 0 16px;text-transform:uppercase;">Core features</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:52px;font-weight:900;margin:0 0 60px;letter-spacing:-1.5px;">Everything your team needs</h2>
+
+    <!-- Tab nav -->
+    <div id="tab-nav" style="display:flex;gap:0;border-bottom:2px solid #E8E8E2;margin-bottom:60px;">
+      <button class="tab-btn active" data-tab="0" onclick="switchTab(0)" style="padding:14px 28px;border:none;background:none;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:#141412;border-bottom:2px solid #141412;margin-bottom:-2px;transition:color 0.2s;">Writing</button>
+      <button class="tab-btn" data-tab="1" onclick="switchTab(1)" style="padding:14px 28px;border:none;background:none;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.2s;">AI Assist</button>
+      <button class="tab-btn" data-tab="2" onclick="switchTab(2)" style="padding:14px 28px;border:none;background:none;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.2s;">Publishing</button>
+      <button class="tab-btn" data-tab="3" onclick="switchTab(3)" style="padding:14px 28px;border:none;background:none;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.2s;">Brand voice</button>
+    </div>
+
+    <!-- Tab panels -->
+    <div id="tab-panels">
+      <div class="tab-panel" style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700;margin:0 0 20px;letter-spacing:-1px;">A writing experience your team will actually love</h3>
+          <p style="font-size:15px;line-height:1.8;color:#555;margin:0 0 28px;">Clean, distraction-free editor with real-time multiplayer, inline comments, version history, and keyboard-first shortcuts. No formatting hell, no Slack threads about Word docs.</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;margin-top:1px;">✓</span> Real-time co-editing with presence</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;margin-top:1px;">✓</span> Inline comments & resolved threads</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;margin-top:1px;">✓</span> 60-day version history</li>
+          </ul>
+        </div>
+        <div style="background:#F0EFE8;border-radius:12px;height:280px;display:flex;align-items:center;justify-content:center;border:1px solid #E8E8E2;">
+          <div style="text-align:center;color:#BCBCB4;">
+            <div style="font-size:48px;margin-bottom:12px;">✍️</div>
+            <p style="font-size:14px;font-family:'IBM Plex Mono',monospace;">Editor preview</p>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" style="display:none;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700;margin:0 0 20px;letter-spacing:-1px;">AI that writes with you, not for you</h3>
+          <p style="font-size:15px;line-height:1.8;color:#555;margin:0 0 28px;">Context-aware suggestions, auto-outlining, tone adjustments, and research pulls — all without leaving your document. You stay in control.</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Smart outline generation</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Tone & length adjustment</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Source-linked research suggestions</li>
+          </ul>
+        </div>
+        <div style="background:#F0F7F0;border-radius:12px;height:280px;display:flex;align-items:center;justify-content:center;border:1px solid #C8DFC8;">
+          <div style="text-align:center;color:#3D6B3A;">
+            <div style="font-size:48px;margin-bottom:12px;">✦</div>
+            <p style="font-size:14px;font-family:'IBM Plex Mono',monospace;">AI suggestion engine</p>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" style="display:none;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700;margin:0 0 20px;letter-spacing:-1px;">Ship to any channel in one click</h3>
+          <p style="font-size:15px;line-height:1.8;color:#555;margin:0 0 28px;">Publish directly to WordPress, Ghost, Webflow, HubSpot, Notion, and more. Your content, your stack.</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> 20+ direct publisher integrations</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> SEO meta editing built in</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Scheduled publishing & content calendar</li>
+          </ul>
+        </div>
+        <div style="background:#F0EFE8;border-radius:12px;height:280px;display:flex;align-items:center;justify-content:center;border:1px solid #E8E8E2;">
+          <div style="text-align:center;color:#BCBCB4;"><div style="font-size:48px;margin-bottom:12px;">🚀</div><p style="font-size:14px;font-family:'IBM Plex Mono',monospace;">Publishing integrations</p></div>
+        </div>
+      </div>
+      <div class="tab-panel" style="display:none;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:36px;font-weight:700;margin:0 0 20px;letter-spacing:-1px;">Your brand voice. Locked in.</h3>
+          <p style="font-size:15px;line-height:1.8;color:#555;margin:0 0 28px;">Train Phaero on your style guide and it flags off-brand writing in real time — so every piece sounds like you, not a random AI.</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Custom style guide upload</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Real-time tone analysis</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#333;"><span style="color:#3D6B3A;font-weight:700;">✓</span> Brand compliance scoring</li>
+          </ul>
+        </div>
+        <div style="background:#F0EFE8;border-radius:12px;height:280px;display:flex;align-items:center;justify-content:center;border:1px solid #E8E8E2;">
+          <div style="text-align:center;color:#BCBCB4;"><div style="font-size:48px;margin-bottom:12px;">🎯</div><p style="font-size:14px;font-family:'IBM Plex Mono',monospace;">Brand voice engine</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section id="use-cases" style="padding:100px 80px;background:#141412;max-width:100%;margin:0;">
+    <div style="max-width:1400px;margin:0 auto;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#555;margin:0 0 16px;text-transform:uppercase;">Who it's for</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:#FFF;margin:0 0 60px;letter-spacing:-1.5px;">Built for every kind of content team</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#2A2A28;">
+        <div style="background:#141412;padding:48px;transition:background 0.3s;" onmouseover="this.style.background='#1E1E1C'" onmouseout="this.style.background='#141412'">
+          <p style="font-size:32px;margin:0 0 16px;">✍️</p>
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#FFF;margin:0 0 14px;">Editorial teams</h3>
+          <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Multi-author workflows, editorial calendars, and publish-on-deadline tooling baked in.</p>
+        </div>
+        <div style="background:#141412;padding:48px;transition:background 0.3s;" onmouseover="this.style.background='#1E1E1C'" onmouseout="this.style.background='#141412'">
+          <p style="font-size:32px;margin:0 0 16px;">📣</p>
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#FFF;margin:0 0 14px;">Marketing teams</h3>
+          <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Campaign briefs, landing page copy, and email sequences — reviewed, approved, and shipped from one place.</p>
+        </div>
+        <div style="background:#141412;padding:48px;transition:background 0.3s;" onmouseover="this.style.background='#1E1E1C'" onmouseout="this.style.background='#141412'">
+          <p style="font-size:32px;margin:0 0 16px;">🏢</p>
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#FFF;margin:0 0 14px;">Agencies</h3>
+          <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Per-client workspaces, brand voice switching, and white-label review links for seamless client handoffs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ ACCORDION -->
+  <section id="faq" style="padding:120px 80px;max-width:800px;margin:0 auto;">
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;margin:0 0 16px;text-transform:uppercase;">FAQ</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-weight:900;margin:0 0 60px;letter-spacing:-1.5px;">Common questions</h2>
+    <div id="faq-list" style="display:flex;flex-direction:column;gap:0;">
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:60px 80px;border-top:1px solid #E8E8E2;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;">
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;margin-bottom:16px;">Phaero</div>
+      <p style="font-size:14px;line-height:1.7;color:#666;max-width:280px;margin:0;">The writing OS for content teams who take their craft seriously.</p>
+    </div>
+    <div>
+      <p style="font-size:12px;font-weight:600;color:#141412;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;font-family:'IBM Plex Mono',monospace;">Product</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Features</a>
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Pricing</a>
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Changelog</a>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:12px;font-weight:600;color:#141412;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;font-family:'IBM Plex Mono',monospace;">Company</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">About</a>
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Blog</a>
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Careers</a>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:12px;font-weight:600;color:#141412;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;font-family:'IBM Plex Mono',monospace;">Legal</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Privacy</a>
+        <a href="#" style="text-decoration:none;font-size:14px;color:#666;transition:color 0.2s;" onmouseover="this.style.color='#141412'" onmouseout="this.style.color='#666'">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    html { scroll-behavior: smooth; }
+    .tab-panel.active { display: grid !important; }
+  </style>
+
+  <script>
+    // Typewriter effect
+    const lines = [
+      "Our Q3 campaign targets enterprise buyers in the APAC region,\nfocusing on pain points around data compliance and cost reduction.\n\nKey messages:\n— Reduce operational overhead by up to 40%\n— Enterprise-grade security, startup-grade speed\n— Dedicated onboarding within 72 hours"
+    ];
+    let text = lines[0], i = 0;
+    const el = document.getElementById('typed-text');
+    function type() {
+      if (i <= text.length) {
+        el.innerHTML = text.slice(0, i).replace(/\n/g, '<br/>');
+        i++;
+        setTimeout(type, 28);
+        if (i > 80 && !document.getElementById('ai-pill').style.display.includes('block')) {
+          setTimeout(() => { document.getElementById('ai-pill').style.display = 'block'; }, 800);
+        }
+      }
+    }
+    setTimeout(type, 800);
+
+    // Tab switching
+    function switchTab(idx) {
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        const active = i === idx;
+        btn.style.fontWeight = active ? '600' : '500';
+        btn.style.color = active ? '#141412' : '#888';
+        btn.style.borderBottomColor = active ? '#141412' : 'transparent';
+      });
+      document.querySelectorAll('.tab-panel').forEach((panel, i) => {
+        panel.style.display = i === idx ? 'grid' : 'none';
+      });
+    }
+
+    // FAQ accordion
+    const faqs = [
+      { q: "Does Phaero work with my existing CMS?", a: "Yes. Phaero connects directly to WordPress, Ghost, Webflow, HubSpot, Notion, and 16 other platforms. If yours isn't on the list, our API lets you build any custom integration." },
+      { q: "How does brand voice training work?", a: "Upload your style guide (PDF or text), and Phaero's model learns your tone, vocabulary, and formatting rules. It then flags deviations in real time as you write — think Grammarly, but for brand consistency." },
+      { q: "Is my content safe and private?", a: "Absolutely. All content is encrypted at rest and in transit. We never train our models on your content, and enterprise plans include dedicated instances with full data isolation." },
+      { q: "Can I use Phaero for freelance clients?", a: "Yes — our Agency plan lets you create separate workspaces per client, each with their own brand voice profile, team members, and billing. You can also generate white-label review links." },
+      { q: "What's the difference between Phaero and Google Docs?", a: "Google Docs is a generic document editor. Phaero is purpose-built for content production: it has AI drafting, brand voice enforcement, publishing integrations, editorial workflows, and content calendar management that Google Docs simply doesn't have." }
+    ];
+
+    const faqList = document.getElementById('faq-list');
+    faqs.forEach((item, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'border-top:1px solid #E8E8E2;';
+      if (i === faqs.length - 1) wrapper.style.borderBottom = '1px solid #E8E8E2';
+      wrapper.innerHTML = `
+        <button onclick="toggleFaq(${i})" style="width:100%;text-align:left;padding:22px 0;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Sans',sans-serif;">
+          <span style="font-size:16px;font-weight:600;color:#141412;">${item.q}</span>
+          <span id="faq-icon-${i}" style="font-size:20px;color:#3D6B3A;font-weight:300;transition:transform 0.3s;flex-shrink:0;margin-left:20px;">+</span>
+        </button>
+        <div id="faq-body-${i}" style="overflow:hidden;max-height:0;transition:max-height 0.4s ease,padding 0.4s ease;">
+          <p style="font-size:14px;line-height:1.8;color:#555;padding-bottom:22px;margin:0;">${item.a}</p>
+        </div>
+      `;
+      faqList.appendChild(wrapper);
+    });
+
+    let openFaq = null;
+    function toggleFaq(i) {
+      const body = document.getElementById(`faq-body-${i}`);
+      const icon = document.getElementById(`faq-icon-${i}`);
+      if (openFaq === i) {
+        body.style.maxHeight = '0';
+        icon.textContent = '+';
+        icon.style.transform = 'rotate(0deg)';
+        openFaq = null;
+      } else {
+        if (openFaq !== null) {
+          document.getElementById(`faq-body-${openFaq}`).style.maxHeight = '0';
+          document.getElementById(`faq-icon-${openFaq}`).textContent = '+';
+          document.getElementById(`faq-icon-${openFaq}`).style.transform = 'rotate(0deg)';
+        }
+        body.style.maxHeight = '200px';
+        icon.textContent = '×';
+        icon.style.transform = 'rotate(90deg)';
+        openFaq = i;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vantage Post — The Independent Record</title>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,700;1,300;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;font-family:'Inter',sans-serif;background:#FFFFFF;color:#0E0E0E;overflow-x:hidden;">
+
+  <!-- BREAKING NEWS TICKER -->
+  <div id="breaking-bar" style="background:#B91C1C;color:#FFF;padding:8px 0;overflow:hidden;white-space:nowrap;display:flex;align-items:center;">
+    <span style="background:#7F1D1D;font-size:10px;font-weight:700;padding:8px 16px;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;height:100%;display:flex;align-items:center;margin-right:16px;">Breaking</span>
+    <div id="breaking-text" style="display:inline-block;animation:scroll 25s linear infinite;font-size:12px;font-weight:500;letter-spacing:0.5px;white-space:nowrap;">
+      European Central Bank holds rates for third consecutive quarter · Tech stocks rebound after AI infrastructure spending reports · UN climate summit opens in Lagos · Arctic ice extent reaches 40-year low ·&nbsp;
+      European Central Bank holds rates for third consecutive quarter · Tech stocks rebound after AI infrastructure spending reports · UN climate summit opens in Lagos · Arctic ice extent reaches 40-year low ·
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header style="background:#0E0E0E;color:#FFF;padding:0;">
+    <div style="padding:28px 60px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:1px solid #2A2A2A;">
+      <div style="font-size:12px;color:#888;letter-spacing:0.5px;" id="hdr-date"></div>
+      <div style="text-align:center;">
+        <h1 style="font-family:'Newsreader',serif;font-size:42px;font-weight:700;margin:0;letter-spacing:-0.5px;line-height:1;">The Vantage Post</h1>
+        <p style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#555;margin:6px 0 0;">The Independent Record</p>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:16px;align-items:center;">
+        <a href="#" style="font-size:12px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#888'">Sign in</a>
+        <a href="#" style="background:#FFF;color:#0E0E0E;font-size:12px;font-weight:700;padding:8px 18px;text-decoration:none;letter-spacing:0.5px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Subscribe</a>
+      </div>
+    </div>
+    <!-- Nav bar -->
+    <div style="padding:0 60px;display:flex;align-items:center;gap:0;overflow-x:auto;border-bottom:1px solid #1A1A1A;">
+      <a href="#" class="nav-cat active-cat" data-cat="all" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:600;color:#FFF;border-bottom:2px solid #FFF;white-space:nowrap;letter-spacing:0.5px;">All</a>
+      <a href="#" class="nav-cat" data-cat="politics" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:500;color:#888;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.5px;transition:all 0.2s;">Politics</a>
+      <a href="#" class="nav-cat" data-cat="economy" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:500;color:#888;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.5px;transition:all 0.2s;">Economy</a>
+      <a href="#" class="nav-cat" data-cat="technology" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:500;color:#888;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.5px;transition:all 0.2s;">Technology</a>
+      <a href="#" class="nav-cat" data-cat="climate" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:500;color:#888;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.5px;transition:all 0.2s;">Climate</a>
+      <a href="#" class="nav-cat" data-cat="culture" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:500;color:#888;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.5px;transition:all 0.2s;">Culture</a>
+      <a href="#" class="nav-cat" data-cat="science" style="text-decoration:none;padding:14px 20px;font-size:12px;font-weight:500;color:#888;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:0.5px;transition:all 0.2s;">Science</a>
+      <div style="margin-left:auto;padding:8px 0 8px 20px;flex-shrink:0;">
+        <input id="search-input" type="text" placeholder="Search stories..." style="background:#1A1A1A;border:none;padding:8px 14px;font-size:12px;color:#FFF;font-family:'Inter',sans-serif;width:200px;outline:none;" oninput="handleSearch(this.value)" />
+      </div>
+    </div>
+  </header>
+
+  <!-- SEARCH RESULTS (hidden by default) -->
+  <div id="search-results" style="display:none;padding:32px 60px;background:#F8F8F8;border-bottom:1px solid #E0E0E0;">
+    <p id="search-label" style="font-size:12px;color:#888;margin:0 0 20px;font-weight:500;"></p>
+    <div id="search-hits" style="display:flex;flex-direction:column;gap:0;"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main style="padding:0 60px;" id="main-content">
+
+    <!-- TOP STORY: full-width -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #E0E0E0;min-height:420px;" data-cat="politics">
+      <!-- Text -->
+      <div style="padding:48px 48px 48px 0;border-right:1px solid #E0E0E0;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:18px;">
+            <span style="background:#B91C1C;color:#FFF;font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:2px;text-transform:uppercase;">Top Story</span>
+            <span style="font-size:11px;color:#B91C1C;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Politics</span>
+          </div>
+          <h2 style="font-family:'Newsreader',serif;font-size:44px;font-weight:700;line-height:1.1;margin:0 0 18px;letter-spacing:-1px;">Senate Passes Historic Climate Infrastructure Bill in Narrow Vote</h2>
+          <p style="font-size:16px;line-height:1.75;color:#444;margin:0 0 24px;max-width:520px;">A landmark piece of legislation authorising $480 billion in green infrastructure spending passed the Senate in a 52–48 vote on Thursday, clearing its final major hurdle before heading to the executive for signature.</p>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#0E0E0E;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:10px;font-weight:700;">KA</div>
+            <div>
+              <p style="font-size:12px;font-weight:600;margin:0;">Kwame Asante</p>
+              <p style="font-size:11px;color:#888;margin:0;">Washington Bureau</p>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <p style="font-size:11px;color:#888;margin:0;">April 14, 2025</p>
+            <p id="read-estimate-top" style="font-size:11px;color:#B91C1C;font-weight:600;margin:2px 0 0;"></p>
+          </div>
+        </div>
+      </div>
+      <!-- Visual half -->
+      <div style="background:#0E0E0E;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:360px;">
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 30px,rgba(255,255,255,0.012) 30px,rgba(255,255,255,0.012) 60px);"></div>
+        <div style="text-align:center;position:relative;z-index:2;">
+          <div style="font-family:'Newsreader',serif;font-size:100px;color:rgba(255,255,255,0.04);line-height:1;font-weight:700;">VP</div>
+          <p style="font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:3px;text-transform:uppercase;font-family:'Inter',sans-serif;">Photo · Marcus Webb</p>
+        </div>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(14,14,14,0.8),transparent);padding:20px 28px;">
+          <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0;font-style:italic;">Senate chamber during Thursday's vote. 52 senators voted in favour.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARTICLE GRID (filterable) -->
+    <div id="article-grid" style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #E0E0E0;"></div>
+
+    <!-- OPINION + SIDEBAR ROW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 300px;gap:0;border-bottom:1px solid #E0E0E0;padding:48px 0;gap:48px;">
+
+      <!-- Opinion piece 1 -->
+      <div style="border-right:1px solid #E0E0E0;padding-right:40px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <div style="width:40px;height:2px;background:#0E0E0E;"></div>
+          <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Opinion</span>
+        </div>
+        <h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:700;line-height:1.2;margin:0 0 12px;letter-spacing:-0.3px;">The Myth of the Meritocratic University</h3>
+        <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 16px;">Our admissions processes select for privilege first and talent second. The data, long suppressed, is now impossible to ignore.</p>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:auto;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#4B5563;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:10px;font-weight:700;">LB</div>
+          <div><p style="font-size:12px;font-weight:600;margin:0;">Lara Berg</p><p style="font-size:11px;color:#888;margin:0;">Contributing editor</p></div>
+        </div>
+      </div>
+
+      <!-- Opinion piece 2 -->
+      <div style="border-right:1px solid #E0E0E0;padding-right:40px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <div style="width:40px;height:2px;background:#0E0E0E;"></div>
+          <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Analysis</span>
+        </div>
+        <h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:700;line-height:1.2;margin:0 0 12px;letter-spacing:-0.3px;">Rate Cuts and the Housing Trap: What the Models Miss</h3>
+        <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 16px;">Central bank modellers have consistently underestimated how demand responds when mortgage affordability shifts at the speed it has in 2025.</p>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#1D4ED8;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:10px;font-weight:700;">TP</div>
+          <div><p style="font-size:12px;font-weight:600;margin:0;">Thomas Park</p><p style="font-size:11px;color:#888;margin:0;">Economics editor</p></div>
+        </div>
+      </div>
+
+      <!-- Sidebar: Top reads + weather widget -->
+      <div style="display:flex;flex-direction:column;gap:28px;">
+        <div>
+          <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-bottom:2px solid #0E0E0E;padding-bottom:8px;margin:0 0 12px;">Most Read</p>
+          <div id="most-read-sidebar" style="display:flex;flex-direction:column;gap:0;"></div>
+        </div>
+        <div style="background:#F8F8F8;padding:18px;border:1px solid #E0E0E0;">
+          <p style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Weather · Lagos</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <p style="font-family:'Newsreader',serif;font-size:36px;font-weight:700;margin:0;line-height:1;">29°C</p>
+              <p style="font-size:12px;color:#888;margin:4px 0 0;">Partly cloudy</p>
+            </div>
+            <div style="font-size:40px;">⛅</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;border-top:1px solid #E0E0E0;padding-top:14px;">
+            <div style="text-align:center;"><p style="font-size:10px;color:#888;margin:0 0 4px;">Thu</p><p style="font-size:13px;font-weight:600;margin:0;">31°</p></div>
+            <div style="text-align:center;"><p style="font-size:10px;color:#888;margin:0 0 4px;">Fri</p><p style="font-size:13px;font-weight:600;margin:0;">28°</p></div>
+            <div style="text-align:center;"><p style="font-size:10px;color:#888;margin:0 0 4px;">Sat</p><p style="font-size:13px;font-weight:600;margin:0;">30°</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- NEWSLETTER BAR -->
+  <div style="background:#0E0E0E;padding:60px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div>
+      <h3 style="font-family:'Newsreader',serif;font-size:32px;font-weight:700;color:#FFF;margin:0 0 12px;letter-spacing:-0.5px;">The Evening Briefing</h3>
+      <p style="font-size:14px;line-height:1.7;color:#888;margin:0;">Five stories. Five minutes. Delivered weekdays at 6pm. Join 220,000 readers who trust The Vantage Post to separate signal from noise.</p>
+    </div>
+    <div style="display:flex;gap:0;">
+      <input type="email" placeholder="Your email address" style="flex:1;padding:14px 18px;background:#1A1A1A;border:1px solid #333;border-right:none;color:#FFF;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#555'" onblur="this.style.borderColor='#333'" />
+      <button style="padding:14px 24px;background:#FFF;color:#0E0E0E;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Subscribe free</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="padding:48px 60px;border-top:1px solid #E0E0E0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+    <span style="font-family:'Newsreader',serif;font-size:22px;font-weight:700;">The Vantage Post</span>
+    <p style="font-size:12px;color:#888;margin:0;">© 2025 Vantage Media Group. Independent journalism since 1994.</p>
+    <div style="display:flex;gap:20px;">
+      <a href="#" style="font-size:12px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#0E0E0E'" onmouseout="this.style.color='#888'">Privacy</a>
+      <a href="#" style="font-size:12px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#0E0E0E'" onmouseout="this.style.color='#888'">Terms</a>
+      <a href="#" style="font-size:12px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#0E0E0E'" onmouseout="this.style.color='#888'">Advertise</a>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    html { scroll-behavior: smooth; }
+  </style>
+
+  <script>
+    // Header date
+    document.getElementById('hdr-date').textContent = new Date().toLocaleDateString('en-GB', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    // Read time estimator (200 wpm)
+    function readTime(words) { return Math.max(1, Math.round(words / 200)) + ' min read'; }
+    document.getElementById('read-estimate-top').textContent = readTime(820);
+
+    // Article data
+    const articles = [
+      { cat:'technology', catLabel:'Technology', color:'#1D4ED8', title:'OpenStack\'s New Rival: Inside the Model That\'s Changing Enterprise AI', author:'Sade Oyelaran', date:'April 14', words:560, excerpt:'A quiet fork of an open-source model is reshaping how the Fortune 500 thinks about AI deployment.' },
+      { cat:'economy', catLabel:'Economy', color:'#D97706', title:'Labour Markets Are Tightening in Places Nobody Expected', author:'Remi Adeyemi', date:'April 13', words:490, excerpt:'Unemployment in secondary cities across West Africa has fallen to record lows — driven by an unlikely sector.' },
+      { cat:'climate', catLabel:'Climate', color:'#059669', title:'Mangrove Restoration Works. So Why Are We Still Arguing About Funding?', author:'Dr. Ife Adewale', date:'April 13', words:670, excerpt:'The science on coastal carbon sinks has been settled for years. The politics remain a mess.' },
+      { cat:'culture', catLabel:'Culture', color:'#7C3AED', title:'The Reading Rooms Are Back — And They\'re Not What You Remember', author:'Clara Mendez', date:'April 12', words:420, excerpt:'A new generation of literary venues is rethinking what it means to share space around books.' },
+      { cat:'science', catLabel:'Science', color:'#0E9F6E', title:'Quantum Error Correction Milestone Brings Practical Computers Closer', author:'James Okoye', date:'April 12', words:510, excerpt:'Researchers report a fourfold improvement in qubit coherence time using a novel error-correction architecture.' },
+      { cat:'politics', catLabel:'Politics', color:'#B91C1C', title:'Local Election Results Signal a Fractured Electorate With No Clear Centre', author:'Amara Diallo', date:'April 11', words:730, excerpt:'Thursday\'s municipal elections produced results that defy easy narrative — and complicate projections for the national vote.' },
+    ];
+
+    let activeFilter = 'all';
+    const grid = document.getElementById('article-grid');
+
+    function renderArticles(filter) {
+      const filtered = filter === 'all' ? articles : articles.filter(a => a.cat === filter);
+      grid.innerHTML = '';
+      filtered.forEach((a, i) => {
+        const isLast = i === filtered.length - 1;
+        const card = document.createElement('div');
+        card.dataset.cat = a.cat;
+        const borderRight = (i + 1) % 3 !== 0 ? 'border-right:1px solid #E0E0E0;' : '';
+        card.style.cssText = `padding:32px;${borderRight}border-bottom:1px solid #E0E0E0;cursor:pointer;transition:background 0.2s;opacity:0;transform:translateY(10px);`;
+        card.innerHTML = `
+          <span style="font-size:10px;font-weight:700;color:${a.color};letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:10px;">${a.catLabel}</span>
+          <h3 style="font-family:'Newsreader',serif;font-size:20px;font-weight:700;line-height:1.3;margin:0 0 10px;letter-spacing:-0.3px;">${a.title}</h3>
+          <p style="font-size:13px;line-height:1.7;color:#555;margin:0 0 16px;">${a.excerpt}</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:#888;font-weight:500;">${a.author}</span>
+            <span style="font-size:11px;color:#888;">${readTime(a.words)}</span>
+          </div>
+        `;
+        card.addEventListener('mouseenter', () => card.style.background = '#F8F8F8');
+        card.addEventListener('mouseleave', () => card.style.background = 'transparent');
+        card.style.transition = 'background 0.2s, opacity 0.4s ease, transform 0.4s ease';
+        grid.appendChild(card);
+        requestAnimationFrame(() => setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, i * 60));
+      });
+      if (!filtered.length) {
+        grid.innerHTML = '<div style="padding:60px;text-align:center;color:#888;font-size:14px;grid-column:span 3;">No articles in this category.</div>';
+      }
+    }
+    renderArticles('all');
+
+    // Category nav
+    document.querySelectorAll('.nav-cat').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const cat = el.dataset.cat;
+        activeFilter = cat;
+        document.querySelectorAll('.nav-cat').forEach(n => {
+          n.style.color = '#888'; n.style.fontWeight = '500'; n.style.borderBottomColor = 'transparent';
+        });
+        el.style.color = '#FFF'; el.style.fontWeight = '600'; el.style.borderBottomColor = '#FFF';
+        renderArticles(cat);
+        // Clear search
+        document.getElementById('search-input').value = '';
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+      });
+    });
+
+    // Live search
+    function handleSearch(query) {
+      const q = query.trim().toLowerCase();
+      const resultsEl = document.getElementById('search-results');
+      const hitsEl = document.getElementById('search-hits');
+      const mainEl = document.getElementById('main-content');
+      if (!q) {
+        resultsEl.style.display = 'none';
+        mainEl.style.display = 'block';
+        return;
+      }
+      const allArticles = [
+        ...articles,
+        { cat:'politics', catLabel:'Politics', color:'#B91C1C', title:'Senate Passes Historic Climate Infrastructure Bill', author:'Kwame Asante', date:'April 14', words:820, excerpt:'A landmark piece of legislation authorising $480 billion in green infrastructure spending passed Thursday.' },
+      ];
+      const hits = allArticles.filter(a => a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q) || a.author.toLowerCase().includes(q));
+      document.getElementById('search-label').textContent = `${hits.length} result${hits.length !== 1 ? 's' : ''} for "${query}"`;
+      hitsEl.innerHTML = '';
+      if (!hits.length) {
+        hitsEl.innerHTML = '<p style="font-size:14px;color:#888;">No articles match your search.</p>';
+      } else {
+        hits.forEach(a => {
+          const row = document.createElement('div');
+          row.style.cssText = 'padding:16px 0;border-bottom:1px solid #E0E0E0;cursor:pointer;transition:background 0.15s;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;';
+          row.innerHTML = `
+            <span style="font-size:10px;font-weight:700;color:${a.color};letter-spacing:2px;text-transform:uppercase;padding-top:2px;white-space:nowrap;">${a.catLabel}</span>
+            <div>
+              <p style="font-family:'Newsreader',serif;font-size:17px;font-weight:700;margin:0 0 4px;line-height:1.3;">${a.title.replace(new RegExp(query, 'gi'), m => `<mark style="background:#FEF08A;padding:0 2px;">${m}</mark>`)}</p>
+              <p style="font-size:13px;color:#888;margin:0;">${a.author} · ${readTime(a.words)}</p>
+            </div>
+          `;
+          row.addEventListener('mouseenter', () => row.style.background = '#F8F8F8');
+          row.addEventListener('mouseleave', () => row.style.background = 'transparent');
+          hitsEl.appendChild(row);
+        });
+      }
+      resultsEl.style.display = 'block';
+      mainEl.style.display = 'none';
+    }
+
+    // Most read sidebar
+    const mrItems = [
+      'Senate Passes Historic Climate Infrastructure Bill',
+      'Labour Markets Are Tightening in Places Nobody Expected',
+      'The Reading Rooms Are Back',
+      'OpenStack\'s New Rival: Inside the Model That\'s Changing Enterprise AI',
+    ];
+    const mrSidebar = document.getElementById('most-read-sidebar');
+    mrItems.forEach((t, i) => {
+      const div = document.createElement('div');
+      div.style.cssText = 'padding:10px 0;border-bottom:1px solid #E0E0E0;display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;cursor:pointer;transition:background 0.15s;';
+      div.innerHTML = `<span style="font-size:16px;font-weight:700;color:#E0E0E0;font-family:'Newsreader',serif;line-height:1;">${i+1}</span><p style="font-size:12px;line-height:1.5;margin:0;font-weight:500;">${t}</p>`;
+      div.addEventListener('mouseenter', () => div.style.background = '#F8F8F8');
+      div.addEventListener('mouseleave', () => div.style.background = 'transparent');
+      mrSidebar.appendChild(div);
+    });
+  </script>
+</body>
+</html>

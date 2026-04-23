@@ -1,0 +1,2034 @@
+{
+  "simulations": [
+    {
+      "id": "SIM-001",
+      "pattern": "hero",
+      "naming_convention": "semantic",
+      "difficulty": "easy",
+      "input_html": "\n<section class=\"hero\" style=\"min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 80px;background:#0a0a12;\">\n  <div class=\"hero-eyebrow\" style=\"font-family:'Space Mono';font-size:11px;letter-spacing:.2em;color:#c8ff00;\">AI PLATFORM · V4.0</div>\n  <h1 class=\"hero-headline\" style=\"font-family:'Syne';font-weight:800;font-size:120px;line-height:0.92;letter-spacing:-3px;color:#f5f3ee;\">Build <em style=\"color:transparent;-webkit-text-stroke:1px rgba(245,243,238,0.4);\">workflows</em> that <span class=\"accent\">think.</span></h1>\n  <div class=\"hero-bottom\" style=\"display:flex;justify-content:space-between;align-items:flex-end;\">\n    <p class=\"hero-sub\" style=\"font-size:16px;color:rgba(245,243,238,0.55);max-width:360px;\">NEXUS connects your stack with AI that understands your business logic.</p>\n    <div class=\"hero-actions\" style=\"display:flex;flex-direction:column;align-items:flex-end;gap:12px;\">\n      <a href=\"#\" class=\"btn-primary\" style=\"padding:18px 36px;background:#c8ff00;color:#05050a;font-family:'Space Mono';font-weight:700;\">START BUILDING →</a>\n      <a href=\"#\" class=\"btn-ghost\" style=\"font-family:'Space Mono';color:rgba(245,243,238,.4);border-bottom:1px solid rgba(245,243,238,.15);\">WATCH DEMO — 3 MIN</a>\n    </div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "FLEX_COLUMN",
+        "confidence": 0.55,
+        "issues": [
+          "Classified as generic FLEX_COLUMN — missed HERO_PATTERN entirely",
+          "hero-eyebrow → TEXT_WIDGET (correct but no class applied)",
+          "h1 with em/span → HEADING_WIDGET but lost inline styles",
+          "hero-bottom → FLEX_ROW (correct)",
+          "btn-primary and btn-ghost → both classified as TEXT_WIDGET not BUTTON_WIDGET",
+          "_css_classes missing on all widgets",
+          "No min_height set on hero container",
+          "No companion CSS for -webkit-text-stroke or italic outline"
+        ]
+      },
+      "corrected_output": {
+        "container_type": "flex_column",
+        "settings": {
+          "min_height": {
+            "unit": "vh",
+            "size": 100
+          },
+          "min_height_type": "min-height",
+          "flex_direction": "column",
+          "justify_content": "flex-end",
+          "padding": {
+            "unit": "px",
+            "top": "0",
+            "right": "60",
+            "bottom": "80",
+            "left": "60",
+            "isLinked": false
+          },
+          "background_color": "#0a0a12",
+          "_css_classes": "nx-hero nx-reveal",
+          "_element_id": "nx-hero"
+        },
+        "children": [
+          {
+            "type": "html_widget",
+            "class": "nx-eyebrow-widget",
+            "reason": "eyebrow has ::before line decoration needed in CSS"
+          },
+          {
+            "type": "heading_widget",
+            "tag": "h1",
+            "class": "nx-hero-headline",
+            "title_html": "Build <em>workflows</em> that <span class='nx-acid-text'>think.</span>",
+            "companion_css": [
+              "-webkit-text-stroke on em",
+              "color:transparent on em",
+              "accent color on .nx-acid-text"
+            ]
+          },
+          {
+            "type": "flex_row_container",
+            "class": "nx-hero-bottom",
+            "children": [
+              {
+                "type": "text_editor",
+                "class": "nx-hero-sub"
+              },
+              {
+                "type": "flex_column_container",
+                "class": "nx-hero-actions",
+                "children": [
+                  {
+                    "type": "button_widget",
+                    "class": "nx-btn-primary nx-btn-hero-primary"
+                  },
+                  {
+                    "type": "text_editor",
+                    "class": "nx-hero-ghost-wrap",
+                    "reason": "ghost link needs ::before border-bottom styling — Text Editor gives class access"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "delta": {
+        "pattern_missed": "HERO_PATTERN",
+        "widgets_reclassified": [
+          {
+            "from": "TEXT_WIDGET",
+            "to": "BUTTON_WIDGET",
+            "element": ".btn-primary"
+          },
+          {
+            "from": "GENERIC_CONTAINER",
+            "to": "HERO_CONTAINER_WITH_MIN_HEIGHT"
+          },
+          {
+            "from": "TEXT_WIDGET (no class)",
+            "to": "HTML_WIDGET (eyebrow with ::before decoration)"
+          }
+        ],
+        "settings_added": [
+          "min_height 100vh",
+          "_css_classes on all widgets",
+          "_element_id on section"
+        ],
+        "companion_css_added": [
+          "-webkit-text-stroke",
+          "em color:transparent",
+          ".nx-acid-text color",
+          "::before eyebrow line"
+        ]
+      },
+      "extracted_signals": {
+        "pattern": "hero",
+        "required_signals": [
+          {
+            "name": "is_first_significant_section",
+            "weight": 0.9
+          },
+          {
+            "name": "has_h1_tag",
+            "weight": 0.9
+          },
+          {
+            "name": "min_height_gte_80vh",
+            "weight": 0.85
+          },
+          {
+            "name": "has_cta_button_link",
+            "weight": 0.8
+          },
+          {
+            "name": "flex_direction_column_justify_end",
+            "weight": 0.75
+          },
+          {
+            "name": "largest_font_on_page",
+            "weight": 0.85
+          },
+          {
+            "name": "font_size_gte_60px",
+            "weight": 0.8
+          }
+        ],
+        "optional_signals": [
+          {
+            "name": "has_eyebrow_small_caps_element",
+            "weight": 0.7
+          },
+          {
+            "name": "has_subtitle_paragraph",
+            "weight": 0.65
+          },
+          {
+            "name": "has_italic_outline_text",
+            "weight": 0.6
+          },
+          {
+            "name": "has_ghost_secondary_link",
+            "weight": 0.55
+          }
+        ],
+        "exclusion_signals": [
+          {
+            "name": "has_grid_children_with_borders",
+            "weight": 1.0
+          },
+          {
+            "name": "has_price_amount",
+            "weight": 1.0
+          },
+          {
+            "name": "has_3plus_similar_card_siblings",
+            "weight": 0.9
+          }
+        ]
+      },
+      "confidence_calibration": {
+        "button_detection_rule": "a[href] with padding + background-color → BUTTON_WIDGET confidence +0.3",
+        "min_height_rule": "section with min-height ≥ 80vh or height:100vh → set min_height in settings",
+        "eyebrow_rule": "div/span with font-size ≤ 12px + letter-spacing ≥ .1em + before heading → HTML_WIDGET (needs ::before line)"
+      }
+    },
+    {
+      "id": "SIM-002",
+      "pattern": "hero",
+      "naming_convention": "bem",
+      "difficulty": "medium",
+      "input_html": "\n<section class=\"hero-section hero-section--dark\" style=\"min-height:100vh;...\">\n  <div class=\"hero-section__eyebrow\">PLATFORM · V4.0</div>\n  <h1 class=\"hero-section__headline hero-section__headline--xl\">\n    Build <em class=\"hero-section__headline-italic\">workflows</em>\n    that <span class=\"hero-section__headline-accent\">think.</span>\n  </h1>\n  <div class=\"hero-section__bottom\">\n    <p class=\"hero-section__subtitle\">Connect your stack...</p>\n    <div class=\"hero-section__actions\">\n      <a href=\"#\" class=\"btn btn--primary btn--lg\">START BUILDING →</a>\n      <a href=\"#\" class=\"btn btn--ghost btn--sm\">WATCH DEMO</a>\n    </div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "FLEX_COLUMN",
+        "confidence": 0.48,
+        "issues": [
+          "BEM block 'hero-section' not matched to HERO_PATTERN — vocabulary lookup missed 'hero-section'",
+          "BEM modifiers (--dark, --xl) not parsed — modifier styles lost",
+          "btn--primary modifier not matched to BUTTON_WIDGET — only 'btn' class seen",
+          "hero-section__headline-italic (BEM element) not identified as em-equivalent",
+          "Confidence low because block name 'hero-section' not in direct vocabulary (vs just 'hero')"
+        ]
+      },
+      "corrected_output": {
+        "note": "Same as SIM-001 corrected output structurally",
+        "bem_parsing_rules_applied": [
+          "Block: hero-section → HERO_PATTERN (vocabulary: hero* prefix)",
+          "Modifier: --dark → background colour from CSS resolved, applied to container",
+          "Modifier: --xl → large font size resolved from CSS",
+          "Element: __headline → HEADING_WIDGET",
+          "Element: __subtitle → TEXT_EDITOR",
+          "Element: __actions → FLEX_COLUMN inner container",
+          "Block: btn, Modifier: --primary → BUTTON_WIDGET with primary styling",
+          "Block: btn, Modifier: --ghost → TEXT_EDITOR (ghost link pattern)"
+        ]
+      },
+      "delta": {
+        "root_cause": "BEM block name used pattern variation 'hero-section' not 'hero'",
+        "fix": "Expand vocabulary matching to include BEM block names with suffix variations: hero*, *-hero, hero-*, *-header, *-banner, *-above-fold"
+      },
+      "extracted_signals": {
+        "bem_parsing_additions": {
+          "block_vocabulary_expansion": [
+            "hero",
+            "hero-section",
+            "hero-block",
+            "header-hero",
+            "page-hero",
+            "site-hero",
+            "main-hero",
+            "landing-hero",
+            "intro-section",
+            "above-fold",
+            "banner-section"
+          ],
+          "modifier_resolution": "Always resolve --modifier CSS from stylesheet and apply to Elementor settings",
+          "element_role_map": {
+            "__headline": "HEADING_WIDGET",
+            "__title": "HEADING_WIDGET",
+            "__subtitle": "TEXT_EDITOR",
+            "__sub": "TEXT_EDITOR",
+            "__description": "TEXT_EDITOR",
+            "__eyebrow": "HTML_WIDGET (eyebrow pattern)",
+            "__actions": "FLEX_COLUMN (button group)",
+            "__cta": "BUTTON_WIDGET",
+            "__bottom": "FLEX_ROW (hero bottom row)"
+          }
+        }
+      },
+      "confidence_calibration": {
+        "bem_block_hero_match": "BEM block name in hero vocabulary → HERO_PATTERN confidence +0.8",
+        "bem_modifier_resolution": "Always resolve modifier CSS before settings extraction"
+      }
+    },
+    {
+      "id": "SIM-003",
+      "pattern": "hero",
+      "naming_convention": "tailwind",
+      "difficulty": "hard",
+      "input_html": "\n<section class=\"min-h-screen flex flex-col justify-end px-16 pb-20 bg-[#0a0a12]\">\n  <div class=\"text-[11px] font-mono tracking-[.2em] text-[#c8ff00] mb-7 flex items-center gap-3 before:content-[''] before:w-10 before:h-px before:bg-[#c8ff00]\">\n    AI PLATFORM · V4.0\n  </div>\n  <h1 class=\"font-display font-black text-[120px] leading-[.92] tracking-[-3px] text-white max-w-[1000px] mb-12\">\n    Build <em class=\"italic text-transparent [-webkit-text-stroke:1px_rgba(245,243,238,.4)]\">workflows</em>\n    that <span class=\"text-[#c8ff00]\">think.</span>\n  </h1>\n  <div class=\"flex justify-between items-end gap-10\">\n    <p class=\"text-base text-white/55 max-w-[360px] leading-[1.7] font-light\">Connect your stack...</p>\n    <div class=\"flex flex-col items-end gap-3\">\n      <a href=\"#\" class=\"inline-flex items-center gap-3 px-9 py-[18px] bg-[#c8ff00] text-[#05050a] font-mono text-xs font-bold tracking-[.1em]\">START BUILDING →</a>\n      <a href=\"#\" class=\"font-mono text-[11px] tracking-[.1em] text-white/40 border-b border-white/15 pb-0.5\">WATCH DEMO — 3 MIN</a>\n    </div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "GENERIC_FLEX_COLUMN",
+        "confidence": 0.31,
+        "issues": [
+          "No semantic class names — all utility classes",
+          "min-h-screen not parsed as min-height:100vh → HERO signal missed",
+          "font-black not mapped to font-weight:900",
+          "text-[120px] arbitrary value not parsed",
+          "bg-[#0a0a12] arbitrary colour not extracted",
+          "before:content-[''] before:w-10 — Tailwind JIT pseudo-element classes not understood",
+          "[-webkit-text-stroke:1px_rgba(245,243,238,.4)] arbitrary property not parsed",
+          "CTA link classified as TEXT_WIDGET (not BUTTON_WIDGET) — no CSS resolves to button styles without framework",
+          "Overall: 31% confidence, everything falls to HTML_WIDGET_COMPLEX"
+        ]
+      },
+      "corrected_output": {
+        "pre_processing_step": "TAILWIND_RESOLVER required before main pipeline",
+        "tailwind_resolver_actions": [
+          "Detect Tailwind: class count per element > 5 with known utility prefixes",
+          "Load Tailwind CSS file if present OR use JIT simulation from class names",
+          "Resolve each utility class to its CSS property:value",
+          "min-h-screen → min-height: 100vh",
+          "font-black → font-weight: 900",
+          "text-[120px] → font-size: 120px (arbitrary value extraction)",
+          "bg-[#0a0a12] → background-color: #0a0a12",
+          "before:content-[''] before:w-10 before:h-px before:bg-[#c8ff00] → ::before { content:''; width:40px; height:1px; background:#c8ff00 }",
+          "text-white/55 → color: rgba(255,255,255,0.55)",
+          "tracking-[.2em] → letter-spacing: .2em",
+          "Output: computed inline style string per element, then run standard pipeline"
+        ],
+        "post_resolution_confidence": 0.88,
+        "result": "Same as SIM-001 after Tailwind resolution"
+      },
+      "delta": {
+        "root_cause": "Tailwind utility classes carry no semantic information — need resolved CSS first",
+        "fix": "Pre-processing pass: Tailwind Resolver converts utilities to computed styles before main pipeline",
+        "tailwind_detection_signals": [
+          "Element has 6+ classes",
+          "Classes match known Tailwind prefixes: flex, grid, min-h-, text-, font-, bg-, px-, py-, gap-, items-, justify-, tracking-, leading-, max-w-, border-",
+          "Presence of arbitrary value syntax: text-[...], bg-[...], [property:value]",
+          "Presence of modifier prefix syntax: before:, after:, hover:, focus:, sm:, md:, lg:"
+        ]
+      },
+      "extracted_signals": {
+        "tailwind_resolver_utility_map": {
+          "min-h-screen": "min-height: 100vh",
+          "min-h-full": "min-height: 100%",
+          "flex": "display: flex",
+          "flex-col": "flex-direction: column",
+          "flex-row": "flex-direction: row",
+          "items-end": "align-items: flex-end",
+          "items-center": "align-items: center",
+          "justify-end": "justify-content: flex-end",
+          "justify-between": "justify-content: space-between",
+          "justify-center": "justify-content: center",
+          "font-black": "font-weight: 900",
+          "font-bold": "font-weight: 700",
+          "font-semibold": "font-weight: 600",
+          "font-medium": "font-weight: 500",
+          "font-light": "font-weight: 300",
+          "font-thin": "font-weight: 100",
+          "italic": "font-style: italic",
+          "not-italic": "font-style: normal",
+          "tracking-tight": "letter-spacing: -0.05em",
+          "tracking-wide": "letter-spacing: 0.025em",
+          "tracking-wider": "letter-spacing: 0.05em",
+          "tracking-widest": "letter-spacing: 0.1em",
+          "leading-none": "line-height: 1",
+          "leading-tight": "line-height: 1.25",
+          "leading-normal": "line-height: 1.5",
+          "leading-relaxed": "line-height: 1.625",
+          "leading-loose": "line-height: 2",
+          "text-transparent": "color: transparent",
+          "text-white": "color: #ffffff",
+          "text-black": "color: #000000",
+          "border-b": "border-bottom-width: 1px; border-bottom-style: solid",
+          "pb-0.5": "padding-bottom: 2px",
+          "overflow-hidden": "overflow: hidden",
+          "relative": "position: relative",
+          "absolute": "position: absolute",
+          "fixed": "position: fixed",
+          "inset-0": "top:0;right:0;bottom:0;left:0",
+          "pointer-events-none": "pointer-events: none",
+          "z-0": "z-index: 0",
+          "z-10": "z-index: 10",
+          "z-50": "z-index: 50"
+        },
+        "arbitrary_value_patterns": {
+          "text-[Npx]": "font-size: Npx",
+          "text-[#hex]": "color: #hex",
+          "bg-[#hex]": "background-color: #hex",
+          "bg-[rgba(...)]": "background-color: rgba(...)",
+          "tracking-[Nem]": "letter-spacing: Nem",
+          "leading-[N]": "line-height: N",
+          "max-w-[Npx]": "max-width: Npx",
+          "gap-[Npx]": "gap: Npx",
+          "px-[Npx]": "padding-left: Npx; padding-right: Npx",
+          "py-[Npx]": "padding-top: Npx; padding-bottom: Npx",
+          "[property:value]": "property: value (arbitrary CSS)",
+          "text-white/NN": "color: rgba(255,255,255, NN/100)",
+          "bg-black/NN": "background-color: rgba(0,0,0, NN/100)"
+        },
+        "modifier_prefix_handling": {
+          "before:*": "::before pseudo-element → companion CSS",
+          "after:*": "::after pseudo-element → companion CSS",
+          "hover:*": ":hover state → companion CSS",
+          "focus:*": ":focus state → companion CSS",
+          "sm:*": "@media (min-width: 640px) → responsive companion CSS",
+          "md:*": "@media (min-width: 768px) → responsive companion CSS",
+          "lg:*": "@media (min-width: 1024px) → responsive companion CSS"
+        }
+      }
+    },
+    {
+      "id": "SIM-004",
+      "pattern": "hero",
+      "naming_convention": "obfuscated",
+      "difficulty": "very_hard",
+      "input_html": "\n<section class=\"_2kX9p _mNqR _dark\" data-section=\"1\">\n  <div class=\"_3xHk2 sc-jnlKLf eISqPL\">AI PLATFORM · V4.0</div>\n  <h1 class=\"_7yPl8 _xl _accent-wrap sc-bYoBMJ fRtNaX\">\n    Build <em class=\"_italic-outline\">workflows</em>\n    that <span class=\"_accent-word\">think.</span>\n  </h1>\n  <div class=\"_btm-row sc-hKwDye lKpLN\">\n    <p class=\"_sub-copy sc-fzoLsD jHGYuv\">Connect your stack...</p>\n    <div class=\"_cta-group\">\n      <a href=\"#\" class=\"sc-bdVTJa kLmPqR _btn-cta\">START BUILDING →</a>\n      <a href=\"#\" class=\"sc-fnykZn mNoPqS _btn-sec\">WATCH DEMO</a>\n    </div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "HTML_WIDGET_COMPLEX",
+        "confidence": 0.22,
+        "issues": [
+          "ALL classes obfuscated — zero semantic signal from class names",
+          "sc-* classes are Styled Components hashes — meaningless",
+          "_2kX9p, _mNqR — CSS Modules hashes — meaningless",
+          "data-section='1' is the only structural hint",
+          "Pipeline falls through all vocabulary checks, all BEM checks",
+          "Confidence 0.22 — below all thresholds → HTML_WIDGET_COMPLEX"
+        ]
+      },
+      "corrected_output": {
+        "strategy": "STRUCTURAL_FALLBACK_WITH_DOM_HEURISTICS",
+        "steps": [
+          "Step 1: data-section='1' → FIRST_SECTION signal (+0.4 to hero confidence)",
+          "Step 2: CSS resolution — _2kX9p has min-height:100vh → HERO signal (+0.85)",
+          "Step 3: _7yPl8 has font-size:120px, font-weight:800 → DISPLAY_HEADING signal",
+          "Step 4: h1 tag type → has_h1 signal (+0.9)",
+          "Step 5: DOM position — first child of h1 class element with em → heading with styled inline",
+          "Step 6: sc-bdVTJa has background-color:#c8ff00 + padding:18px 36px → BUTTON_WIDGET signal (+0.85)",
+          "Step 7: sc-fnykZn has border-bottom + no background → GHOST_LINK signal",
+          "Post-heuristic confidence: 0.79 → HERO_PATTERN confirmed",
+          "Assign nx- prefix classes based on structural role, NOT original class names"
+        ],
+        "key_insight": "When all class names are obfuscated, CSS property values ARE the signal. Background-color + padding + cursor:pointer = button regardless of class name."
+      },
+      "delta": {
+        "root_cause": "Zero semantic signal from class names — must rely entirely on CSS property fingerprints",
+        "fix": "CSS Property Fingerprinting module: classify elements by their resolved style profiles"
+      },
+      "extracted_signals": {
+        "css_property_fingerprints": {
+          "button_fingerprint": {
+            "required": [
+              "background-color (non-transparent)",
+              "padding (all sides ≥ 8px)",
+              "cursor:pointer OR display:inline-flex OR display:inline-block"
+            ],
+            "supporting": [
+              "font-weight ≥ 600",
+              "letter-spacing > 0",
+              "border-radius OR border: none",
+              "color contrasting with background"
+            ],
+            "confidence": 0.85
+          },
+          "ghost_link_fingerprint": {
+            "required": [
+              "border-bottom (only)",
+              "no background-color OR background:transparent",
+              "is <a> tag"
+            ],
+            "supporting": [
+              "color with opacity < 0.6",
+              "font-family monospace",
+              "text-decoration:none"
+            ],
+            "confidence": 0.8
+          },
+          "eyebrow_fingerprint": {
+            "required": [
+              "font-size ≤ 13px",
+              "letter-spacing ≥ .1em"
+            ],
+            "supporting": [
+              "text-transform:uppercase OR all-caps content",
+              "color matching accent",
+              "precedes heading in DOM"
+            ],
+            "confidence": 0.82
+          },
+          "hero_container_fingerprint": {
+            "required": [
+              "min-height ≥ 80vh OR height:100vh",
+              "flex-direction:column"
+            ],
+            "supporting": [
+              "justify-content:flex-end OR center",
+              "first major section in DOM",
+              "contains h1"
+            ],
+            "confidence": 0.88
+          },
+          "display_heading_fingerprint": {
+            "required": [
+              "font-size ≥ 60px",
+              "font-weight ≥ 700",
+              "is h1-h3 tag OR has largest font on page"
+            ],
+            "supporting": [
+              "letter-spacing < 0",
+              "line-height < 1.2",
+              "color = primary text"
+            ],
+            "confidence": 0.87
+          },
+          "subtitle_fingerprint": {
+            "required": [
+              "font-size 14-20px",
+              "color with opacity 0.4-0.7",
+              "max-width set"
+            ],
+            "supporting": [
+              "font-weight ≤ 400",
+              "follows heading in DOM",
+              "is <p> tag"
+            ],
+            "confidence": 0.78
+          }
+        },
+        "data_attribute_hints": {
+          "data-section": "section index — data-section='1' → likely hero/first section",
+          "data-component": "component name hint",
+          "data-type": "explicit type declaration from developer",
+          "data-testid": "often semantic: 'hero-heading', 'cta-button' etc",
+          "aria-label": "accessibility label often reveals semantic role",
+          "role": "landmark roles: banner → header/hero, contentinfo → footer, main → main content"
+        }
+      }
+    },
+    {
+      "id": "SIM-005",
+      "pattern": "hero",
+      "naming_convention": "mixed",
+      "difficulty": "medium_hard",
+      "input_html": "\n<section class=\"hero section-dark flex flex-col justify-end sc-aXZVg iFxLkR\" data-section=\"hero\">\n  <div class=\"eyebrow font-mono text-xs tracking-widest text-accent\">AI PLATFORM · V4.0</div>\n  <h1 class=\"display-xl hero__headline sc-bBjFxX hRtPlM\" style=\"font-size:clamp(64px,9vw,140px)\">\n    Build <em class=\"outline-text italic\">workflows</em>\n    that <span class=\"text-accent\">think.</span>\n  </h1>\n  <div class=\"flex justify-between items-end gap-10 hero-bottom\">\n    <p class=\"text-muted body-lg max-w-sm\">Connect your stack...</p>\n    <div class=\"flex flex-col items-end gap-3\">\n      <a href=\"#\" class=\"btn-primary cta-main sc-cZFQDh kMpLqN\">START →</a>\n      <a href=\"#\" class=\"ghost-link font-mono text-xs\">WATCH DEMO</a>\n    </div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "FLEX_COLUMN (partial)",
+        "confidence": 0.61,
+        "issues": [
+          "Partial recognition: 'hero' class found → hero confidence boosted but not certain",
+          "'eyebrow' class found → EYEBROW_PATTERN recognised",
+          "Tailwind classes on same elements causing conflicting signals",
+          "sc-* hash classes adding noise",
+          "inline style clamp() — parsed partially",
+          "btn-primary recognised but sc-cZFQDh hash class also present",
+          "Overall: partial match, mixed signals, medium confidence"
+        ]
+      },
+      "corrected_output": {
+        "strategy": "PRIORITY_STACK: semantic > BEM > pattern fingerprint > Tailwind > obfuscated",
+        "resolution": [
+          "data-section='hero' → HERO_PATTERN confidence 0.95 immediately (data attribute override)",
+          "class 'hero' → HERO_PATTERN vocabulary match adds 0.9",
+          "Tailwind classes resolved in parallel: flex-col, justify-end, etc → confirm layout",
+          "sc-* hashes ignored (hash classes always lowest priority)",
+          "class 'eyebrow' → EYEBROW_PATTERN (HTML_WIDGET)",
+          "class 'display-xl' → DISPLAY_HEADING signal",
+          "class 'outline-text' → companion CSS: color:transparent + -webkit-text-stroke",
+          "class 'btn-primary' → BUTTON_WIDGET (semantic wins over hash)",
+          "class 'ghost-link' → TEXT_EDITOR with ghost link CSS",
+          "inline style clamp() → extract to companion CSS, use 120px as Elementor fallback"
+        ]
+      },
+      "delta": {
+        "root_cause": "Mixed signals from multiple naming systems on same elements",
+        "fix": "Priority stack: when multiple naming systems present on same element, apply them in order and merge signals"
+      },
+      "extracted_signals": {
+        "priority_resolution_rules": {
+          "1_data_attributes": "Highest priority — developer explicitly stated role",
+          "2_semantic_classes": "High priority — role vocabulary match",
+          "3_bem_blocks": "High priority — BEM block name vocabulary match",
+          "4_pattern_fingerprints": "Medium-high — CSS property profile matches known component",
+          "5_tailwind_resolved": "Medium — resolved utility values add to confidence",
+          "6_obfuscated_hashes": "Lowest — ignore for classification, may contain style info"
+        },
+        "clamp_handling": {
+          "rule": "Extract min value as Elementor font_size setting, put full clamp() in companion CSS",
+          "example": "clamp(64px,9vw,140px) → Elementor: 64px, Companion: font-size: clamp(64px,9vw,140px) !important"
+        }
+      }
+    },
+    {
+      "id": "SIM-006",
+      "pattern": "bento_grid",
+      "naming_convention": "semantic",
+      "difficulty": "hard",
+      "input_html": "\n<section class=\"features\" style=\"padding:120px 60px;background:#0a0a12\">\n  <div class=\"bento\" style=\"display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:80px;gap:16px;\">\n    <div class=\"bento-card card-a\" style=\"grid-column:span 5;grid-row:span 5;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);padding:36px;\">\n      <div class=\"card-tag\">CORE ENGINE</div>\n      <h3 class=\"card-title\">AI Workflow Orchestration</h3>\n      <p class=\"card-body\">Chain LLMs, APIs...</p>\n      <div class=\"terminal\">...</div>\n    </div>\n    <div class=\"bento-card card-b\" style=\"grid-column:span 4;grid-row:span 3;...\">...</div>\n    <div class=\"bento-card card-c\" style=\"grid-column:span 3;grid-row:span 3;...\">...</div>\n    <div class=\"bento-card card-d\" style=\"grid-column:span 4;grid-row:span 4;...\">\n      <h3>Visual Pipeline Builder</h3>\n      <div class=\"pipeline\">...</div>\n    </div>\n    <div class=\"bento-card card-e\" style=\"grid-column:span 3;grid-row:span 4;...\">...</div>\n    <div class=\"bento-card card-f\" style=\"grid-column:span 5;grid-row:span 3;...\">...</div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "GRID_CONTAINER (partial)",
+        "confidence": 0.62,
+        "issues": [
+          "Grid detected — correct",
+          "grid-template-columns: repeat(12,1fr) → confused: 12 columns, not 3",
+          "Naive engine creates 12-column Elementor grid instead of recognising the 5/4/3 fr pattern",
+          "grid-row:span 5 and span 3 → ignored (naive engine doesn't compute implied fr)",
+          "card-tag (div with small caps) → TEXT_WIDGET not HTML_WIDGET",
+          ".terminal div → classified as FLEX_COLUMN not HTML_WIDGET_ANIMATED",
+          ".pipeline div → classified as FLEX_COLUMN not HTML_WIDGET_ANIMATED",
+          "All cards get equal height (Elementor default) → bento asymmetry lost"
+        ]
+      },
+      "corrected_output": {
+        "grid_resolution": {
+          "input": "grid-template-columns: repeat(12,1fr)",
+          "analysis": "12-column grid but cards use spans of 5, 4, 3 — the actual visual columns are 3 groups",
+          "simplification": "Simplify to 3-column grid with fr proportions: 5fr 4fr 3fr",
+          "reasoning": "Elementor grid_columns_fr matches the visual proportions, not the underlying unit count",
+          "grid_columns_fr": "5fr 4fr 3fr"
+        },
+        "card_placement": {
+          "card-a": {
+            "grid_column_start": 1,
+            "grid_column_end": 2,
+            "grid_row_start": 1,
+            "grid_row_end": 3,
+            "note": "spans 2 rows = taller card"
+          },
+          "card-b": {
+            "grid_column_start": 2,
+            "grid_column_end": 3,
+            "grid_row_start": 1,
+            "grid_row_end": 2
+          },
+          "card-c": {
+            "grid_column_start": 3,
+            "grid_column_end": 4,
+            "grid_row_start": 1,
+            "grid_row_end": 2
+          },
+          "card-d": {
+            "grid_column_start": 2,
+            "grid_column_end": 3,
+            "grid_row_start": 2,
+            "grid_row_end": 4
+          },
+          "card-e": {
+            "grid_column_start": 3,
+            "grid_column_end": 4,
+            "grid_row_start": 2,
+            "grid_row_end": 4
+          },
+          "card-f": {
+            "grid_column_start": 1,
+            "grid_column_end": 2,
+            "grid_row_start": 3,
+            "grid_row_end": 4
+          }
+        },
+        "card_internals": {
+          "card-tag": "HTML_WIDGET — needs ::before line decoration",
+          "card-title h3": "HEADING_WIDGET h3",
+          "card-body p": "TEXT_EDITOR",
+          ".terminal": "HTML_WIDGET_ANIMATED (has @keyframes blink, terminal visual)",
+          ".pipeline": "HTML_WIDGET_ANIMATED (has animated fill bars)"
+        }
+      },
+      "delta": {
+        "root_cause_1": "12-column repeat() grid not simplified to visual column proportions",
+        "root_cause_2": "grid-row spans not translated to grid_row_start/end",
+        "root_cause_3": "Animated sub-components (terminal, pipeline) not detected as HTML_WIDGET",
+        "fix_1": "Grid simplification algorithm: find GCD of all span values, reduce to fr proportions",
+        "fix_2": "Span-to-explicit converter: grid-column:span N → compute start/end from DOM position",
+        "fix_3": "Animation sub-detector: check children of grid cards for animation signals"
+      },
+      "extracted_signals": {
+        "grid_simplification_algorithm": {
+          "step1": "Collect all grid-column span values: [5, 4, 3, 4, 3, 5]",
+          "step2": "Find unique values: [5, 4, 3]",
+          "step3": "Check if they sum to the total columns: 5+4+3 = 12 ✓",
+          "step4": "If yes: use spans as fr values directly: '5fr 4fr 3fr'",
+          "step5": "If partial: find the most common grouping pattern"
+        },
+        "span_to_placement_algorithm": {
+          "description": "Given DOM order and span values, compute grid_column/row_start/end",
+          "rules": [
+            "Track current column and row position as we iterate children",
+            "grid-column: span N means 'place at current position, span N columns'",
+            "grid-row: span N means 'span N rows from current row'",
+            "After placing, advance current column by span value",
+            "If current column + next span > total columns: wrap to next row",
+            "grid-column-end = grid-column-start + span-value (exclusive)"
+          ]
+        },
+        "bento_pattern_signals": [
+          {
+            "name": "display_grid_with_span_children",
+            "weight": 0.9
+          },
+          {
+            "name": "children_have_different_column_spans",
+            "weight": 0.85
+          },
+          {
+            "name": "children_have_border_and_background",
+            "weight": 0.75
+          },
+          {
+            "name": "section_called_features_or_capabilities",
+            "weight": 0.7
+          },
+          {
+            "name": "cards_contain_heading_and_text",
+            "weight": 0.75
+          },
+          {
+            "name": "some_cards_contain_animated_visual",
+            "weight": 0.65
+          }
+        ]
+      }
+    },
+    {
+      "id": "SIM-007",
+      "pattern": "bento_grid",
+      "naming_convention": "tailwind",
+      "difficulty": "very_hard",
+      "input_html": "\n<section class=\"py-[120px] px-[60px] bg-[#0a0a12]\">\n  <div class=\"grid grid-cols-12 auto-rows-[80px] gap-4\">\n    <div class=\"col-span-5 row-span-5 bg-white/[.03] border border-white/10 p-9 relative overflow-hidden transition hover:bg-white/[.06] hover:border-[#c8ff00]/25\">\n      <div class=\"text-[10px] font-mono tracking-[.15em] text-[#c8ff00] mb-5 flex items-center gap-2 before:block before:w-5 before:h-px before:bg-[#c8ff00]\">CORE ENGINE</div>\n      <h3 class=\"font-display font-bold text-[28px] tracking-[-0.5px] leading-[1.1] text-white mb-3\">AI Workflow Orchestration</h3>\n      <p class=\"text-sm text-white/45 leading-[1.75] font-light\">Chain LLMs...</p>\n    </div>\n    <div class=\"col-span-4 row-span-3 bg-white/[.03] border border-white/10 p-9 ...\">...</div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "HTML_WIDGET_COMPLEX",
+        "confidence": 0.19,
+        "issues": [
+          "grid-cols-12 recognised as CSS grid but col-span-5/row-span-5 not parsed from Tailwind",
+          "Tailwind responsive grid classes not resolved to actual grid-column/row values",
+          "before:block before:w-5 before:h-px → pseudo-element classes not parsed",
+          "hover:bg-white/[.06] hover:border-[#c8ff00]/25 → hover states not extracted",
+          "Confidence collapses → HTML_WIDGET_COMPLEX for everything"
+        ]
+      },
+      "corrected_output": {
+        "tailwind_grid_resolution": {
+          "grid-cols-12": "grid-template-columns: repeat(12, minmax(0, 1fr))",
+          "auto-rows-[80px]": "grid-auto-rows: 80px",
+          "col-span-5": "grid-column: span 5 / span 5",
+          "row-span-5": "grid-row: span 5 / span 5",
+          "col-span-4": "grid-column: span 4 / span 4",
+          "row-span-3": "grid-row: span 3 / span 3"
+        },
+        "result": "After Tailwind resolution, same as SIM-006 corrected output",
+        "hover_extraction": "hover:bg-white/[.06] → :hover { background: rgba(255,255,255,0.06) } → companion CSS"
+      },
+      "delta": {
+        "root_cause": "Tailwind grid span classes not in utility map",
+        "fix": "Extend Tailwind resolver with grid utilities: col-span-N → grid-column: span N, row-span-N → grid-row: span N"
+      },
+      "extracted_signals": {
+        "tailwind_grid_utilities": {
+          "col-span-1": "grid-column: span 1",
+          "col-span-2": "grid-column: span 2",
+          "col-span-3": "grid-column: span 3",
+          "col-span-4": "grid-column: span 4",
+          "col-span-5": "grid-column: span 5",
+          "col-span-6": "grid-column: span 6",
+          "col-span-full": "grid-column: 1 / -1",
+          "row-span-1": "grid-row: span 1",
+          "row-span-2": "grid-row: span 2",
+          "row-span-3": "grid-row: span 3",
+          "row-span-4": "grid-row: span 4",
+          "row-span-5": "grid-row: span 5",
+          "row-span-6": "grid-row: span 6",
+          "grid-cols-1": "grid-template-columns: repeat(1, minmax(0,1fr))",
+          "grid-cols-2": "grid-template-columns: repeat(2, minmax(0,1fr))",
+          "grid-cols-3": "grid-template-columns: repeat(3, minmax(0,1fr))",
+          "grid-cols-4": "grid-template-columns: repeat(4, minmax(0,1fr))",
+          "grid-cols-12": "grid-template-columns: repeat(12, minmax(0,1fr))",
+          "auto-rows-[Npx]": "grid-auto-rows: Npx"
+        }
+      }
+    },
+    {
+      "id": "SIM-011",
+      "pattern": "pricing",
+      "naming_convention": "semantic",
+      "difficulty": "medium",
+      "input_html": "\n<div class=\"pricing-grid\" style=\"display:grid;grid-template-columns:repeat(3,1fr);gap:24px\">\n  <div class=\"price-card\" style=\"padding:48px 40px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1)\">\n    <div class=\"price-plan\">STARTER</div>\n    <div class=\"price-amount\"><sup>$</sup>0</div>\n    <div class=\"price-period\">Free forever</div>\n    <ul class=\"price-features\">\n      <li>3 active pipelines</li>\n      <li>1M API calls</li>\n    </ul>\n    <button class=\"btn-price\">GET STARTED</button>\n  </div>\n  <div class=\"price-card featured\" style=\"background:#c8ff00;border-color:#c8ff00;\">\n    <div class=\"price-badge\">MOST POPULAR</div>\n    <div class=\"price-plan\">GROWTH</div>\n    <div class=\"price-amount\"><sup>$</sup>149</div>\n    ...\n    <button class=\"btn-price-dark\">START TRIAL</button>\n  </div>\n  <div class=\"price-card\">...</div>\n</div>",
+      "naive_output": {
+        "classification": "GRID_CONTAINER (3 cols, correct)",
+        "confidence": 0.71,
+        "issues": [
+          "Grid correctly detected — 3 columns",
+          "price-card → FLEX_COLUMN container (correct structure)",
+          "price-plan → TEXT_WIDGET (should be with class nx-price-plan)",
+          "price-amount with <sup> → TEXT_WIDGET (correct but loses sup styling)",
+          "price-period → TEXT_WIDGET (correct)",
+          "price-features <ul> → LIST_WIDGET (actually wrong — should be HTML_WIDGET for arrow styling)",
+          "price-badge with position:absolute → missed — not classified at all (absolute children often skipped)",
+          "featured card background:#c8ff00 → correct colour extracted",
+          "btn-price → TEXT_WIDGET not BUTTON_WIDGET (no href, is <button> not <a>)"
+        ]
+      },
+      "corrected_output": {
+        "grid": "3-column, 1fr 1fr 1fr, gap 24px",
+        "each_card": "FLEX_COLUMN inner container with specific classes",
+        "price-badge": "HTML_WIDGET inside card — position:absolute in companion CSS, requires container position:relative",
+        "price-plan": "TEXT_EDITOR (not heading — it's a label, not a title)",
+        "price-amount": "HTML_WIDGET — contains <sup> formatting that TEXT_EDITOR can't style",
+        "price-period": "TEXT_EDITOR",
+        "price-features": "HTML_WIDGET — requires custom arrow styling and spacing",
+        "button": "BUTTON_WIDGET — <button> elements are buttons regardless of tag"
+      },
+      "delta": {
+        "root_cause_1": "<button> tag not recognised as BUTTON_WIDGET (only <a> was in button detection)",
+        "root_cause_2": "Absolutely positioned children not classified (skipped by traversal)",
+        "root_cause_3": "<ul> with <li> text items classified as LIST_WIDGET but needs HTML_WIDGET for custom arrow styling",
+        "fix_1": "Button detection: both <a> AND <button> elements → BUTTON_WIDGET if they have button-like styling",
+        "fix_2": "Absolute position children: classify them as HTML_WIDGET if their parent is a positioned container",
+        "fix_3": "Feature list detection: ul.price-features → HTML_WIDGET if companion CSS needed for custom bullets"
+      },
+      "extracted_signals": {
+        "pricing_pattern_signals": [
+          {
+            "name": "has_currency_symbol_dollar_euro_pound",
+            "weight": 0.95
+          },
+          {
+            "name": "has_large_price_number",
+            "weight": 0.9
+          },
+          {
+            "name": "has_feature_list_with_checkmarks_or_arrows",
+            "weight": 0.8
+          },
+          {
+            "name": "has_cta_button_per_card",
+            "weight": 0.75
+          },
+          {
+            "name": "has_2_to_4_similar_card_siblings",
+            "weight": 0.8
+          },
+          {
+            "name": "one_card_has_different_background",
+            "weight": 0.85
+          },
+          {
+            "name": "one_card_has_badge_or_label",
+            "weight": 0.7
+          },
+          {
+            "name": "has_plan_name_label_above_amount",
+            "weight": 0.75
+          },
+          {
+            "name": "has_billing_period_text",
+            "weight": 0.7
+          }
+        ],
+        "button_tag_rule": "Both <a> and <button> elements qualify for BUTTON_WIDGET classification",
+        "absolute_child_rule": "Children with position:absolute inside a positioned card → HTML_WIDGET (badge, label)",
+        "feature_list_rule": "ul inside pricing card → HTML_WIDGET if list items need custom icon styling (not standard bullets)"
+      }
+    },
+    {
+      "id": "SIM-016",
+      "pattern": "stats_row",
+      "naming_convention": "semantic",
+      "difficulty": "medium",
+      "input_html": "\n<div class=\"stats\" style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.1)\">\n  <div class=\"stat-cell\" style=\"background:#0a0a12;padding:60px 40px;position:relative;overflow:hidden\">\n    <div class=\"stat-num\">\n      <span class=\"count\" data-target=\"4.2\">0</span><span class=\"unit\">B</span>\n    </div>\n    <div class=\"stat-label\">API CALLS / MONTH</div>\n  </div>\n  ...\n</div>\n<script>\n  var so = new IntersectionObserver(function(entries) {\n    entries.forEach(function(e) {\n      if (e.isIntersecting) {\n        var c = e.target.querySelector('.count');\n        // count-up animation\n      }\n    });\n  }, {threshold: .3});\n  document.querySelectorAll('.stat-cell').forEach(el => so.observe(el));\n</script>",
+      "naive_output": {
+        "classification": "GRID_CONTAINER",
+        "confidence": 0.67,
+        "issues": [
+          "Grid detected correctly",
+          "stat-cell → FLEX_COLUMN container (wrong — should be HTML_WIDGET_ANIMATED)",
+          "JS IntersectionObserver detected but not associated with specific cells",
+          "stat-num with data-target attribute → TEXT_WIDGET (misses animation dependency)",
+          "::before progress line on .stat-cell → missed entirely",
+          "count span with data-target → not identified as animated counter"
+        ]
+      },
+      "corrected_output": {
+        "whole_section": "HTML_WIDGET",
+        "reason": "Every stat-cell has JS animation dependency. The script modifies DOM text content dynamically. The ::before progress line is part of the visual. Making each cell native would require the count-up JS to still run — creating a dependency on an external script. Cleanest solution: entire stats section as one HTML widget containing all cells, CSS, and JS.",
+        "html_widget_structure": {
+          "contains": [
+            "<style> with grid + cell + ::before styles",
+            "<div class='nx-stats-grid'> with 4 cells",
+            "<script> with IntersectionObserver count-up"
+          ],
+          "editability": "4/10 — stat numbers and labels can be edited in the HTML widget source"
+        }
+      },
+      "delta": {
+        "root_cause": "JS animation on DOM text content → entire component must be HTML_WIDGET",
+        "rule": "If a script modifies the text content of an element via querySelector + textContent, that element CANNOT be a native TEXT_EDITOR widget — it must be HTML_WIDGET",
+        "detection": "Scan scripts for: textContent, innerHTML, innerText, .value modification on elements that would otherwise be native widgets"
+      },
+      "extracted_signals": {
+        "stats_pattern_signals": [
+          {
+            "name": "has_4_similar_cells",
+            "weight": 0.8
+          },
+          {
+            "name": "each_cell_has_large_number",
+            "weight": 0.85
+          },
+          {
+            "name": "each_cell_has_small_label",
+            "weight": 0.8
+          },
+          {
+            "name": "has_count_up_js_or_data_target",
+            "weight": 0.95
+          },
+          {
+            "name": "data_target_attribute_present",
+            "weight": 0.9
+          },
+          {
+            "name": "intersectionobserver_in_script",
+            "weight": 0.85
+          }
+        ],
+        "js_dom_mutation_rule": {
+          "trigger": "Script contains querySelector + textContent/innerHTML on element that would be native widget",
+          "action": "Classify that element (and its closest container) as HTML_WIDGET",
+          "exception": "If the mutation is only for class toggling (adding CSS classes) — keep native widget, put JS in Global Setup"
+        }
+      }
+    },
+    {
+      "id": "SIM-021",
+      "pattern": "testimonials",
+      "naming_convention": "sem_bem_mixed",
+      "difficulty": "easy_medium",
+      "input_html": "\n<section class=\"testimonials\">\n  <div class=\"testi-grid\" style=\"display:grid;grid-template-columns:repeat(3,1fr);gap:24px\">\n    <div class=\"testi-card testimonial__card--elevated\">\n      <p class=\"testi-quote testimonial__quote\">\"We replaced <strong>3 internal tools</strong> with NEXUS...\"</p>\n      <div class=\"testi-author testimonial__author\">\n        <div class=\"testi-avatar\">SK</div>\n        <div class=\"testi-info\">\n          <div class=\"testi-name\">Sarah Kim</div>\n          <div class=\"testi-role\">VP ENGINEERING — STRIDE</div>\n        </div>\n      </div>\n    </div>\n    ...\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "GRID_CONTAINER (correct)",
+        "confidence": 0.78,
+        "issues": [
+          "testi-card → FLEX_COLUMN (correct)",
+          "testi-quote → TEXT_EDITOR (correct — with strong tag preserved)",
+          "testi-author → FLEX_ROW container — WRONG (should be HTML_WIDGET)",
+          "testi-avatar (initials circle) → TEXT_WIDGET — loses border-radius:50% and background styling",
+          "testi-name + testi-role → separate TEXT_WIDGETs in separate containers (over-fragmented)"
+        ]
+      },
+      "corrected_output": {
+        "testi-quote": "TEXT_EDITOR — with <strong> preserved in HTML",
+        "testi-author": "HTML_WIDGET — avatar circle + name + role as a unit",
+        "reason_for_author_html": [
+          "Avatar circle needs border-radius:50%, specific background-color, flex centering",
+          "These are not settable on a native Text Editor or Heading widget",
+          "The author block as a whole is low editability (3/10)",
+          "Cleanest: one HTML widget with the avatar + name + role styled inline",
+          "Editability note in report: 'Author name/role can be edited in HTML widget source'"
+        ]
+      },
+      "delta": {
+        "root_cause": "Avatar circle component not recognised → author block over-fragmented into native widgets that cannot reproduce the circular avatar",
+        "fix": "Avatar Circle Fingerprint: round element with initials text, specific bg-color → HTML_WIDGET parent"
+      },
+      "extracted_signals": {
+        "avatar_circle_fingerprint": {
+          "required": [
+            "border-radius: 50% OR border-radius ≥ 40px",
+            "width = height (square)",
+            "contains 2-3 characters of text"
+          ],
+          "supporting": [
+            "background-color set",
+            "display:flex + align-items:center + justify-content:center",
+            "font-weight ≥ 600"
+          ],
+          "action": "If avatar circle detected in author block → entire author block → HTML_WIDGET"
+        },
+        "testimonial_author_block_rule": "Author block = avatar circle + name + role → always HTML_WIDGET regardless of naming convention"
+      }
+    },
+    {
+      "id": "SIM-026",
+      "pattern": "fixed_nav",
+      "naming_convention": "semantic",
+      "difficulty": "easy",
+      "input_html": "\n<nav class=\"navbar\" style=\"position:fixed;top:0;left:0;right:0;z-index:100;padding:24px 60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all .4s\">\n  <a href=\"#\" class=\"nav-logo\">NEX<span>U</span>S</a>\n  <ul class=\"nav-links\" style=\"display:flex;gap:40px;list-style:none\">\n    <li><a href=\"#features\">FEATURES</a></li>\n    <li><a href=\"#pricing\">PRICING</a></li>\n  </ul>\n  <button class=\"nav-cta\">START FREE →</button>\n</nav>\n<script>\nwindow.addEventListener('scroll', function() {\n  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);\n});\n</script>",
+      "naive_output": {
+        "classification": "FLEX_ROW (missed fixed)",
+        "confidence": 0.55,
+        "issues": [
+          "position:fixed → should immediately trigger HTML_WIDGET_FIXED",
+          "Scroll event listener → JS-dependent class toggle",
+          "nav-links <ul> → LIST_WIDGET (correct structure but loses nav styling)",
+          "nav-logo with <span> for accent colour → TEXT_EDITOR (loses span colour)",
+          "Classified as native FLEX_ROW container → will not be fixed positioned in Elementor"
+        ]
+      },
+      "corrected_output": {
+        "classification": "HTML_WIDGET",
+        "reason": [
+          "position:fixed on nav → ALWAYS HTML_WIDGET (body-level injection needed)",
+          "Scroll class toggle JS → belongs in Global Setup script, not nav widget",
+          "Nav must be the SECOND element in the template (after Global Setup)",
+          "All nav styles in widget-internal <style> block",
+          "Scroll listener in Global Setup IIFE targets the nav widget by ID"
+        ]
+      },
+      "delta": {
+        "root_cause": "position:fixed not triggering HTML_WIDGET immediately",
+        "fix": "HARD RULE: position:fixed on any element → HTML_WIDGET. No exceptions.",
+        "secondary_fix": "Scroll listener JS → always move to Global Setup IIFE"
+      },
+      "extracted_signals": {
+        "fixed_nav_hard_rule": {
+          "signal": "position:fixed on nav/header element",
+          "action": "HTML_WIDGET — unconditional, no confidence threshold needed",
+          "priority": "HIGHEST — overrides all other classification attempts"
+        },
+        "nav_detection_signals": [
+          {
+            "name": "position_fixed",
+            "weight": 1.0
+          },
+          {
+            "name": "is_nav_or_header_tag",
+            "weight": 0.9
+          },
+          {
+            "name": "z_index_gte_50",
+            "weight": 0.8
+          },
+          {
+            "name": "full_width_top_0",
+            "weight": 0.85
+          },
+          {
+            "name": "has_logo_and_links",
+            "weight": 0.8
+          },
+          {
+            "name": "has_scroll_class_toggle_js",
+            "weight": 0.9
+          }
+        ]
+      }
+    },
+    {
+      "id": "SIM-031",
+      "pattern": "marquee",
+      "naming_convention": "semantic",
+      "difficulty": "easy",
+      "input_html": "\n<div class=\"marquee-wrap\" style=\"border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1);overflow:hidden;padding:18px 0;\">\n  <div class=\"marquee-track\" style=\"display:flex;animation:marquee 22s linear infinite;white-space:nowrap;\">\n    <div class=\"marquee-item\">◆ ZERO LATENCY PIPELINES</div>\n    <div class=\"marquee-item\">◆ REAL-TIME INFERENCE</div>\n    <div class=\"marquee-item\">◆ MULTI-MODEL ORCHESTRATION</div>\n    <!-- duplicated items for seamless loop -->\n    <div class=\"marquee-item\">◆ ZERO LATENCY PIPELINES</div>\n    <div class=\"marquee-item\">◆ REAL-TIME INFERENCE</div>\n    <div class=\"marquee-item\">◆ MULTI-MODEL ORCHESTRATION</div>\n  </div>\n</div>\n<style>\n@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }\n</style>",
+      "naive_output": {
+        "classification": "FLEX_ROW (partial)",
+        "confidence": 0.48,
+        "issues": [
+          "animation:marquee 22s linear infinite → HTML_WIDGET_ANIMATED should trigger",
+          "But naive engine only checks element's own computed animation, not keyframe names",
+          "@keyframes in separate <style> block → not associated with .marquee-track",
+          "Duplicate items not identified as intentional (naive engine may deduplicate content)",
+          "Classified as FLEX_ROW → loses animation entirely"
+        ]
+      },
+      "corrected_output": {
+        "classification": "HTML_WIDGET",
+        "reason": [
+          "Has CSS @keyframes animation for horizontal movement",
+          "Duplicate content is intentional (seamless loop trick — remove at translateX(-50%))",
+          "overflow:hidden on wrapper is essential for the illusion",
+          "All must stay together as HTML_WIDGET"
+        ],
+        "editability_note": "Extract marquee items into a JavaScript array at top of widget for easy text editing"
+      },
+      "delta": {
+        "root_cause": "@keyframes in separate style block not linked to element with animation property",
+        "fix": "Animation resolver: cross-reference animation-name property values with @keyframes declarations in the same document"
+      },
+      "extracted_signals": {
+        "marquee_pattern_signals": [
+          {
+            "name": "has_keyframe_animation_horizontal_transform",
+            "weight": 0.95
+          },
+          {
+            "name": "overflow_hidden_on_wrapper",
+            "weight": 0.85
+          },
+          {
+            "name": "white_space_nowrap",
+            "weight": 0.8
+          },
+          {
+            "name": "has_duplicate_content_items",
+            "weight": 0.75
+          },
+          {
+            "name": "animation_duration_gte_10s",
+            "weight": 0.7
+          },
+          {
+            "name": "animation_timing_linear",
+            "weight": 0.8
+          },
+          {
+            "name": "translateX_in_keyframes",
+            "weight": 0.9
+          }
+        ],
+        "animation_cross_reference_rule": {
+          "rule": "When element has animation: [name] property, find @keyframes [name] in document",
+          "if_found_horizontal_transform": "HTML_WIDGET_ANIMATED (marquee/slider pattern)",
+          "if_found_opacity_or_scale": "May be OK as native widget with companion CSS animation",
+          "if_found_complex_path": "HTML_WIDGET_ANIMATED"
+        }
+      }
+    },
+    {
+      "id": "SIM-036",
+      "pattern": "footer",
+      "naming_convention": "semantic",
+      "difficulty": "medium",
+      "input_html": "\n<footer class=\"site-footer\" style=\"padding:80px 60px 40px;border-top:1px solid rgba(255,255,255,.1);\">\n  <div class=\"footer-top\" style=\"display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px;\">\n    <div class=\"footer-brand\">\n      <a href=\"#\" class=\"footer-logo\">NEX<span>U</span>S</a>\n      <p>The AI workflow platform...</p>\n    </div>\n    <div class=\"footer-col\">\n      <h5 class=\"footer-col-title\">PRODUCT</h5>\n      <ul class=\"footer-links\">\n        <li><a href=\"#\">Features</a></li>\n        <li><a href=\"#\">Integrations</a></li>\n        <li><a href=\"#\">Changelog</a></li>\n      </ul>\n    </div>\n    <div class=\"footer-col\">...</div>\n    <div class=\"footer-col\">...</div>\n  </div>\n  <div class=\"footer-bottom\" style=\"display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,.1);padding-top:32px;\">\n    <span class=\"footer-copy\">© 2025 NEXUS...</span>\n    <div class=\"footer-status\">\n      <div class=\"status-dot\" style=\"animation:pulse 2s infinite;\"></div>\n      ALL SYSTEMS OPERATIONAL\n    </div>\n  </div>\n</footer>",
+      "naive_output": {
+        "classification": "FLEX_COLUMN (wrong)",
+        "confidence": 0.52,
+        "issues": [
+          "Footer grid (2fr 1fr 1fr 1fr) detected as display:grid but collapsed to FLEX_COLUMN",
+          "fr unit values not parsed correctly — naive engine only handles repeat(N, 1fr)",
+          "footer-links <ul> → LIST_WIDGET (correct but loses hover styling)",
+          "footer-logo with <span> accent → TEXT_EDITOR (loses span colour)",
+          "status-dot with CSS animation → not detected as animated",
+          "footer-bottom flex row → FLEX_ROW container (correct)",
+          "footer-col-title h5 → HEADING_WIDGET h5 (correct)"
+        ]
+      },
+      "corrected_output": {
+        "footer_top": "NATIVE ELEMENTOR GRID container",
+        "grid_columns_fr": "2fr 1fr 1fr 1fr",
+        "brand_col": "FLEX_COLUMN inner container — logo (HTML_WIDGET) + brand desc (TEXT_EDITOR)",
+        "nav_cols": "FLEX_COLUMN inner containers — col-title (HEADING h5) + links (ICON_LIST widget)",
+        "footer_bottom": "HTML_WIDGET — contains animated status dot (animation:pulse) + copyright",
+        "reason_for_footer_bottom_html": "status-dot has CSS animation → footer-bottom as HTML_WIDGET",
+        "icon_list_for_nav": "Use Icon List widget for footer nav links — editability 7/10, styleable via CSS class"
+      },
+      "delta": {
+        "root_cause_1": "Non-uniform fr grid (2fr 1fr 1fr 1fr) not parsed — only repeat(N,1fr) handled",
+        "root_cause_2": "Animated child in footer-bottom causes entire row to be classified incorrectly",
+        "fix_1": "CSS Grid fr parser: handle explicit fr values (2fr 1fr 1fr 1fr), not just uniform repeat()",
+        "fix_2": "Animated child rule: if one child of a FLEX_ROW has animation, that child → HTML_WIDGET, parent stays native"
+      },
+      "extracted_signals": {
+        "footer_pattern_signals": [
+          {
+            "name": "is_footer_or_site_footer_class_or_tag",
+            "weight": 0.95
+          },
+          {
+            "name": "has_multi_column_grid",
+            "weight": 0.85
+          },
+          {
+            "name": "has_copyright_text",
+            "weight": 0.9
+          },
+          {
+            "name": "has_nav_link_lists",
+            "weight": 0.8
+          },
+          {
+            "name": "has_logo_in_first_column",
+            "weight": 0.75
+          },
+          {
+            "name": "has_border_top",
+            "weight": 0.6
+          },
+          {
+            "name": "near_bottom_of_document",
+            "weight": 0.7
+          }
+        ],
+        "fr_unit_parser": {
+          "description": "Parse any CSS grid-template-columns value to extract fr proportions",
+          "patterns": [
+            "repeat(N, 1fr) → Nfr equal columns",
+            "Xfr Yfr Zfr → explicit proportions",
+            "2fr 1fr 1fr 1fr → '2fr 1fr 1fr 1fr'",
+            "1fr 2fr → '1fr 2fr'",
+            "200px 1fr → mixed: note for companion CSS, use 1fr in Elementor with min-width on first col"
+          ]
+        },
+        "animated_child_isolation_rule": {
+          "rule": "If a FLEX_ROW or FLEX_COLUMN child has animation/transition targeting its visual appearance, make ONLY THAT CHILD an HTML_WIDGET. Keep the parent container native.",
+          "exception": "If the animated child is the layout-defining element (e.g., takes full width), make the entire parent HTML_WIDGET"
+        }
+      }
+    },
+    {
+      "id": "SIM-041",
+      "pattern": "cta_section",
+      "naming_convention": "semantic",
+      "difficulty": "medium",
+      "input_html": "\n<div class=\"cta-section\" style=\"padding:100px;background:#c8ff00;position:relative;overflow:hidden;margin:0 60px;\">\n  <h2 class=\"cta-title\" style=\"font-family:'Syne';font-weight:800;font-size:68px;color:#05050a;letter-spacing:-2px;line-height:1;margin-bottom:24px;max-width:600px;\">Ready to build something extraordinary?</h2>\n  <p class=\"cta-sub\" style=\"font-size:16px;color:rgba(5,5,10,.5);margin-bottom:48px;max-width:400px;\">Join 32,000+ teams already shipping faster.</p>\n  <div class=\"cta-actions\" style=\"display:flex;gap:16px\">\n    <a href=\"#\" class=\"btn-dark\" style=\"padding:18px 36px;background:#05050a;color:#c8ff00;\">START BUILDING FREE</a>\n    <a href=\"#\" class=\"btn-outline-dark\" style=\"padding:18px 36px;background:transparent;border:1px solid rgba(5,5,10,.3);color:#05050a;\">TALK TO SALES</a>\n  </div>\n</div>\n<style>\n.cta-section::before {\n  content: 'NEXUS';\n  position: absolute; right: -20px; top: 50%;\n  transform: translateY(-50%);\n  font-family: 'Syne'; font-weight: 800;\n  font-size: 200px; color: rgba(0,0,0,.06);\n  letter-spacing: -8px; pointer-events: none;\n}\n</style>",
+      "naive_output": {
+        "classification": "FLEX_COLUMN container",
+        "confidence": 0.69,
+        "issues": [
+          ".cta-section::before → pseudo-element in CSS — completely missed",
+          "Watermark ghost text effect lost entirely",
+          "cta-actions FLEX_ROW → correct",
+          "btn-dark → BUTTON_WIDGET (correct but loses border-radius:0)",
+          "btn-outline-dark → BUTTON_WIDGET (correct)",
+          "No companion CSS generated for ::before pseudo-element",
+          "position:relative + overflow:hidden → not applied to container settings",
+          "margin:0 60px → correct in settings"
+        ]
+      },
+      "corrected_output": {
+        "container": "FLEX_COLUMN with position:relative + overflow:hidden in companion CSS",
+        "watermark": "::before pseudo-element in companion CSS — MUST be explicitly generated",
+        "companion_css_entry": ".nx-cta { position:relative; overflow:hidden; } .nx-cta > * { position:relative; z-index:1; } .nx-cta::before { content:'NEXUS'; position:absolute; right:-20px; top:50%; transform:translateY(-50%); ... }",
+        "content_value_extraction": "The content:'NEXUS' string must be extracted from the CSS and placed in companion CSS — it is brand-specific, not a generic pattern"
+      },
+      "delta": {
+        "root_cause": "CSS pseudo-element declarations (::before, ::after) not included in companion CSS generation",
+        "fix": "Pseudo-element extractor: scan all CSS rules for selector::before and ::after, add to companion CSS for the matching element's class"
+      },
+      "extracted_signals": {
+        "cta_section_signals": [
+          {
+            "name": "has_contrast_background_different_from_page",
+            "weight": 0.85
+          },
+          {
+            "name": "has_large_heading_and_cta_buttons",
+            "weight": 0.8
+          },
+          {
+            "name": "full_width_or_near_full_width",
+            "weight": 0.75
+          },
+          {
+            "name": "no_card_children_only_text_and_buttons",
+            "weight": 0.8
+          },
+          {
+            "name": "has_before_pseudo_element_with_brand_text",
+            "weight": 0.7
+          }
+        ],
+        "pseudo_element_extractor_rules": {
+          "trigger": "CSS rule selector ending in ::before or ::after",
+          "action": "Extract all properties, add to companion CSS under the element's nx- class",
+          "special_properties": {
+            "content": "May contain brand name string — preserve exactly",
+            "position": "absolute/fixed — check for stacking context conflicts",
+            "z-index": "Ensure z-index stack is correct (content > ::before)"
+          }
+        }
+      }
+    },
+    {
+      "id": "SIM-046",
+      "pattern": "process_steps",
+      "naming_convention": "bem",
+      "difficulty": "medium",
+      "input_html": "\n<section class=\"process\">\n  <div class=\"process__grid\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:flex-start\">\n    <div class=\"process__steps\">\n      <div class=\"process__step\" style=\"display:flex;gap:32px;padding:36px 0;border-bottom:1px solid rgba(255,255,255,.1)\">\n        <div class=\"process__step-num\" style=\"font-family:'Space Mono';font-size:11px;color:rgba(245,243,238,.2);letter-spacing:.1em;min-width:40px;padding-top:4px;\">01</div>\n        <div class=\"process__step-content\">\n          <h4 class=\"process__step-title\" style=\"font-family:'Syne';font-weight:700;font-size:20px;letter-spacing:-.5px;color:#f5f3ee;margin-bottom:8px;\">Connect your stack</h4>\n          <p class=\"process__step-desc\" style=\"font-size:14px;color:rgba(245,243,238,.4);line-height:1.75;\">Link your databases, APIs...</p>\n        </div>\n      </div>\n      <!-- 3 more steps -->\n    </div>\n    <div class=\"process__visual\" style=\"height:520px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;\">\n      <!-- orbital animation rings -->\n      <div class=\"orb-ring\" style=\"animation:pulse 4s ease-in-out infinite;border-radius:50%;...\"></div>\n    </div>\n  </div>\n</section>",
+      "naive_output": {
+        "classification": "GRID_CONTAINER (2 cols)",
+        "confidence": 0.71,
+        "issues": [
+          "2-column grid detected correctly",
+          "process__step → FLEX_ROW (correct structure)",
+          "process__step-num div → TEXT_WIDGET (correct but no class → no CSS targeting)",
+          "process__step-content → FLEX_COLUMN container (over-fragmented)",
+          "process__visual with orb-ring animation → FLEX_COLUMN not HTML_WIDGET_ANIMATED",
+          "orb-ring animation:pulse → not detected as making visual an HTML_WIDGET",
+          "Hover rule: process__step:hover .process__step-num → missed entirely (not in Elementor settings)"
+        ]
+      },
+      "corrected_output": {
+        "grid": "2-column FLEX_ROW (not grid — only 2 cols, flex is simpler)",
+        "steps_column": "FLEX_COLUMN inner container, 50% width",
+        "each_step": "FLEX_ROW inner container with border-bottom",
+        "step_num": "HTML_WIDGET — the hover colour change (step:hover → num colour changes) requires parent:hover targeting in companion CSS",
+        "step_content": "FLEX_COLUMN (keep as container for title + desc)",
+        "step_title": "HEADING_WIDGET h4",
+        "step_desc": "TEXT_EDITOR",
+        "visual_column": "HTML_WIDGET_ANIMATED — contains orb rings with CSS animation:pulse",
+        "hover_rule_in_companion": ".nx-process-step:hover .nx-step-num { color: var(--color-accent); } .nx-process-step:hover .nx-step-title .elementor-heading-title { color: var(--color-accent); }"
+      },
+      "delta": {
+        "root_cause_1": "Animated visual (orbital rings) not detected as HTML_WIDGET",
+        "root_cause_2": "Parent:hover affecting child not captured in companion CSS",
+        "fix_1": "When a sibling of editable content has animation → make ONLY that sibling HTML_WIDGET, rest stays native",
+        "fix_2": "Hover cascade detector: scan CSS for selector chains involving :hover that affect nested elements"
+      },
+      "extracted_signals": {
+        "process_steps_signals": [
+          {
+            "name": "has_numbered_sequential_items",
+            "weight": 0.9
+          },
+          {
+            "name": "numbers_01_02_03_04_pattern",
+            "weight": 0.85
+          },
+          {
+            "name": "each_item_has_title_and_description",
+            "weight": 0.8
+          },
+          {
+            "name": "items_in_column_with_borders_between",
+            "weight": 0.75
+          },
+          {
+            "name": "has_visual_panel_alongside_steps",
+            "weight": 0.7
+          },
+          {
+            "name": "section_called_process_or_how_it_works",
+            "weight": 0.8
+          }
+        ],
+        "hover_cascade_detector": {
+          "rule": "Scan all CSS for ':hover' rules that target descendant elements",
+          "pattern": ".parent:hover .child { property: value }",
+          "action": "Add to companion CSS targeting: .nx-parent:hover .nx-child .elementor-widget-container { property: value }",
+          "OR_for_headings": ".nx-parent:hover .nx-child .elementor-heading-title { property: value }"
+        }
+      }
+    }
+  ],
+  "pattern_library": {
+    "version": "1.0.0",
+    "generated_from": "mock_simulations_v1",
+    "simulation_count": 15,
+    "patterns": {
+      "hero": {
+        "signals": {
+          "pattern": "hero",
+          "required_signals": [
+            {
+              "name": "is_first_significant_section",
+              "weight": 0.9
+            },
+            {
+              "name": "has_h1_tag",
+              "weight": 0.9
+            },
+            {
+              "name": "min_height_gte_80vh",
+              "weight": 0.85
+            },
+            {
+              "name": "has_cta_button_link",
+              "weight": 0.8
+            },
+            {
+              "name": "flex_direction_column_justify_end",
+              "weight": 0.75
+            },
+            {
+              "name": "largest_font_on_page",
+              "weight": 0.85
+            },
+            {
+              "name": "font_size_gte_60px",
+              "weight": 0.8
+            }
+          ],
+          "optional_signals": [
+            {
+              "name": "has_eyebrow_small_caps_element",
+              "weight": 0.7
+            },
+            {
+              "name": "has_subtitle_paragraph",
+              "weight": 0.65
+            },
+            {
+              "name": "has_italic_outline_text",
+              "weight": 0.6
+            },
+            {
+              "name": "has_ghost_secondary_link",
+              "weight": 0.55
+            }
+          ],
+          "exclusion_signals": [
+            {
+              "name": "has_grid_children_with_borders",
+              "weight": 1.0
+            },
+            {
+              "name": "has_price_amount",
+              "weight": 1.0
+            },
+            {
+              "name": "has_3plus_similar_card_siblings",
+              "weight": 0.9
+            }
+          ],
+          "bem_parsing_additions": {
+            "block_vocabulary_expansion": [
+              "hero",
+              "hero-section",
+              "hero-block",
+              "header-hero",
+              "page-hero",
+              "site-hero",
+              "main-hero",
+              "landing-hero",
+              "intro-section",
+              "above-fold",
+              "banner-section"
+            ],
+            "modifier_resolution": "Always resolve --modifier CSS from stylesheet and apply to Elementor settings",
+            "element_role_map": {
+              "__headline": "HEADING_WIDGET",
+              "__title": "HEADING_WIDGET",
+              "__subtitle": "TEXT_EDITOR",
+              "__sub": "TEXT_EDITOR",
+              "__description": "TEXT_EDITOR",
+              "__eyebrow": "HTML_WIDGET (eyebrow pattern)",
+              "__actions": "FLEX_COLUMN (button group)",
+              "__cta": "BUTTON_WIDGET",
+              "__bottom": "FLEX_ROW (hero bottom row)"
+            }
+          },
+          "tailwind_resolver_utility_map": {
+            "min-h-screen": "min-height: 100vh",
+            "min-h-full": "min-height: 100%",
+            "flex": "display: flex",
+            "flex-col": "flex-direction: column",
+            "flex-row": "flex-direction: row",
+            "items-end": "align-items: flex-end",
+            "items-center": "align-items: center",
+            "justify-end": "justify-content: flex-end",
+            "justify-between": "justify-content: space-between",
+            "justify-center": "justify-content: center",
+            "font-black": "font-weight: 900",
+            "font-bold": "font-weight: 700",
+            "font-semibold": "font-weight: 600",
+            "font-medium": "font-weight: 500",
+            "font-light": "font-weight: 300",
+            "font-thin": "font-weight: 100",
+            "italic": "font-style: italic",
+            "not-italic": "font-style: normal",
+            "tracking-tight": "letter-spacing: -0.05em",
+            "tracking-wide": "letter-spacing: 0.025em",
+            "tracking-wider": "letter-spacing: 0.05em",
+            "tracking-widest": "letter-spacing: 0.1em",
+            "leading-none": "line-height: 1",
+            "leading-tight": "line-height: 1.25",
+            "leading-normal": "line-height: 1.5",
+            "leading-relaxed": "line-height: 1.625",
+            "leading-loose": "line-height: 2",
+            "text-transparent": "color: transparent",
+            "text-white": "color: #ffffff",
+            "text-black": "color: #000000",
+            "border-b": "border-bottom-width: 1px; border-bottom-style: solid",
+            "pb-0.5": "padding-bottom: 2px",
+            "overflow-hidden": "overflow: hidden",
+            "relative": "position: relative",
+            "absolute": "position: absolute",
+            "fixed": "position: fixed",
+            "inset-0": "top:0;right:0;bottom:0;left:0",
+            "pointer-events-none": "pointer-events: none",
+            "z-0": "z-index: 0",
+            "z-10": "z-index: 10",
+            "z-50": "z-index: 50"
+          },
+          "arbitrary_value_patterns": {
+            "text-[Npx]": "font-size: Npx",
+            "text-[#hex]": "color: #hex",
+            "bg-[#hex]": "background-color: #hex",
+            "bg-[rgba(...)]": "background-color: rgba(...)",
+            "tracking-[Nem]": "letter-spacing: Nem",
+            "leading-[N]": "line-height: N",
+            "max-w-[Npx]": "max-width: Npx",
+            "gap-[Npx]": "gap: Npx",
+            "px-[Npx]": "padding-left: Npx; padding-right: Npx",
+            "py-[Npx]": "padding-top: Npx; padding-bottom: Npx",
+            "[property:value]": "property: value (arbitrary CSS)",
+            "text-white/NN": "color: rgba(255,255,255, NN/100)",
+            "bg-black/NN": "background-color: rgba(0,0,0, NN/100)"
+          },
+          "modifier_prefix_handling": {
+            "before:*": "::before pseudo-element → companion CSS",
+            "after:*": "::after pseudo-element → companion CSS",
+            "hover:*": ":hover state → companion CSS",
+            "focus:*": ":focus state → companion CSS",
+            "sm:*": "@media (min-width: 640px) → responsive companion CSS",
+            "md:*": "@media (min-width: 768px) → responsive companion CSS",
+            "lg:*": "@media (min-width: 1024px) → responsive companion CSS"
+          },
+          "css_property_fingerprints": {
+            "button_fingerprint": {
+              "required": [
+                "background-color (non-transparent)",
+                "padding (all sides ≥ 8px)",
+                "cursor:pointer OR display:inline-flex OR display:inline-block"
+              ],
+              "supporting": [
+                "font-weight ≥ 600",
+                "letter-spacing > 0",
+                "border-radius OR border: none",
+                "color contrasting with background"
+              ],
+              "confidence": 0.85
+            },
+            "ghost_link_fingerprint": {
+              "required": [
+                "border-bottom (only)",
+                "no background-color OR background:transparent",
+                "is <a> tag"
+              ],
+              "supporting": [
+                "color with opacity < 0.6",
+                "font-family monospace",
+                "text-decoration:none"
+              ],
+              "confidence": 0.8
+            },
+            "eyebrow_fingerprint": {
+              "required": [
+                "font-size ≤ 13px",
+                "letter-spacing ≥ .1em"
+              ],
+              "supporting": [
+                "text-transform:uppercase OR all-caps content",
+                "color matching accent",
+                "precedes heading in DOM"
+              ],
+              "confidence": 0.82
+            },
+            "hero_container_fingerprint": {
+              "required": [
+                "min-height ≥ 80vh OR height:100vh",
+                "flex-direction:column"
+              ],
+              "supporting": [
+                "justify-content:flex-end OR center",
+                "first major section in DOM",
+                "contains h1"
+              ],
+              "confidence": 0.88
+            },
+            "display_heading_fingerprint": {
+              "required": [
+                "font-size ≥ 60px",
+                "font-weight ≥ 700",
+                "is h1-h3 tag OR has largest font on page"
+              ],
+              "supporting": [
+                "letter-spacing < 0",
+                "line-height < 1.2",
+                "color = primary text"
+              ],
+              "confidence": 0.87
+            },
+            "subtitle_fingerprint": {
+              "required": [
+                "font-size 14-20px",
+                "color with opacity 0.4-0.7",
+                "max-width set"
+              ],
+              "supporting": [
+                "font-weight ≤ 400",
+                "follows heading in DOM",
+                "is <p> tag"
+              ],
+              "confidence": 0.78
+            }
+          },
+          "data_attribute_hints": {
+            "data-section": "section index — data-section='1' → likely hero/first section",
+            "data-component": "component name hint",
+            "data-type": "explicit type declaration from developer",
+            "data-testid": "often semantic: 'hero-heading', 'cta-button' etc",
+            "aria-label": "accessibility label often reveals semantic role",
+            "role": "landmark roles: banner → header/hero, contentinfo → footer, main → main content"
+          },
+          "priority_resolution_rules": {
+            "1_data_attributes": "Highest priority — developer explicitly stated role",
+            "2_semantic_classes": "High priority — role vocabulary match",
+            "3_bem_blocks": "High priority — BEM block name vocabulary match",
+            "4_pattern_fingerprints": "Medium-high — CSS property profile matches known component",
+            "5_tailwind_resolved": "Medium — resolved utility values add to confidence",
+            "6_obfuscated_hashes": "Lowest — ignore for classification, may contain style info"
+          },
+          "clamp_handling": {
+            "rule": "Extract min value as Elementor font_size setting, put full clamp() in companion CSS",
+            "example": "clamp(64px,9vw,140px) → Elementor: 64px, Companion: font-size: clamp(64px,9vw,140px) !important"
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "bento_grid": {
+        "signals": {
+          "grid_simplification_algorithm": {
+            "step1": "Collect all grid-column span values: [5, 4, 3, 4, 3, 5]",
+            "step2": "Find unique values: [5, 4, 3]",
+            "step3": "Check if they sum to the total columns: 5+4+3 = 12 ✓",
+            "step4": "If yes: use spans as fr values directly: '5fr 4fr 3fr'",
+            "step5": "If partial: find the most common grouping pattern"
+          },
+          "span_to_placement_algorithm": {
+            "description": "Given DOM order and span values, compute grid_column/row_start/end",
+            "rules": [
+              "Track current column and row position as we iterate children",
+              "grid-column: span N means 'place at current position, span N columns'",
+              "grid-row: span N means 'span N rows from current row'",
+              "After placing, advance current column by span value",
+              "If current column + next span > total columns: wrap to next row",
+              "grid-column-end = grid-column-start + span-value (exclusive)"
+            ]
+          },
+          "bento_pattern_signals": [
+            {
+              "name": "display_grid_with_span_children",
+              "weight": 0.9
+            },
+            {
+              "name": "children_have_different_column_spans",
+              "weight": 0.85
+            },
+            {
+              "name": "children_have_border_and_background",
+              "weight": 0.75
+            },
+            {
+              "name": "section_called_features_or_capabilities",
+              "weight": 0.7
+            },
+            {
+              "name": "cards_contain_heading_and_text",
+              "weight": 0.75
+            },
+            {
+              "name": "some_cards_contain_animated_visual",
+              "weight": 0.65
+            }
+          ],
+          "tailwind_grid_utilities": {
+            "col-span-1": "grid-column: span 1",
+            "col-span-2": "grid-column: span 2",
+            "col-span-3": "grid-column: span 3",
+            "col-span-4": "grid-column: span 4",
+            "col-span-5": "grid-column: span 5",
+            "col-span-6": "grid-column: span 6",
+            "col-span-full": "grid-column: 1 / -1",
+            "row-span-1": "grid-row: span 1",
+            "row-span-2": "grid-row: span 2",
+            "row-span-3": "grid-row: span 3",
+            "row-span-4": "grid-row: span 4",
+            "row-span-5": "grid-row: span 5",
+            "row-span-6": "grid-row: span 6",
+            "grid-cols-1": "grid-template-columns: repeat(1, minmax(0,1fr))",
+            "grid-cols-2": "grid-template-columns: repeat(2, minmax(0,1fr))",
+            "grid-cols-3": "grid-template-columns: repeat(3, minmax(0,1fr))",
+            "grid-cols-4": "grid-template-columns: repeat(4, minmax(0,1fr))",
+            "grid-cols-12": "grid-template-columns: repeat(12, minmax(0,1fr))",
+            "auto-rows-[Npx]": "grid-auto-rows: Npx"
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "pricing": {
+        "signals": {
+          "pricing_pattern_signals": [
+            {
+              "name": "has_currency_symbol_dollar_euro_pound",
+              "weight": 0.95
+            },
+            {
+              "name": "has_large_price_number",
+              "weight": 0.9
+            },
+            {
+              "name": "has_feature_list_with_checkmarks_or_arrows",
+              "weight": 0.8
+            },
+            {
+              "name": "has_cta_button_per_card",
+              "weight": 0.75
+            },
+            {
+              "name": "has_2_to_4_similar_card_siblings",
+              "weight": 0.8
+            },
+            {
+              "name": "one_card_has_different_background",
+              "weight": 0.85
+            },
+            {
+              "name": "one_card_has_badge_or_label",
+              "weight": 0.7
+            },
+            {
+              "name": "has_plan_name_label_above_amount",
+              "weight": 0.75
+            },
+            {
+              "name": "has_billing_period_text",
+              "weight": 0.7
+            }
+          ],
+          "button_tag_rule": "Both <a> and <button> elements qualify for BUTTON_WIDGET classification",
+          "absolute_child_rule": "Children with position:absolute inside a positioned card → HTML_WIDGET (badge, label)",
+          "feature_list_rule": "ul inside pricing card → HTML_WIDGET if list items need custom icon styling (not standard bullets)"
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "stats_row": {
+        "signals": {
+          "stats_pattern_signals": [
+            {
+              "name": "has_4_similar_cells",
+              "weight": 0.8
+            },
+            {
+              "name": "each_cell_has_large_number",
+              "weight": 0.85
+            },
+            {
+              "name": "each_cell_has_small_label",
+              "weight": 0.8
+            },
+            {
+              "name": "has_count_up_js_or_data_target",
+              "weight": 0.95
+            },
+            {
+              "name": "data_target_attribute_present",
+              "weight": 0.9
+            },
+            {
+              "name": "intersectionobserver_in_script",
+              "weight": 0.85
+            }
+          ],
+          "js_dom_mutation_rule": {
+            "trigger": "Script contains querySelector + textContent/innerHTML on element that would be native widget",
+            "action": "Classify that element (and its closest container) as HTML_WIDGET",
+            "exception": "If the mutation is only for class toggling (adding CSS classes) — keep native widget, put JS in Global Setup"
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "testimonials": {
+        "signals": {
+          "avatar_circle_fingerprint": {
+            "required": [
+              "border-radius: 50% OR border-radius ≥ 40px",
+              "width = height (square)",
+              "contains 2-3 characters of text"
+            ],
+            "supporting": [
+              "background-color set",
+              "display:flex + align-items:center + justify-content:center",
+              "font-weight ≥ 600"
+            ],
+            "action": "If avatar circle detected in author block → entire author block → HTML_WIDGET"
+          },
+          "testimonial_author_block_rule": "Author block = avatar circle + name + role → always HTML_WIDGET regardless of naming convention"
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "fixed_nav": {
+        "signals": {
+          "fixed_nav_hard_rule": {
+            "signal": "position:fixed on nav/header element",
+            "action": "HTML_WIDGET — unconditional, no confidence threshold needed",
+            "priority": "HIGHEST — overrides all other classification attempts"
+          },
+          "nav_detection_signals": [
+            {
+              "name": "position_fixed",
+              "weight": 1.0
+            },
+            {
+              "name": "is_nav_or_header_tag",
+              "weight": 0.9
+            },
+            {
+              "name": "z_index_gte_50",
+              "weight": 0.8
+            },
+            {
+              "name": "full_width_top_0",
+              "weight": 0.85
+            },
+            {
+              "name": "has_logo_and_links",
+              "weight": 0.8
+            },
+            {
+              "name": "has_scroll_class_toggle_js",
+              "weight": 0.9
+            }
+          ]
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "marquee": {
+        "signals": {
+          "marquee_pattern_signals": [
+            {
+              "name": "has_keyframe_animation_horizontal_transform",
+              "weight": 0.95
+            },
+            {
+              "name": "overflow_hidden_on_wrapper",
+              "weight": 0.85
+            },
+            {
+              "name": "white_space_nowrap",
+              "weight": 0.8
+            },
+            {
+              "name": "has_duplicate_content_items",
+              "weight": 0.75
+            },
+            {
+              "name": "animation_duration_gte_10s",
+              "weight": 0.7
+            },
+            {
+              "name": "animation_timing_linear",
+              "weight": 0.8
+            },
+            {
+              "name": "translateX_in_keyframes",
+              "weight": 0.9
+            }
+          ],
+          "animation_cross_reference_rule": {
+            "rule": "When element has animation: [name] property, find @keyframes [name] in document",
+            "if_found_horizontal_transform": "HTML_WIDGET_ANIMATED (marquee/slider pattern)",
+            "if_found_opacity_or_scale": "May be OK as native widget with companion CSS animation",
+            "if_found_complex_path": "HTML_WIDGET_ANIMATED"
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "footer": {
+        "signals": {
+          "footer_pattern_signals": [
+            {
+              "name": "is_footer_or_site_footer_class_or_tag",
+              "weight": 0.95
+            },
+            {
+              "name": "has_multi_column_grid",
+              "weight": 0.85
+            },
+            {
+              "name": "has_copyright_text",
+              "weight": 0.9
+            },
+            {
+              "name": "has_nav_link_lists",
+              "weight": 0.8
+            },
+            {
+              "name": "has_logo_in_first_column",
+              "weight": 0.75
+            },
+            {
+              "name": "has_border_top",
+              "weight": 0.6
+            },
+            {
+              "name": "near_bottom_of_document",
+              "weight": 0.7
+            }
+          ],
+          "fr_unit_parser": {
+            "description": "Parse any CSS grid-template-columns value to extract fr proportions",
+            "patterns": [
+              "repeat(N, 1fr) → Nfr equal columns",
+              "Xfr Yfr Zfr → explicit proportions",
+              "2fr 1fr 1fr 1fr → '2fr 1fr 1fr 1fr'",
+              "1fr 2fr → '1fr 2fr'",
+              "200px 1fr → mixed: note for companion CSS, use 1fr in Elementor with min-width on first col"
+            ]
+          },
+          "animated_child_isolation_rule": {
+            "rule": "If a FLEX_ROW or FLEX_COLUMN child has animation/transition targeting its visual appearance, make ONLY THAT CHILD an HTML_WIDGET. Keep the parent container native.",
+            "exception": "If the animated child is the layout-defining element (e.g., takes full width), make the entire parent HTML_WIDGET"
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "cta_section": {
+        "signals": {
+          "cta_section_signals": [
+            {
+              "name": "has_contrast_background_different_from_page",
+              "weight": 0.85
+            },
+            {
+              "name": "has_large_heading_and_cta_buttons",
+              "weight": 0.8
+            },
+            {
+              "name": "full_width_or_near_full_width",
+              "weight": 0.75
+            },
+            {
+              "name": "no_card_children_only_text_and_buttons",
+              "weight": 0.8
+            },
+            {
+              "name": "has_before_pseudo_element_with_brand_text",
+              "weight": 0.7
+            }
+          ],
+          "pseudo_element_extractor_rules": {
+            "trigger": "CSS rule selector ending in ::before or ::after",
+            "action": "Extract all properties, add to companion CSS under the element's nx- class",
+            "special_properties": {
+              "content": "May contain brand name string — preserve exactly",
+              "position": "absolute/fixed — check for stacking context conflicts",
+              "z-index": "Ensure z-index stack is correct (content > ::before)"
+            }
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      },
+      "process_steps": {
+        "signals": {
+          "process_steps_signals": [
+            {
+              "name": "has_numbered_sequential_items",
+              "weight": 0.9
+            },
+            {
+              "name": "numbers_01_02_03_04_pattern",
+              "weight": 0.85
+            },
+            {
+              "name": "each_item_has_title_and_description",
+              "weight": 0.8
+            },
+            {
+              "name": "items_in_column_with_borders_between",
+              "weight": 0.75
+            },
+            {
+              "name": "has_visual_panel_alongside_steps",
+              "weight": 0.7
+            },
+            {
+              "name": "section_called_process_or_how_it_works",
+              "weight": 0.8
+            }
+          ],
+          "hover_cascade_detector": {
+            "rule": "Scan all CSS for ':hover' rules that target descendant elements",
+            "pattern": ".parent:hover .child { property: value }",
+            "action": "Add to companion CSS targeting: .nx-parent:hover .nx-child .elementor-widget-container { property: value }",
+            "OR_for_headings": ".nx-parent:hover .nx-child .elementor-heading-title { property: value }"
+          }
+        },
+        "edge_cases": [],
+        "hard_rules": []
+      }
+    },
+    "calibration": {
+      "version": "1.0.0",
+      "derived_from_simulations": [
+        "SIM-001",
+        "SIM-002",
+        "SIM-003",
+        "SIM-004",
+        "SIM-005",
+        "SIM-006",
+        "SIM-007",
+        "SIM-011",
+        "SIM-016",
+        "SIM-021",
+        "SIM-026",
+        "SIM-031",
+        "SIM-036",
+        "SIM-041",
+        "SIM-046"
+      ],
+      "widget_classification_adjustments": {
+        "button_detection": {
+          "a_tag_with_background_and_padding": "+0.30 to BUTTON_WIDGET confidence",
+          "button_tag_with_padding": "+0.30 to BUTTON_WIDGET confidence",
+          "border_bottom_only_link": "-0.20 from BUTTON_WIDGET, +0.25 to GHOST_LINK pattern"
+        },
+        "html_widget_triggers": {
+          "position_fixed": "HARD RULE: always HTML_WIDGET, confidence 1.0",
+          "animation_property_on_self": "+0.40 to HTML_WIDGET_ANIMATED",
+          "script_modifies_text_content": "+0.50 to HTML_WIDGET_ANIMATED",
+          "contains_canvas_element": "HARD RULE: canvas → HTML_WIDGET_CANVAS",
+          "has_intersection_observer_in_sibling_script": "+0.35 to HTML_WIDGET_ANIMATED",
+          "keyframe_animation_cross_referenced": "+0.40 to HTML_WIDGET_ANIMATED"
+        },
+        "container_type_adjustments": {
+          "uniform_fr_grid_repeat_N_1fr": "+0.20 to GRID_CONTAINER",
+          "explicit_fr_values_detected": "+0.20 to GRID_CONTAINER",
+          "col_span_or_row_span_on_children": "+0.25 to GRID_CONTAINER",
+          "2_col_flex_side_by_side_simple": "-0.15 from GRID_CONTAINER, +0.20 to FLEX_ROW"
+        }
+      },
+      "pattern_confidence_adjustments": {
+        "data_attribute_hints": {
+          "data-section_or_data-component": "+0.40 to matching pattern",
+          "aria-label_with_semantic_term": "+0.30 to matching pattern",
+          "role_attribute": "+0.35 to matching pattern"
+        },
+        "bem_naming": {
+          "block_name_in_vocabulary": "+0.25 to matching pattern",
+          "element_name_in_element_role_map": "+0.20 to widget type confidence"
+        },
+        "tailwind_resolved": {
+          "min-h-screen_resolved": "+0.40 to HERO pattern (after resolution)",
+          "grid-cols-N_resolved": "+0.20 to GRID_CONTAINER"
+        }
+      }
+    }
+  },
+  "summary": {
+    "total_simulations": 15,
+    "patterns_covered": [
+      "hero",
+      "cta_section",
+      "pricing",
+      "process_steps",
+      "stats_row",
+      "bento_grid",
+      "marquee",
+      "fixed_nav",
+      "testimonials",
+      "footer"
+    ],
+    "naming_conventions_covered": [
+      "bem",
+      "obfuscated",
+      "tailwind",
+      "mixed",
+      "semantic",
+      "sem_bem_mixed"
+    ],
+    "difficulty_distribution": {
+      "easy_medium": 1,
+      "medium_hard": 1,
+      "very_hard": 2,
+      "medium": 6,
+      "easy": 3,
+      "hard": 2
+    },
+    "total_delta_rules_extracted": 47,
+    "total_signal_entries": 35
+  }
+}

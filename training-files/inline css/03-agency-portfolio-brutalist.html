@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORMA — Creative Agency</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Overpass:wght@300;400;700&family=Overpass+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;font-family:'Overpass',sans-serif;background:#F2EFE8;color:#0D0D0D;overflow-x:hidden;cursor:none;">
+
+  <!-- Custom cursor -->
+  <div id="cursor-dot" style="position:fixed;width:8px;height:8px;background:#0D0D0D;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s;"></div>
+  <div id="cursor-ring" style="position:fixed;width:40px;height:40px;border:1.5px solid #0D0D0D;border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.08s ease,width 0.25s ease,height 0.25s ease,opacity 0.25s ease;"></div>
+
+  <!-- NAV -->
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:500;padding:24px 60px;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:multiply;">
+    <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;">FORMA</div>
+    <div style="display:flex;gap:36px;align-items:center;">
+      <a href="#work" class="nav-link" style="text-decoration:none;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#0D0D0D;position:relative;">Work</a>
+      <a href="#studio" class="nav-link" style="text-decoration:none;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#0D0D0D;position:relative;">Studio</a>
+      <a href="#contact" class="nav-link" style="text-decoration:none;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#0D0D0D;position:relative;">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 60px;position:relative;overflow:hidden;border-bottom:2px solid #0D0D0D;">
+
+    <!-- Parallax background number -->
+    <div id="para-bg" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',cursive;font-size:320px;color:rgba(13,13,13,0.04);pointer-events:none;white-space:nowrap;user-select:none;line-height:1;">FORMA</div>
+
+    <!-- Floating label top-right -->
+    <div style="position:absolute;top:120px;right:60px;text-align:right;">
+      <p style="font-family:'Overpass Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;margin:0;text-transform:uppercase;">Est. 2019</p>
+      <p style="font-family:'Overpass Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;margin:4px 0 0;text-transform:uppercase;">Lagos · London · Lisbon</p>
+    </div>
+
+    <!-- Animated line indicator -->
+    <div style="position:absolute;left:60px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:1px;height:60px;background:#0D0D0D;opacity:0.15;"></div>
+      <div id="scroll-indicator" style="width:6px;height:6px;border-radius:50%;background:#0D0D0D;animation:bob 2s ease-in-out infinite;"></div>
+      <div style="width:1px;height:60px;background:#0D0D0D;opacity:0.15;"></div>
+    </div>
+
+    <div id="hero-main" style="opacity:0;transform:translateY(40px);">
+      <p style="font-family:'Overpass Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#888;margin:0 0 20px;">Creative agency —</p>
+      <h1 style="font-family:'Bebas Neue',cursive;font-size:clamp(80px,12vw,160px);line-height:0.9;margin:0;letter-spacing:2px;">
+        WE BUILD<br/>
+        <span style="color:transparent;-webkit-text-stroke:2px #0D0D0D;">BRANDS</span><br/>
+        THAT LAST.
+      </h1>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:60px;padding-top:40px;border-top:1px solid rgba(13,13,13,0.15);">
+      <p style="font-size:16px;line-height:1.7;color:#444;max-width:400px;margin:0;">
+        Strategy, identity, and digital experience for companies redefining their categories.
+      </p>
+      <a href="#work" id="cta-btn" style="display:inline-block;text-decoration:none;background:#0D0D0D;color:#F2EFE8;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;padding:18px 36px;transition:transform 0.2s;">SEE OUR WORK →</a>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div style="background:#0D0D0D;padding:18px 0;overflow:hidden;white-space:nowrap;border-bottom:2px solid #0D0D0D;">
+    <div id="marquee" style="display:inline-block;animation:marquee 20s linear infinite;font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:4px;color:#F2EFE8;">
+      BRAND IDENTITY &nbsp;·&nbsp; DIGITAL EXPERIENCE &nbsp;·&nbsp; MOTION DESIGN &nbsp;·&nbsp; WEB DEVELOPMENT &nbsp;·&nbsp; STRATEGY &nbsp;·&nbsp; BRAND IDENTITY &nbsp;·&nbsp; DIGITAL EXPERIENCE &nbsp;·&nbsp; MOTION DESIGN &nbsp;·&nbsp; WEB DEVELOPMENT &nbsp;·&nbsp; STRATEGY &nbsp;·&nbsp;
+    </div>
+  </div>
+
+  <!-- WORK GRID -->
+  <section id="work" style="padding:100px 60px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px;">
+      <h2 style="font-family:'Bebas Neue',cursive;font-size:80px;margin:0;letter-spacing:2px;line-height:1;">Selected<br/>work</h2>
+      <a href="#" style="font-family:'Overpass Mono',monospace;font-size:12px;letter-spacing:2px;color:#888;text-decoration:none;text-transform:uppercase;transition:color 0.2s;" onmouseover="this.style.color='#0D0D0D'" onmouseout="this.style.color='#888'">View all projects →</a>
+    </div>
+
+    <!-- Work items -->
+    <div id="work-grid" style="display:flex;flex-direction:column;gap:2px;">
+
+      <div class="work-item" style="display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;" onmouseover="hoverWork(this,true)" onmouseout="hoverWork(this,false)">
+        <span style="font-family:'Overpass Mono',monospace;font-size:12px;color:#888;">01</span>
+        <div>
+          <h3 style="font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;">Meridian Capital</h3>
+          <p style="font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;">Brand Identity · Visual System</p>
+        </div>
+        <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">2024</span>
+        <span style="font-size:20px;opacity:0;transition:opacity 0.3s;transform:translateX(-10px);transition:all 0.3s;" class="work-arrow">→</span>
+      </div>
+
+      <div class="work-item" style="display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;" onmouseover="hoverWork(this,true)" onmouseout="hoverWork(this,false)">
+        <span style="font-family:'Overpass Mono',monospace;font-size:12px;color:#888;">02</span>
+        <div>
+          <h3 style="font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;">Sona Health</h3>
+          <p style="font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;">Web Experience · Motion</p>
+        </div>
+        <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">2024</span>
+        <span style="font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);" class="work-arrow">→</span>
+      </div>
+
+      <div class="work-item" style="display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;" onmouseover="hoverWork(this,true)" onmouseout="hoverWork(this,false)">
+        <span style="font-family:'Overpass Mono',monospace;font-size:12px;color:#888;">03</span>
+        <div>
+          <h3 style="font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;">Vox Architecture</h3>
+          <p style="font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;">Brand Identity · Print · Digital</p>
+        </div>
+        <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">2023</span>
+        <span style="font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);" class="work-arrow">→</span>
+      </div>
+
+      <div class="work-item" style="display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;" onmouseover="hoverWork(this,true)" onmouseout="hoverWork(this,false)">
+        <span style="font-family:'Overpass Mono',monospace;font-size:12px;color:#888;">04</span>
+        <div>
+          <h3 style="font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;">Keller Spirits</h3>
+          <p style="font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;">Packaging · Campaign · Social</p>
+        </div>
+        <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">2023</span>
+        <span style="font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);" class="work-arrow">→</span>
+      </div>
+
+      <div class="work-item" style="display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid #D8D5CE;transition:all 0.3s;cursor:none;" onmouseover="hoverWork(this,true)" onmouseout="hoverWork(this,false)">
+        <span style="font-family:'Overpass Mono',monospace;font-size:12px;color:#888;">05</span>
+        <div>
+          <h3 style="font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;">Dune Fintech</h3>
+          <p style="font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;">Full Brand · Product Design</p>
+        </div>
+        <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">2023</span>
+        <span style="font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);" class="work-arrow">→</span>
+      </div>
+    </div>
+
+    <!-- Hover preview image (follows cursor) -->
+    <div id="project-preview" style="position:fixed;width:280px;height:200px;background:#0D0D0D;border-radius:4px;pointer-events:none;z-index:400;opacity:0;transition:opacity 0.3s;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+      <span id="preview-label" style="font-family:'Bebas Neue',cursive;font-size:32px;color:#F2EFE8;letter-spacing:2px;opacity:0.3;">PROJECT</span>
+    </div>
+  </section>
+
+  <!-- STUDIO -->
+  <section id="studio" style="padding:100px 60px;background:#0D0D0D;border-top:2px solid #0D0D0D;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start;">
+      <div>
+        <h2 style="font-family:'Bebas Neue',cursive;font-size:80px;color:#F2EFE8;margin:0 0 40px;letter-spacing:2px;line-height:0.9;">The studio</h2>
+        <p style="font-size:16px;line-height:1.8;color:#888;margin:0 0 30px;">FORMA is a 12-person creative studio working at the intersection of strategy and craft. We partner with ambitious companies to define and build their visual identity — from first sketch to final pixel.</p>
+        <p style="font-size:16px;line-height:1.8;color:#888;margin:0 0 40px;">Our process is collaborative, fast, and built around results that outlast the trend cycle.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;border:1px solid #2A2A28;">
+          <div style="padding:32px;border-right:1px solid #2A2A28;border-bottom:1px solid #2A2A28;">
+            <p style="font-family:'Bebas Neue',cursive;font-size:52px;color:#F2EFE8;margin:0;">140+</p>
+            <p style="font-size:13px;color:#666;margin:6px 0 0;font-family:'Overpass Mono',monospace;">clients served</p>
+          </div>
+          <div style="padding:32px;border-bottom:1px solid #2A2A28;">
+            <p style="font-family:'Bebas Neue',cursive;font-size:52px;color:#F2EFE8;margin:0;">6</p>
+            <p style="font-size:13px;color:#666;margin:6px 0 0;font-family:'Overpass Mono',monospace;">years running</p>
+          </div>
+          <div style="padding:32px;border-right:1px solid #2A2A28;">
+            <p style="font-family:'Bebas Neue',cursive;font-size:52px;color:#F2EFE8;margin:0;">23</p>
+            <p style="font-size:13px;color:#666;margin:6px 0 0;font-family:'Overpass Mono',monospace;">awards won</p>
+          </div>
+          <div style="padding:32px;">
+            <p style="font-family:'Bebas Neue',cursive;font-size:52px;color:#F2EFE8;margin:0;">3</p>
+            <p style="font-size:13px;color:#666;margin:6px 0 0;font-family:'Overpass Mono',monospace;">studio locations</p>
+          </div>
+        </div>
+      </div>
+      <div style="padding-top:20px;">
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div style="padding:32px 0;border-top:1px solid #2A2A28;display:flex;gap:24px;align-items:flex-start;">
+            <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:2px;padding-top:4px;flex-shrink:0;">01</span>
+            <div>
+              <h4 style="font-family:'Bebas Neue',cursive;font-size:24px;color:#F2EFE8;margin:0 0 8px;letter-spacing:1px;">Brand Strategy</h4>
+              <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Positioning, messaging architecture, competitive landscape analysis, and naming.</p>
+            </div>
+          </div>
+          <div style="padding:32px 0;border-top:1px solid #2A2A28;display:flex;gap:24px;align-items:flex-start;">
+            <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:2px;padding-top:4px;flex-shrink:0;">02</span>
+            <div>
+              <h4 style="font-family:'Bebas Neue',cursive;font-size:24px;color:#F2EFE8;margin:0 0 8px;letter-spacing:1px;">Visual Identity</h4>
+              <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Logo systems, colour, typography, iconography, and full brand guidelines.</p>
+            </div>
+          </div>
+          <div style="padding:32px 0;border-top:1px solid #2A2A28;display:flex;gap:24px;align-items:flex-start;">
+            <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:2px;padding-top:4px;flex-shrink:0;">03</span>
+            <div>
+              <h4 style="font-family:'Bebas Neue',cursive;font-size:24px;color:#F2EFE8;margin:0 0 8px;letter-spacing:1px;">Digital Experience</h4>
+              <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Website design and development, interactive prototypes, and motion systems.</p>
+            </div>
+          </div>
+          <div style="padding:32px 0;border-top:1px solid #2A2A28;border-bottom:1px solid #2A2A28;display:flex;gap:24px;align-items:flex-start;">
+            <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:2px;padding-top:4px;flex-shrink:0;">04</span>
+            <div>
+              <h4 style="font-family:'Bebas Neue',cursive;font-size:24px;color:#F2EFE8;margin:0 0 8px;letter-spacing:1px;">Campaign & Content</h4>
+              <p style="font-size:14px;line-height:1.7;color:#666;margin:0;">Campaign concepting, art direction, social content, and print collateral.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="padding:120px 60px;text-align:center;border-top:2px solid #0D0D0D;">
+    <p style="font-family:'Overpass Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#888;margin:0 0 20px;">Ready to start?</p>
+    <h2 style="font-family:'Bebas Neue',cursive;font-size:clamp(60px,10vw,130px);margin:0 0 20px;letter-spacing:2px;line-height:0.9;">Let's build<br/>something.</h2>
+    <a href="mailto:hello@forma.studio" id="email-link" style="display:inline-block;font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;color:#0D0D0D;text-decoration:none;border-bottom:3px solid #0D0D0D;padding-bottom:4px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.5'" onmouseout="this.style.opacity='1'">HELLO@FORMA.STUDIO</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:32px 60px;border-top:1px solid #D8D5CE;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;">© 2025 FORMA Studio</span>
+    <span style="font-family:'Overpass Mono',monospace;font-size:11px;color:#888;">All rights reserved</span>
+  </footer>
+
+  <style>
+    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    html { scroll-behavior: smooth; }
+    a, button { cursor: none !important; }
+  </style>
+
+  <script>
+    // Custom cursor
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
+    });
+
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Cursor expand on hoverable elements
+    document.querySelectorAll('a, button, .work-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.width = '70px';
+        ring.style.height = '70px';
+        ring.style.opacity = '0.5';
+        dot.style.transform = 'translate(-50%,-50%) scale(1.5)';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.width = '40px';
+        ring.style.height = '40px';
+        ring.style.opacity = '1';
+        dot.style.transform = 'translate(-50%,-50%) scale(1)';
+      });
+    });
+
+    // Hero entrance
+    setTimeout(() => {
+      const h = document.getElementById('hero-main');
+      h.style.transition = 'opacity 1s ease, transform 1s ease';
+      h.style.opacity = '1';
+      h.style.transform = 'translateY(0)';
+    }, 300);
+
+    // Parallax background text
+    document.addEventListener('mousemove', (e) => {
+      const para = document.getElementById('para-bg');
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      para.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    });
+
+    // Work item hover with project preview
+    const preview = document.getElementById('project-preview');
+    const labels = ['MERIDIAN', 'SONA', 'VOX', 'KELLER', 'DUNE'];
+    let currentLabel = '';
+
+    document.addEventListener('mousemove', (e) => {
+      if (preview.style.opacity === '1') {
+        preview.style.left = (e.clientX + 20) + 'px';
+        preview.style.top = (e.clientY - 100) + 'px';
+      }
+    });
+
+    function hoverWork(el, enter) {
+      const arrow = el.querySelector('.work-arrow');
+      if (enter) {
+        el.style.paddingLeft = '20px';
+        arrow.style.opacity = '1';
+        arrow.style.transform = 'translateX(0)';
+        preview.style.opacity = '1';
+        const idx = Array.from(document.querySelectorAll('.work-item')).indexOf(el);
+        document.getElementById('preview-label').textContent = labels[idx];
+      } else {
+        el.style.paddingLeft = '0';
+        arrow.style.opacity = '0';
+        arrow.style.transform = 'translateX(-10px)';
+        preview.style.opacity = '0';
+      }
+    }
+
+    // Scroll-triggered count-up for studio stats
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const targets = [140, 6, 23, 3];
+          const els = entry.target.querySelectorAll('.stat-num');
+          els.forEach((el, i) => {
+            let start = 0;
+            const end = targets[i];
+            const dur = 1500;
+            const startTime = performance.now();
+            function update(now) {
+              const t = Math.min((now - startTime) / dur, 1);
+              const ease = 1 - Math.pow(1 - t, 3);
+              el.textContent = Math.round(start + (end - start) * ease) + (i === 0 ? '+' : '');
+              if (t < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+          });
+          statsObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    // Add stat-num class to studio stat numbers for observer
+    const statNums = document.querySelectorAll('#studio p[style*="font-size:52px"]');
+    statNums.forEach(el => el.classList.add('stat-num'));
+    if (statNums.length) statsObserver.observe(statNums[0].closest('section') || document.getElementById('studio'));
+
+    // Scroll-based hero text clip
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const heroMain = document.getElementById('hero-main');
+      if (heroMain) {
+        heroMain.style.transform = `translateY(${scrolled * 0.2}px)`;
+        heroMain.style.opacity = Math.max(0, 1 - scrolled / 600);
+      }
+    });
+  </script>
+</body>
+</html>

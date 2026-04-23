@@ -251,7 +251,8 @@ class EditabilityPredictor {
 			return true;
 		}
 		// Check for canvas children.
-		return null !== $xp->query( './/canvas | .//[contains(@class,"canvas")]', $el )->item( 0 );
+		$canvas_nodes = $xp->query( './/canvas | .//*[contains(@class,"canvas")]', $el );
+		return (bool) ( $canvas_nodes && $canvas_nodes->length > 0 );
 	}
 
 	private function isDecorativeSymbol( \DOMElement $el ): bool {

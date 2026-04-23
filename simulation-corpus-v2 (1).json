@@ -1,0 +1,661 @@
+{
+  "round": 2,
+  "simulations": [
+    {
+      "id": "SIM-051",
+      "category": "framework_output",
+      "source": "webflow_export",
+      "difficulty": "hard",
+      "description": "Webflow exports have extremely verbose class names, w- prefixed layout classes, and nested divs that are pure layout helpers with no semantic value",
+      "input_signals": {
+        "class_patterns": [
+          "w-layout-grid",
+          "w-col",
+          "w-container",
+          "w-row",
+          "w-nav",
+          "w-nav-brand",
+          "w-inline-block",
+          "w-nav-menu",
+          "w-nav-link"
+        ],
+        "structure_patterns": [
+          "Multiple wrapper divs with no visual role (w-container > div > div > content)",
+          "w-layout-grid with CSS Grid",
+          "w-col classes with explicit width percentages inline",
+          "data-w-id attributes on every element",
+          "IX2 animation data attributes: data-w-id, fs-cc-* attributes"
+        ],
+        "style_patterns": [
+          "Inline styles override class styles",
+          "Webflow injects a large stylesheet with all utility classes",
+          "Colours defined as CSS variables --color-*",
+          "Webflow's own grid system (not standard CSS Grid)"
+        ]
+      },
+      "naive_failures": [
+        "w-layout-grid classified as generic FLEX_COLUMN (not GRID_CONTAINER)",
+        "Deeply nested wrapper divs create 6+ levels of Elementor containers",
+        "w-nav classified as native FLEX_ROW not HTML_WIDGET",
+        "data-w-id attributes cause confusion in ID generation",
+        "IX2 animation data attributes not detected as animation triggers"
+      ],
+      "corrections": {
+        "pre_pass": "WEBFLOW_DETECTOR",
+        "detection_signals": [
+          "Presence of w-layout-*, w-col, w-container, w-row class prefixes",
+          "data-w-id attributes on multiple elements",
+          "Link to webflow.css or webflow-script.js in head"
+        ],
+        "webflow_class_map": {
+          "w-layout-grid": "GRID_CONTAINER — read grid-template-columns from inline style",
+          "w-container": "SKIP_WRAPPER — pure layout helper, flatten into parent",
+          "w-row": "FLEX_ROW_CONTAINER",
+          "w-col": "FLEX_COLUMN_INNER — read width from inline style or w-col-* class",
+          "w-col-1": "width: 8.33%",
+          "w-col-2": "width: 16.66%",
+          "w-col-3": "width: 25%",
+          "w-col-4": "width: 33.33%",
+          "w-col-6": "width: 50%",
+          "w-col-8": "width: 66.66%",
+          "w-col-12": "width: 100%",
+          "w-nav": "HTML_WIDGET (always — Webflow nav has complex IX2 interactions)",
+          "w-inline-block": "SKIP_WRAPPER (usually a link wrapper, absorb into child)",
+          "w-nav-menu": "HTML_WIDGET (part of nav widget)",
+          "w-nav-link": "HTML_WIDGET (part of nav widget)"
+        },
+        "ix2_detection": {
+          "signal": "data-w-id attribute present OR fs-cc-* attributes",
+          "action": "Mark element as potentially animated — check computed animation CSS",
+          "if_animation_found": "HTML_WIDGET_ANIMATED",
+          "if_no_animation": "Proceed with normal classification (data-w-id alone is not enough)"
+        },
+        "wrapper_flattening": {
+          "rule": "Any div with only one child AND no visual CSS (no bg, no border, no padding, no shadow) is a wrapper — skip it and use the child directly",
+          "max_depth_after_flattening": 4
+        }
+      },
+      "extracted_rules": {
+        "webflow_prefix_detection": "class starts with 'w-' → check against Webflow class map",
+        "wrapper_flattening_rule": "single-child div + no visual CSS → SKIP_WRAPPER",
+        "ix2_animation_rule": "data-w-id + computed animation-name or transition → HTML_WIDGET_ANIMATED"
+      }
+    },
+    {
+      "id": "SIM-052",
+      "category": "framework_output",
+      "source": "framer_export",
+      "difficulty": "very_hard",
+      "description": "Framer exports use CSS-in-JS with hashed class names plus heavy use of CSS transforms for layout, not standard flexbox/grid",
+      "input_signals": {
+        "class_patterns": [
+          "framer-*",
+          "Q8Aaq",
+          "biJIvE (randomised hashes)"
+        ],
+        "structure_patterns": [
+          "position:absolute on EVERY element (Framer uses absolute positioning by default)",
+          "top/left percentages for positioning instead of flex/grid",
+          "transform:translate for visual offset",
+          "CSS custom properties for all design tokens: --framer-color-*",
+          "No semantic HTML tags — everything is <div>"
+        ]
+      },
+      "naive_failures": [
+        "position:absolute on all elements → all classified as HTML_WIDGET_COMPLEX (too aggressive)",
+        "Percentage-based positioning not converted to flex layout",
+        "No semantic HTML → zero vocabulary signals",
+        "Pure absolute layout cannot map to Elementor containers at all",
+        "Result: entire page becomes one giant HTML widget"
+      ],
+      "corrections": {
+        "framer_detection_signals": [
+          "All elements have position:absolute",
+          "Class names are short random strings (4-6 chars, no hyphens)",
+          "CSS custom properties follow --framer-* naming",
+          "No h1-h6 tags OR all heading-like elements are divs with heading font sizes"
+        ],
+        "framer_conversion_strategy": {
+          "primary": "LAYOUT_RECONSTRUCTION from visual positioning",
+          "algorithm": [
+            "Step 1: Group elements by their approximate vertical position (top value)",
+            "Step 2: Within each vertical group, sort by left value → determines column order",
+            "Step 3: Infer flex layout from the grouping pattern",
+            "Step 4: Convert percentage top/left to flex order, convert percentage sizes to fr/% values",
+            "Step 5: Apply CSS property fingerprinting to classify each element"
+          ],
+          "fallback": "If reconstruction confidence < 0.5 → entire section as HTML_WIDGET with prominent report note",
+          "report_note": "This section was exported from Framer and uses absolute positioning throughout. Automatic conversion is limited. The HTML widget preserves the visual appearance but the layout is not Elementor-native. Consider rebuilding this section using the Elementor editor."
+        },
+        "framer_css_var_extraction": {
+          "pattern": "--framer-color-*",
+          "action": "Extract to design token map — these ARE the colour system even though names differ"
+        }
+      },
+      "extracted_rules": {
+        "all_absolute_detection": "If 90%+ of children have position:absolute → FRAMER or similar absolute-layout tool",
+        "reconstruction_confidence_floor": 0.5,
+        "framer_css_var_pattern": "--framer-*"
+      }
+    },
+    {
+      "id": "SIM-053",
+      "category": "framework_output",
+      "source": "nextjs_rendered_html",
+      "difficulty": "medium",
+      "description": "Next.js RSC output is clean semantic HTML — the framework does not inject layout classes. The challenge is hydration markers and __NEXT_DATA__ script tags.",
+      "input_signals": {
+        "markers": [
+          "__NEXT_DATA__ script tag",
+          "data-reactroot",
+          "data-nextjs-*",
+          "next/image img tags with specific attributes"
+        ],
+        "structure": "Generally clean semantic HTML — Next.js encourages good HTML practices",
+        "challenge": "next/image produces complex picture/source element structures, not simple img tags"
+      },
+      "naive_failures": [
+        "__NEXT_DATA__ JSON script tag → parsed as SKIP but sometimes contains useful structure hints",
+        "next/image picture > source + img structure → classified as HTML_WIDGET_COMPLEX",
+        "Hydration markers on root element → ignored correctly",
+        "data-nimg attribute on img tags → not recognised as image widget signal"
+      ],
+      "corrections": {
+        "nextjs_detection": "Presence of __NEXT_DATA__ script OR data-nextjs-scroll-focus-boundary",
+        "next_image_handling": {
+          "pattern": "picture > source[srcset] + img[data-nimg]",
+          "action": "Classify as IMAGE_WIDGET — extract src from img[src], note in report that srcset is lost",
+          "report_note": "Next.js Image component detected. The image src has been extracted. Responsive srcset will need to be reconfigured in Elementor's image widget."
+        },
+        "nextjs_data_script": "Remove __NEXT_DATA__ script — it contains runtime state not relevant to static conversion",
+        "overall": "Next.js HTML is generally the easiest framework output — clean semantic HTML + minor cleanup"
+      },
+      "extracted_rules": {
+        "next_image_pattern": "picture > source + img[data-nimg] → IMAGE_WIDGET",
+        "next_data_script": "script#__NEXT_DATA__ → SKIP always"
+      }
+    },
+    {
+      "id": "SIM-054",
+      "category": "edge_layout",
+      "pattern": "overlapping_elements",
+      "difficulty": "hard",
+      "description": "Designs where elements visually overlap using negative margins, transforms, or absolute positioning within a relatively-positioned container",
+      "input_html_pattern": "\n<div class=\"hero-visual\" style=\"position:relative; height:400px;\">\n  <div class=\"orb-bg\" style=\"position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(#c8ff00,transparent);opacity:0.2;top:-50px;right:-30px;\"></div>\n  <div class=\"card-main\" style=\"position:relative;z-index:2;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:40px;\">\n    <h3>Feature Title</h3>\n    <p>Feature description text</p>\n  </div>\n  <div class=\"card-bg-accent\" style=\"position:absolute;bottom:-20px;right:-20px;width:100%;height:100%;background:rgba(200,255,0,0.05);border:1px solid rgba(200,255,0,0.2);z-index:1;\"></div>\n</div>",
+      "naive_failures": [
+        "position:absolute on children → all become HTML_WIDGET_COMPLEX",
+        "Lose the editable card-main content (h3, p) even though it is clearly native-worthy",
+        "orb-bg (decorative gradient circle) and card-bg-accent (offset accent card) both editable? No — they are visual chrome"
+      ],
+      "corrections": {
+        "strategy": "CONTENT_EXTRACTION_WITH_DECORATION_ISOLATION",
+        "steps": [
+          "Identify the 'primary content layer': highest z-index positioned child with text content",
+          "Extract primary content layer as native widgets",
+          "All other positioned children with no text content → companion CSS ::before/::after OR HTML_WIDGET decoration",
+          "Container becomes position:relative in companion CSS"
+        ],
+        "companion_css_approach": {
+          "orb_bg": "Recreate as .nx-hero-visual::before { position:absolute; ... radial-gradient } in companion CSS",
+          "card_bg_accent": "Recreate as .nx-card-main::after { position:absolute; bottom:-20px; right:-20px; ... } in companion CSS",
+          "card_main": "Native FLEX_COLUMN container with heading + text-editor widgets"
+        }
+      },
+      "extracted_rules": {
+        "overlapping_layout_rule": "When container has multiple absolutely-positioned children: identify primary content child (has text, highest z-index), make it native. Move decorative positioned children to companion CSS as pseudo-elements.",
+        "decorative_positioned_child_signals": [
+          "No text content",
+          "No interactive elements",
+          "border-radius:50% (orb) or exact offset positioning (accent card effect)",
+          "opacity < 0.5 (decorative overlay)"
+        ]
+      }
+    },
+    {
+      "id": "SIM-055",
+      "category": "typography_edge",
+      "pattern": "gradient_text",
+      "difficulty": "medium",
+      "description": "Text with CSS gradient fill — common in modern SaaS designs for accent words",
+      "input_html_pattern": "\n<h2 class=\"section-title\">\n  Everything you need to \n  <span class=\"gradient-text\" style=\"background:linear-gradient(135deg,#c8ff00,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;\">ship faster</span>\n</h2>",
+      "naive_failures": [
+        "background:linear-gradient → moved to companion CSS (correct)",
+        "-webkit-background-clip:text → not understood as typography effect",
+        "-webkit-text-fill-color:transparent → not understood",
+        "Result: companion CSS has background:gradient but -webkit-background-clip is dropped",
+        "Gradient text effect broken on import"
+      ],
+      "corrections": {
+        "gradient_text_detection": {
+          "signals": [
+            "-webkit-background-clip: text OR background-clip: text",
+            "-webkit-text-fill-color: transparent OR color: transparent",
+            "background: linear-gradient OR radial-gradient"
+          ],
+          "action": "Classify as GRADIENT_TEXT_SPAN — companion CSS must include ALL THREE properties together",
+          "companion_css_template": ".nx-gradient-text { background: [gradient]; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }"
+        },
+        "heading_with_gradient_span": {
+          "strategy": "Keep as HEADING_WIDGET — the span with gradient styling stays inline in the title HTML field",
+          "companion_css": "Target .nx-section-title .nx-gradient-text with all three gradient text properties"
+        }
+      },
+      "extracted_rules": {
+        "gradient_text_trio": "Always write -webkit-background-clip, -webkit-text-fill-color, and background together — they are inseparable",
+        "detection": "background-clip:text present → GRADIENT_TEXT component, companion CSS required"
+      }
+    },
+    {
+      "id": "SIM-056",
+      "category": "typography_edge",
+      "pattern": "variable_fonts",
+      "difficulty": "medium",
+      "description": "Variable fonts use font-variation-settings instead of font-weight for fine-grained weight control",
+      "input_html_pattern": "\n<h1 style=\"font-family:'Inter var';font-variation-settings:'wght' 800, 'slnt' -5;font-size:72px;\">\n  Build workflows\n</h1>",
+      "naive_failures": [
+        "font-variation-settings not in property-to-Elementor map → dropped",
+        "Result: heading uses default font-weight instead of variable weight",
+        "Slant effect (-5 slnt) completely lost"
+      ],
+      "corrections": {
+        "font_variation_handling": {
+          "detection": "font-variation-settings property present",
+          "action_for_wght": "Extract 'wght' value → use as font-weight in Elementor typography settings (approximate — Elementor doesn't support variable font axes directly)",
+          "action_for_other_axes": "Add font-variation-settings to companion CSS — Elementor cannot control non-wght axes",
+          "companion_css": ".nx-hero-headline .elementor-heading-title { font-variation-settings: 'wght' 800, 'slnt' -5; }"
+        }
+      },
+      "extracted_rules": {
+        "variable_font_rule": "font-variation-settings: wght → extract to font-weight for Elementor. All other axes → companion CSS only."
+      }
+    },
+    {
+      "id": "SIM-057",
+      "category": "advanced_animation",
+      "pattern": "scroll_parallax_and_scrub",
+      "difficulty": "very_hard",
+      "description": "Designs using scroll-position-linked animations: elements that move, scale, or change opacity as the user scrolls (scrubbed animations, not just triggered-once reveals)",
+      "input_signals": {
+        "js_patterns": [
+          "window.addEventListener('scroll', function() { el.style.transform = 'translateY(' + scrollY * 0.5 + 'px)' })",
+          "GSAP ScrollTrigger",
+          "Intersection Observer with incremental state changes (not just toggle)",
+          "CSS scroll-timeline (new spec)",
+          "background-attachment: fixed (CSS parallax)"
+        ]
+      },
+      "naive_failures": [
+        "Scroll-linked JS → element classified as HTML_WIDGET_ANIMATED (correct!)",
+        "background-attachment:fixed → moved to companion CSS (correct but breaks in many mobile browsers)",
+        "GSAP ScrollTrigger → element made HTML_WIDGET but ScrollTrigger library not imported → animation broken"
+      ],
+      "corrections": {
+        "scroll_parallax_js": {
+          "detection": "scroll event listener + style.transform = 'translate' + multiplied by scrollY",
+          "action": "HTML_WIDGET — keep the JS inline in the widget",
+          "enhancement": "Replace multiplied scrollY with CSS scroll-timeline where browser support allows",
+          "report_note": "Scroll-parallax effect detected. Preserved as HTML widget. Works on Chrome/Edge. Firefox support limited."
+        },
+        "gsap_scroll_trigger": {
+          "detection": "ScrollTrigger import OR gsap.to(el, {scrollTrigger:...})",
+          "action": "HTML_WIDGET — include the GSAP JS",
+          "required_addition": "Add CDN script tag for GSAP in Global Setup: <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'>",
+          "add_scrolltrigger": "<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js'>",
+          "report_note": "GSAP ScrollTrigger detected. GSAP library added to Global Setup. Animation will function on the published page."
+        },
+        "background_attachment_fixed": {
+          "detection": "background-attachment: fixed",
+          "action": "Companion CSS — but wrap in @supports to handle mobile gracefully",
+          "companion_css": "@supports not (-webkit-overflow-scrolling: touch) { .nx-section { background-attachment: fixed; } }"
+        },
+        "css_scroll_timeline": {
+          "detection": "animation-timeline: scroll() OR scroll-timeline: --*",
+          "action": "Companion CSS with @supports wrapper",
+          "companion_css": "@supports (animation-timeline: scroll()) { ... }"
+        }
+      },
+      "extracted_rules": {
+        "gsap_cdn_injection": "When GSAP detected → add CDN scripts to Global Setup widget automatically",
+        "scroll_parallax_detection": "scroll event listener + transform style = 'translateY' + scrollY multiplication",
+        "background_fixed_mobile_fix": "Always wrap background-attachment:fixed in @supports not (-webkit-overflow-scrolling: touch)"
+      }
+    },
+    {
+      "id": "SIM-058",
+      "category": "media",
+      "pattern": "video_background",
+      "difficulty": "medium",
+      "description": "Hero or section with autoplay muted loop video as background",
+      "input_html_pattern": "\n<section class=\"hero hero--video\">\n  <video class=\"hero-video\" autoplay muted loop playsinline style=\"position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;\">\n    <source src=\"hero-bg.mp4\" type=\"video/mp4\">\n  </video>\n  <div class=\"hero-content\" style=\"position:relative;z-index:2;\">\n    <h1>Build workflows that think.</h1>\n    <a href=\"#\" class=\"btn-primary\">START FREE</a>\n  </div>\n</section>",
+      "naive_failures": [
+        "<video> tag → HTML_WIDGET_COMPLEX (too aggressive — the content layer is editable)",
+        "hero-content (h1 + button) gets absorbed into the HTML widget when it should be native"
+      ],
+      "corrections": {
+        "strategy": "LAYER_SEPARATION",
+        "video_layer": "HTML_WIDGET — the video element, position:absolute, covers background",
+        "content_layer": "Native containers + widgets — h1 and button are fully editable",
+        "elementor_approach": "Elementor supports video backgrounds natively on containers (background_video_link setting). Use this instead of an HTML widget.",
+        "elementor_video_background_settings": {
+          "background_background": "video",
+          "background_video_link": "[extract src from video tag]",
+          "background_video_start": 0,
+          "background_video_end": 0,
+          "background_play_once": "no",
+          "background_video_fallback_image": ""
+        },
+        "report_note": "Video background detected. Using Elementor's native video background setting. Upload the video file to WordPress Media Library and update the URL in the container's Background settings."
+      },
+      "extracted_rules": {
+        "video_background_native": "video[autoplay][muted][loop] as position:absolute background → use Elementor container's native video background setting, not HTML widget",
+        "content_layer_extraction": "When video is background, siblings with position:relative and z-index > 0 → extract as native content widgets"
+      }
+    },
+    {
+      "id": "SIM-059",
+      "category": "theming",
+      "pattern": "dark_light_toggle",
+      "difficulty": "hard",
+      "description": "Design with two colour schemes toggled by a class on body or a data-theme attribute",
+      "input_signals": {
+        "css_patterns": [
+          "[data-theme='dark'] { --color-bg: #0a0a12; --color-text: #f5f3ee; }",
+          "[data-theme='light'] { --color-bg: #ffffff; --color-text: #1a1a2e; }",
+          ".dark-mode h1 { color: var(--color-text); }",
+          "@media (prefers-color-scheme: dark) { :root { ... } }"
+        ],
+        "js_patterns": [
+          "document.body.setAttribute('data-theme', 'dark')",
+          "document.documentElement.classList.toggle('dark')"
+        ]
+      },
+      "naive_failures": [
+        "Only primary (default) theme colours extracted",
+        "Secondary theme CSS completely ignored",
+        "Toggle JS → included in Global Setup but toggle button not wired"
+      ],
+      "corrections": {
+        "primary_theme": "Extract as normal — the default (initial) theme state is what Elementor renders",
+        "secondary_theme": {
+          "action": "Add both theme CSS variable sets to companion CSS",
+          "format": ":root { --color-bg: [default]; } [data-theme='dark'] { --color-bg: [dark]; } [data-theme='light'] { --color-bg: [light]; }",
+          "report_note": "Dark/light theme toggle detected. Both themes are preserved in the companion CSS. To implement the toggle in WordPress, add a theme-toggle button (HTML widget in nav) that calls document.body.setAttribute('data-theme', theme). The Global Setup script includes the toggle logic."
+        },
+        "prefers_color_scheme": {
+          "action": "Add to companion CSS as @media (prefers-color-scheme: dark) { ... }",
+          "note": "Auto dark mode works without JS toggle"
+        },
+        "global_setup_addition": "Add theme toggle JS to Global Setup: reads localStorage for saved preference, applies on load, provides global toggleTheme() function"
+      },
+      "extracted_rules": {
+        "theme_detection": "[data-theme] OR .dark-mode OR @media prefers-color-scheme in CSS",
+        "dual_theme_extraction": "Extract both themes to companion CSS — primary as :root, secondary as [data-theme='x']",
+        "theme_toggle_js_template": "Store in Global Setup when theme toggle detected"
+      }
+    },
+    {
+      "id": "SIM-060",
+      "category": "component_composition",
+      "pattern": "card_inside_card",
+      "difficulty": "hard",
+      "description": "Feature cards that themselves contain smaller visual cards, metric cards, or mini-dashboards",
+      "input_html_pattern": "\n<div class=\"feature-card feature-card--large\">\n  <div class=\"card-tag\">ANALYTICS</div>\n  <h3 class=\"card-title\">Real-time Insights</h3>\n  <p class=\"card-body\">Track every workflow execution</p>\n  <div class=\"card-visual\">\n    <div class=\"mini-card mini-card--metric\">\n      <span class=\"metric-value\">98.7%</span>\n      <span class=\"metric-label\">uptime</span>\n    </div>\n    <div class=\"mini-card mini-card--metric\">\n      <span class=\"metric-value\">2.3ms</span>\n      <span class=\"metric-label\">latency</span>\n    </div>\n    <div class=\"mini-chart\" style=\"/* chart rendering JS */\">...</div>\n  </div>\n</div>",
+      "naive_failures": [
+        "card-visual with mini-cards → over-classified as GRID_CONTAINER",
+        "mini-cards lose their styling (background, border-radius, specific dimensions)",
+        "mini-chart div → classified as FLEX_COLUMN not HTML_WIDGET_ANIMATED",
+        "Result: card-visual becomes a grid of plain text widgets, all visual fidelity lost"
+      ],
+      "corrections": {
+        "strategy": "SPLIT_AT_EDITABILITY_BOUNDARY",
+        "above_split": [
+          "card-tag → HTML_WIDGET (::before line decoration needed)",
+          "card-title h3 → HEADING_WIDGET",
+          "card-body p → TEXT_EDITOR"
+        ],
+        "below_split": {
+          "card-visual → HTML_WIDGET_COMPLEX": "The entire visual sub-component — mini-cards + chart — stays as HTML widget",
+          "reason": "mini-cards are low editability (2/10), chart is animated, the visual unit is self-contained"
+        },
+        "split_rule": "When a card has a clear 'content area' (text content) and a 'visual area' (data visualisation, metrics display, diagram), split at that boundary. Content area → native. Visual area → HTML widget."
+      },
+      "extracted_rules": {
+        "content_visual_split_rule": "Cards with both text content and data visualisation areas: split at the boundary. Text content → native widgets. Visual/data area → HTML_WIDGET.",
+        "mini_card_detection": {
+          "signals": [
+            "contains only number/metric + label",
+            "small dimensions (< 150px wide)",
+            "multiple similar siblings"
+          ],
+          "action": "Low editability (2/10) → prefer HTML_WIDGET for the visual group"
+        }
+      }
+    },
+    {
+      "id": "SIM-061",
+      "category": "interactive",
+      "pattern": "inline_form",
+      "difficulty": "medium",
+      "description": "Email capture, newsletter signup, or search form embedded in hero or CTA sections",
+      "input_html_pattern": "\n<div class=\"email-capture\" style=\"display:flex;gap:0;max-width:480px;\">\n  <input type=\"email\" placeholder=\"Enter your email\" class=\"email-input\" style=\"flex:1;padding:16px 20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#f5f3ee;font-family:'DM Sans';\">\n  <button type=\"submit\" class=\"email-submit\" style=\"padding:16px 24px;background:#c8ff00;color:#05050a;font-family:'Space Mono';font-weight:700;white-space:nowrap;\">GET EARLY ACCESS</button>\n</div>",
+      "naive_failures": [
+        "form/input elements → HTML_WIDGET_COMPLEX (correct but no guidance)",
+        "styling lost because all form CSS goes to companion CSS but input default styles override it",
+        "No suggestion for native Elementor form widget alternative"
+      ],
+      "corrections": {
+        "inline_form_strategy": "HTML_WIDGET — but with enhanced companion CSS for form styling",
+        "companion_css_form_rules": {
+          "input_reset": ".nx-email-input { -webkit-appearance: none; appearance: none; outline: none; }",
+          "input_autofill_fix": ".nx-email-input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px [bg-color] inset; -webkit-text-fill-color: [text-color]; }",
+          "placeholder_styling": ".nx-email-input::placeholder { color: rgba([text-rgb], 0.35); }"
+        },
+        "native_alternative_note": "Elementor Free has basic HTML form support. Elementor Pro has a Form widget. WPForms, Gravity Forms, and Contact Form 7 all have Elementor widgets. The HTML widget email capture is visually accurate but requires backend wiring.",
+        "report_section": "FORM_DETECTED: This form requires server-side handling. Options: (1) Keep as HTML widget and connect to a form service via JS (e.g., Mailchimp API). (2) Replace with WPForms or Gravity Forms Elementor widget for native WordPress forms."
+      },
+      "extracted_rules": {
+        "form_handling": "Always HTML_WIDGET. Always add form-specific companion CSS (autofill, placeholder, appearance reset). Always add FORM_DETECTED to report.",
+        "autofill_fix_rule": "input:-webkit-autofill rule always required when dark background — browser injects white bg on autofill",
+        "placeholder_rgb_rule": "Use rgba() for placeholder colour, not hex — browsers require rgba for opacity control"
+      }
+    },
+    {
+      "id": "SIM-062",
+      "category": "advanced_animation",
+      "pattern": "lottie_animation",
+      "difficulty": "medium",
+      "description": "Designs using Lottie JSON animations via the lottie-web library",
+      "input_html_pattern": "\n<div class=\"hero-animation\" id=\"lottie-hero\" style=\"width:400px;height:400px;\"></div>\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js\"></script>\n<script>\n  lottie.loadAnimation({\n    container: document.getElementById('lottie-hero'),\n    renderer: 'svg',\n    loop: true,\n    autoplay: true,\n    path: '/animations/hero-animation.json'\n  });\n</script>",
+      "naive_failures": [
+        "div#lottie-hero → classified as DECORATIVE (empty div, no content)",
+        "Script tag recognised as animation but container not linked",
+        "Animation JSON path (/animations/hero-animation.json) not flagged as asset requirement"
+      ],
+      "corrections": {
+        "lottie_detection": {
+          "signals": [
+            "lottie.loadAnimation() in script",
+            "bodymovin script import",
+            "@lottiefiles/lottie-player web component",
+            "<lottie-player> custom element"
+          ],
+          "action": "HTML_WIDGET — include the Lottie script + init code together",
+          "cdn_injection": "Add Lottie CDN to Global Setup: <script src='https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js'>",
+          "asset_flag": "Flag the animation JSON path in report: 'Lottie animation requires /animations/hero-animation.json to be uploaded to WordPress media library and URL updated in the HTML widget.'"
+        },
+        "lottie_player_web_component": {
+          "detection": "<lottie-player> tag",
+          "action": "HTML_WIDGET — include lottie-player CDN script in Global Setup"
+        }
+      },
+      "extracted_rules": {
+        "lottie_cdn": "https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js",
+        "lottie_asset_report": "Always flag Lottie JSON file paths as assets requiring manual upload",
+        "lottie_detection_patterns": [
+          "lottie.loadAnimation",
+          "bodymovin.loadAnimation",
+          "<lottie-player",
+          "@lottiefiles"
+        ]
+      }
+    },
+    {
+      "id": "SIM-063",
+      "category": "edge_layout",
+      "pattern": "sticky_scroll_section",
+      "difficulty": "hard",
+      "description": "Sections where one column stays sticky while the other scrolls — common in 'how it works' and feature showcase sections",
+      "input_html_pattern": "\n<section class=\"sticky-showcase\">\n  <div class=\"showcase-grid\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;\">\n    <div class=\"showcase-sticky\" style=\"position:sticky;top:120px;\">\n      <h2>Why teams choose NEXUS</h2>\n      <p>Everything in one platform.</p>\n    </div>\n    <div class=\"showcase-scroll\">\n      <div class=\"showcase-item\">...</div>\n      <div class=\"showcase-item\">...</div>\n      <div class=\"showcase-item\">...</div>\n    </div>\n  </div>\n</section>",
+      "naive_failures": [
+        "position:sticky → triggers HTML_WIDGET_ANIMATED rule (too aggressive)",
+        "Both columns become HTML_WIDGET, all editable content lost",
+        "Sticky behaviour does work natively in Elementor Pro (Motion Effects > Sticky)"
+      ],
+      "corrections": {
+        "sticky_rule_refinement": {
+          "old_rule": "position:sticky → HTML_WIDGET",
+          "new_rule": "position:fixed → HTML_WIDGET (hard rule). position:sticky → companion CSS only. Elementor Pro: suggest Motion Effects > Sticky as native alternative.",
+          "difference": "position:sticky is scroll-contained, does not create stacking context problems like position:fixed"
+        },
+        "sticky_column_handling": {
+          "sticky_column": "Native FLEX_COLUMN container. Add to companion CSS: .nx-showcase-sticky { position: sticky; top: 120px; }",
+          "scroll_column": "Native FLEX_COLUMN container with showcase items as child containers",
+          "elementor_pro_note": "If Elementor Pro available: use Motion Effects > Sticky on the sticky column container instead of CSS position:sticky"
+        }
+      },
+      "extracted_rules": {
+        "sticky_vs_fixed_rule": "position:sticky → companion CSS (safe for native containers). position:fixed → HTML_WIDGET (hard rule). Never conflate these two.",
+        "sticky_top_value": "Extract top: Npx from sticky element → add to companion CSS .nx-[class] { position:sticky; top: Npx; }"
+      }
+    },
+    {
+      "id": "SIM-064",
+      "category": "page_level",
+      "pattern": "preloader",
+      "difficulty": "medium",
+      "description": "Pages with a loading screen that fades out after content loads",
+      "input_html_pattern": "\n<div id=\"preloader\" style=\"position:fixed;inset:0;background:#0a0a12;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s;\">\n  <div class=\"loader-logo\">NEXUS</div>\n</div>\n<script>\n  window.addEventListener('load', function() {\n    document.getElementById('preloader').style.opacity = '0';\n    document.getElementById('preloader').style.visibility = 'hidden';\n  });\n</script>",
+      "naive_failures": [
+        "position:fixed → HTML_WIDGET (correct!)",
+        "But preloader is placed as first section in Elementor (after global setup) — wrong",
+        "Should be injected into body via Global Setup JS, not as a section"
+      ],
+      "corrections": {
+        "preloader_detection": {
+          "signals": [
+            "position:fixed + z-index > 9000",
+            "window.addEventListener('load', ...) that hides the element",
+            "id contains 'preloader', 'loader', 'splash', 'intro'"
+          ],
+          "action": "Move to Global Setup HTML widget — inject via document.body.appendChild() like the canvas",
+          "why": "Preloader must cover the entire viewport including Elementor's editor chrome — must be body-level"
+        }
+      },
+      "extracted_rules": {
+        "body_level_elements": "These elements must ALWAYS be body-injected (not Elementor sections): particle canvas, custom cursor, preloader/splash screen, cookie consent overlays, global modals"
+      }
+    },
+    {
+      "id": "SIM-065",
+      "category": "page_level",
+      "pattern": "cookie_banner",
+      "difficulty": "easy",
+      "description": "Cookie consent or notification banner at bottom of page",
+      "corrections": {
+        "action": "SKIP from Elementor template entirely",
+        "reason": "Cookie consent should be handled by a dedicated WordPress plugin (GDPR Cookie Consent, CookieYes, etc.) not hardcoded in the page template",
+        "report_note": "Cookie/consent banner detected in source HTML. This has been excluded from the Elementor template. Use a dedicated consent plugin for GDPR compliance (recommended: CookieYes, Complianz, or GDPR Cookie Consent)."
+      },
+      "extracted_rules": {
+        "skip_patterns": [
+          "id/class contains: cookie, consent, gdpr, ccpa, privacy-banner",
+          "Fixed bottom element with accept/decline buttons",
+          "LocalStorage.setItem('consent', ...) in associated JS"
+        ]
+      }
+    },
+    {
+      "id": "SIM-066",
+      "category": "pattern_variant",
+      "pattern": "logo_strip",
+      "difficulty": "easy",
+      "description": "Row of client/partner logos — common trust signal section",
+      "input_html_pattern": "\n<section class=\"logos-section\" style=\"padding:60px;border-top:1px solid rgba(255,255,255,.1)\">\n  <p class=\"logos-label\" style=\"text-align:center;font-size:13px;color:rgba(255,255,255,.3);margin-bottom:40px;letter-spacing:.1em;\">TRUSTED BY TEAMS AT</p>\n  <div class=\"logos-grid\" style=\"display:flex;justify-content:center;align-items:center;gap:60px;flex-wrap:wrap;filter:grayscale(100%) opacity(0.4);\">\n    <img src=\"logos/stripe.svg\" alt=\"Stripe\" style=\"height:28px;\">\n    <img src=\"logos/openai.svg\" alt=\"OpenAI\" style=\"height:28px;\">\n    <img src=\"logos/vercel.svg\" alt=\"Vercel\" style=\"height:28px;\">\n  </div>\n</section>",
+      "naive_failures": [
+        "filter:grayscale(100%) opacity(0.4) on logos-grid → not applied (companion CSS needed)",
+        "<img> tags → IMAGE_WIDGET (correct but external SVG src)",
+        "SVG logos via img src → note in report they need upload to WP media"
+      ],
+      "corrections": {
+        "logos_label": "TEXT_EDITOR widget",
+        "logos_grid": "FLEX_ROW container with flex-wrap:wrap",
+        "each_img": "IMAGE_WIDGET — note src for manual upload",
+        "filter_css": "Companion CSS: .nx-logos-grid .elementor-widget-image img { filter: grayscale(100%); opacity: 0.4; }",
+        "asset_report": "Logo images flagged for upload to WordPress media library"
+      },
+      "extracted_rules": {
+        "logo_strip_signals": [
+          {
+            "name": "has_multiple_img_tags_in_flex_row",
+            "weight": 0.75
+          },
+          {
+            "name": "images_have_equal_height",
+            "weight": 0.7
+          },
+          {
+            "name": "has_label_above_like_trusted_by_or_as_seen_in",
+            "weight": 0.85
+          },
+          {
+            "name": "filter_grayscale_applied_to_group",
+            "weight": 0.8
+          }
+        ],
+        "external_asset_detection": "img[src] starting with http OR src not in the uploaded HTML → flag in report for manual asset upload",
+        "svg_asset_rule": "SVG files via img src → IMAGE_WIDGET, note in report: 'Upload SVG to WordPress media, enable SVG support plugin if needed'"
+      }
+    }
+  ],
+  "pattern_library_updates": {
+    "new_hard_rules": [
+      "preloader/splash screens → body-injected Global Setup, not Elementor section",
+      "cookie banners → SKIP (use dedicated plugin)",
+      "position:sticky → companion CSS only (NOT HTML_WIDGET — different from position:fixed)"
+    ],
+    "new_framework_detectors": [
+      "webflow",
+      "framer",
+      "nextjs"
+    ],
+    "new_component_rules": [
+      "video background → Elementor native video background setting",
+      "Lottie → HTML_WIDGET with CDN auto-injection",
+      "GSAP ScrollTrigger → HTML_WIDGET with CDN auto-injection",
+      "form elements → HTML_WIDGET with autofill fix companion CSS",
+      "gradient text trio → always write all 3 properties together",
+      "variable fonts → wght axis to font-weight, other axes to companion CSS"
+    ],
+    "rule_refinements": [
+      "position:sticky upgraded from HTML_WIDGET to companion CSS only",
+      "animated child isolation: only the animated child → HTML_WIDGET, not whole container",
+      "content/visual split: cards with data visualisation split at editability boundary"
+    ],
+    "new_body_level_elements_list": [
+      "particle canvas",
+      "custom cursor",
+      "preloader",
+      "cookie banner",
+      "global modal/overlay",
+      "position:fixed nav",
+      "floating chat widget"
+    ]
+  },
+  "summary": {
+    "total": 16,
+    "new_hard_rules": 3,
+    "new_framework_detectors": 3,
+    "new_component_rules": 6,
+    "rule_refinements": 3
+  }
+}

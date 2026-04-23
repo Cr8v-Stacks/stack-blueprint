@@ -1,0 +1,46 @@
+{
+  "profiles": {
+    "bootstrap": {
+      "min_run_success_rate": 0.8,
+      "max_fail_runs": 4,
+      "selector_output_css_ratio_min": 0.05,
+      "script_rewrite_ratio_min": 0.4,
+      "global_script_bridge_ratio_min": 0.65,
+      "max_selector_source_without_output_gaps": 4,
+      "max_script_source_without_rewrite_gaps": 3,
+      "max_global_source_js_without_bridge_gaps": 2
+    },
+    "balanced": {
+      "min_run_success_rate": 0.95,
+      "max_fail_runs": 0,
+      "selector_output_css_ratio_min": 0.15,
+      "script_rewrite_ratio_min": 0.55,
+      "global_script_bridge_ratio_min": 0.8,
+      "max_selector_source_without_output_gaps": 0,
+      "max_script_source_without_rewrite_gaps": 0,
+      "max_global_source_js_without_bridge_gaps": 0
+    },
+    "strict": {
+      "min_run_success_rate": 1,
+      "max_fail_runs": 0,
+      "selector_output_css_ratio_min": 0.2,
+      "script_rewrite_ratio_min": 0.65,
+      "global_script_bridge_ratio_min": 0.9,
+      "max_selector_source_without_output_gaps": 0,
+      "max_script_source_without_rewrite_gaps": 0,
+      "max_global_source_js_without_bridge_gaps": 0
+    }
+  },
+  "strategy_overrides": {
+    "v1": {
+      "selector_output_css_ratio_min": 0.12,
+      "script_rewrite_ratio_min": 0.5,
+      "global_script_bridge_ratio_min": 0.75
+    },
+    "v2": {
+      "selector_output_css_ratio_min": 0.18,
+      "script_rewrite_ratio_min": 0.58,
+      "global_script_bridge_ratio_min": 0.82
+    }
+  }
+}

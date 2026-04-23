@@ -1,0 +1,689 @@
+{
+  "round": 3,
+  "simulations": [
+    {
+      "id": "SIM-067",
+      "pattern": "icon_feature_grid",
+      "description": "Grid of features each with icon, title, short description. Common alternative to bento.",
+      "difficulty": "easy",
+      "input_html_pattern": "\n<section class=\"features-alt\">\n  <div class=\"feature-grid\" style=\"display:grid;grid-template-columns:repeat(3,1fr);gap:48px;\">\n    <div class=\"feature-item\">\n      <div class=\"feature-icon\" style=\"width:48px;height:48px;background:rgba(200,255,0,.1);border:1px solid rgba(200,255,0,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;\">\n        <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#c8ff00\">...</svg>\n      </div>\n      <h3 class=\"feature-title\" style=\"font-family:Syne;font-weight:700;font-size:18px;color:#f5f3ee;margin-bottom:10px;\">Zero Latency</h3>\n      <p class=\"feature-desc\" style=\"font-size:14px;color:rgba(245,243,238,.45);line-height:1.75;\">Sub-20ms inference on any model.</p>\n    </div>\n    <div class=\"feature-item\">...</div>\n    <div class=\"feature-item\">...</div>\n    <div class=\"feature-item\">...</div>\n    <div class=\"feature-item\">...</div>\n    <div class=\"feature-item\">...</div>\n  </div>\n</section>",
+      "naive_failures": [
+        "feature-icon div (contains inline SVG) → classified as HTML_WIDGET_COMPLEX (too aggressive — SVG is purely decorative icon)",
+        "SVG inside icon div → triggers HTML_WIDGET on entire feature-item",
+        "Result: all 6 cards become HTML widgets, titles and descriptions lose editability"
+      ],
+      "corrected_output": {
+        "feature-grid": "GRID_CONTAINER — 3 columns, 1fr 1fr 1fr, gap 48px",
+        "feature-item": "FLEX_COLUMN inner container (class: nx-feature-item)",
+        "feature-icon": "HTML_WIDGET — icon container with inline SVG (editability 2/10, designer-maintained)",
+        "feature-title h3": "HEADING_WIDGET h3 (class: nx-feature-title)",
+        "feature-desc p": "TEXT_EDITOR (class: nx-feature-desc)",
+        "key_rule": "Inline SVG that is PURELY decorative (no interactive children, no text, no click handler) = HTML_WIDGET for the icon container only. Parent card and text siblings stay native."
+      },
+      "delta": {
+        "root_cause": "SVG detection triggers HTML_WIDGET on entire parent card, not just the SVG container",
+        "fix": "SVG isolation rule: if SVG is inside a small dedicated icon container (width/height <= 64px), classify ONLY that container as HTML_WIDGET. Do not propagate to card parent.",
+        "new_rule": "SVG_ISOLATION: small icon container with inline SVG → HTML_WIDGET for icon only, siblings remain native"
+      },
+      "extracted_signals": {
+        "icon_feature_grid_signals": [
+          {
+            "name": "grid_with_3_to_6_equal_children",
+            "weight": 0.8
+          },
+          {
+            "name": "each_child_has_icon_plus_heading_plus_text",
+            "weight": 0.9
+          },
+          {
+            "name": "icons_are_small_square_containers",
+            "weight": 0.8
+          },
+          {
+            "name": "section_name_contains_features_or_capabilities",
+            "weight": 0.7
+          }
+        ],
+        "svg_isolation_rule": {
+          "trigger": "inline SVG inside container with width AND height both <= 64px",
+          "action": "Make ONLY that container HTML_WIDGET. Do not affect parent or siblings.",
+          "confidence": 0.92
+        }
+      }
+    },
+    {
+      "id": "SIM-068",
+      "pattern": "alternating_feature_rows",
+      "description": "Classic feature section: image left + text right, then text left + image right, alternating.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<section class=\"feature-rows\">\n  <div class=\"feature-row feature-row--normal\" style=\"display:flex;align-items:center;gap:80px;padding:80px 60px;\">\n    <div class=\"feature-row__image\" style=\"flex:0 0 50%;\"><img src=\"feature-1.png\" alt=\"Pipeline Builder\"></div>\n    <div class=\"feature-row__content\" style=\"flex:1;\">\n      <div class=\"feature-row__tag\">VISUAL BUILDER</div>\n      <h2 class=\"feature-row__title\">Build pipelines without code</h2>\n      <p class=\"feature-row__desc\">Drag, connect, and deploy...</p>\n      <a href=\"#\" class=\"feature-row__cta btn-primary\">SEE HOW IT WORKS</a>\n    </div>\n  </div>\n  <div class=\"feature-row feature-row--reversed\" style=\"display:flex;flex-direction:row-reverse;align-items:center;gap:80px;padding:80px 60px;\">\n    <div class=\"feature-row__image\"><img src=\"feature-2.png\" alt=\"Analytics\"></div>\n    <div class=\"feature-row__content\">\n      <div class=\"feature-row__tag\">ANALYTICS</div>\n      <h2 class=\"feature-row__title\">Full visibility into every run</h2>\n      <p>...</p>\n    </div>\n  </div>\n</section>",
+      "naive_failures": [
+        "flex-direction:row-reverse on reversed row → not supported in Elementor flex settings",
+        "Naive engine ignores row-reverse modifier → both rows render same direction",
+        "feature-row__image with img → IMAGE_WIDGET (correct)",
+        "feature-row__tag → TEXT_WIDGET (should be HTML_WIDGET for ::before line)"
+      ],
+      "corrected_output": {
+        "each_feature_row": "FLEX_ROW inner container",
+        "normal_row": "flex-direction: row, align-items: center, gap: 80px",
+        "reversed_row": "Elementor has no flex-direction:row-reverse. Solution: swap child order in JSON (image container first in DOM, content second) + note in report.",
+        "image_col": "FLEX_COLUMN inner container (50% width) containing IMAGE_WIDGET",
+        "content_col": "FLEX_COLUMN inner container (flex:1) with tag + heading + text + button",
+        "feature_tag": "HTML_WIDGET (needs ::before line decoration)",
+        "companion_css_note": "Add nx-feature-row--reversed class. Companion CSS: .nx-feature-row--reversed { flex-direction: row-reverse; } — Elementor panel shows 'row' but CSS overrides to row-reverse at runtime"
+      },
+      "delta": {
+        "root_cause": "flex-direction:row-reverse has no Elementor panel equivalent",
+        "fix_option_1": "Reorder children in JSON (image first, text second) for reversed rows — visual result is the same as row-reverse when both children take 50%",
+        "fix_option_2": "Apply row-reverse via companion CSS targeting the reversed row's class",
+        "recommended_fix": "Option 1 (reorder children) for full-width equal columns. Option 2 (companion CSS) when widths are unequal.",
+        "new_rule": "FLEX_ROW_REVERSE: detect flex-direction:row-reverse on container. If children are equal width → reorder in JSON. If unequal → companion CSS override."
+      },
+      "extracted_signals": {
+        "alternating_rows_signals": [
+          {
+            "name": "multiple_flex_row_siblings_with_alternating_reverse",
+            "weight": 0.85
+          },
+          {
+            "name": "each_row_has_image_and_text_content",
+            "weight": 0.9
+          },
+          {
+            "name": "section_has_2_to_5_feature_rows",
+            "weight": 0.8
+          }
+        ],
+        "row_reverse_rule": {
+          "detection": "flex-direction: row-reverse on a container",
+          "action_equal_width": "Reorder children in JSON (swap positions)",
+          "action_unequal_width": "Keep order, add flex-direction:row-reverse to companion CSS",
+          "companion_css": ".nx-[section]-row--reversed { flex-direction: row-reverse !important; }"
+        }
+      }
+    },
+    {
+      "id": "SIM-069",
+      "pattern": "timeline",
+      "description": "Vertical or horizontal timeline showing company history, roadmap, or process milestones.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<section class=\"timeline\">\n  <div class=\"timeline-track\" style=\"position:relative;\">\n    <div class=\"timeline-line\" style=\"position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.1);transform:translateX(-50%);\"></div>\n    <div class=\"timeline-item timeline-item--left\" style=\"display:flex;justify-content:flex-end;padding-right:calc(50% + 40px);margin-bottom:60px;\">\n      <div class=\"timeline-card\" style=\"background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);padding:28px 32px;max-width:400px;\">\n        <div class=\"timeline-date\" style=\"font-family:'Space Mono';font-size:11px;color:#c8ff00;margin-bottom:12px;\">Q1 2024</div>\n        <h4 class=\"timeline-title\">Platform Launch</h4>\n        <p class=\"timeline-desc\">Launched with 10 integrations and 500 beta users.</p>\n      </div>\n    </div>\n    <div class=\"timeline-item timeline-item--right\" style=\"display:flex;justify-content:flex-start;padding-left:calc(50% + 40px);margin-bottom:60px;\">\n      <div class=\"timeline-card\">...</div>\n    </div>\n  </div>\n</section>",
+      "naive_failures": [
+        "timeline-line (position:absolute decorative line) → classified as DECORATIVE and skipped — correct!",
+        "calc(50% + 40px) padding on items → not expressible in Elementor panel (fixed px only)",
+        "timeline-item--left/right alternating structure → Elementor has no built-in timeline widget",
+        "Result: structurally complex layout forced into nested containers that break the visual"
+      ],
+      "corrected_output": {
+        "strategy": "PARTIAL_NATIVE_WITH_LAYOUT_COMPANION_CSS",
+        "timeline-track": "FLEX_COLUMN container (class: nx-timeline-track)",
+        "timeline-line": "SKIP from JSON — recreate as .nx-timeline-track::before in companion CSS",
+        "each_timeline_item": "FLEX_ROW inner container (class: nx-timeline-item, nx-timeline-item--left OR nx-timeline-item--right)",
+        "timeline-card": "FLEX_COLUMN inner container — holds date (TEXT_EDITOR), title (HEADING h4), desc (TEXT_EDITOR)",
+        "calc_padding": "Cannot set calc() in Elementor padding. Use companion CSS: .nx-timeline-item--left { justify-content: flex-end; padding-right: calc(50% + 40px); }",
+        "companion_css_central_line": ".nx-timeline-track { position: relative; } .nx-timeline-track::before { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background:rgba(255,255,255,.1); transform:translateX(-50%); }",
+        "editability": "Timeline dates, titles, descriptions → all native and fully editable. Layout positioning → companion CSS."
+      },
+      "delta": {
+        "root_cause_1": "calc() values in padding/margin not settable in Elementor — needs companion CSS",
+        "root_cause_2": "Decorative absolute line (::before equivalent) needs pseudo-element in companion CSS",
+        "new_rules": [
+          "CALC_PADDING: padding/margin with calc() → companion CSS only, set closest px value in Elementor settings as fallback",
+          "DECORATIVE_LINE: position:absolute element with no content, zero width or height → recreate as parent::before in companion CSS"
+        ]
+      },
+      "extracted_signals": {
+        "timeline_pattern_signals": [
+          {
+            "name": "alternating_left_right_items_with_central_line",
+            "weight": 0.9
+          },
+          {
+            "name": "items_have_date_label_and_text",
+            "weight": 0.85
+          },
+          {
+            "name": "section_class_contains_timeline_roadmap_history",
+            "weight": 0.8
+          },
+          {
+            "name": "has_absolute_positioned_decorative_line",
+            "weight": 0.75
+          }
+        ],
+        "calc_padding_rule": {
+          "detection": "padding or margin value contains calc()",
+          "action": "Move full calc() expression to companion CSS. Use the largest fixed px value from the calc() as Elementor fallback.",
+          "example": "calc(50% + 40px) → Elementor: 0px (structural spacing handled by companion CSS)"
+        },
+        "decorative_absolute_line_rule": {
+          "detection": "position:absolute + (width:1px OR height:1px) + no text content + no children",
+          "action": "SKIP from JSON, recreate as parent::before pseudo-element in companion CSS"
+        }
+      }
+    },
+    {
+      "id": "SIM-070",
+      "pattern": "tabbed_content",
+      "description": "Tab navigation that shows/hides content panels. Common for feature showcases.",
+      "difficulty": "hard",
+      "input_html_pattern": "\n<div class=\"tabs-component\">\n  <div class=\"tabs-nav\" style=\"display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.1);\">\n    <button class=\"tab-btn tab-btn--active\" data-tab=\"pipeline\" style=\"padding:16px 28px;background:transparent;border:none;border-bottom:2px solid #c8ff00;color:#f5f3ee;font-family:'Space Mono';font-size:12px;\">PIPELINES</button>\n    <button class=\"tab-btn\" data-tab=\"analytics\" style=\"padding:16px 28px;...;color:rgba(245,243,238,.4);\">ANALYTICS</button>\n    <button class=\"tab-btn\" data-tab=\"security\">SECURITY</button>\n  </div>\n  <div class=\"tabs-content\">\n    <div class=\"tab-panel tab-panel--active\" id=\"tab-pipeline\" style=\"display:block;\">\n      <div class=\"tab-panel-inner\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:60px 0;\">\n        <div><h3>Visual Pipeline Builder</h3><p>...</p></div>\n        <img src=\"pipeline-screenshot.png\" alt=\"Pipeline UI\">\n      </div>\n    </div>\n    <div class=\"tab-panel\" id=\"tab-analytics\" style=\"display:none;\">...</div>\n    <div class=\"tab-panel\" id=\"tab-security\" style=\"display:none;\">...</div>\n  </div>\n</div>\n<script>\n  document.querySelectorAll('.tab-btn').forEach(btn => {\n    btn.addEventListener('click', function() {\n      document.querySelectorAll('.tab-panel').forEach(p => p.style.display='none');\n      document.getElementById('tab-' + this.dataset.tab).style.display='block';\n      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-btn--active'));\n      this.classList.add('tab-btn--active');\n    });\n  });\n</script>",
+      "naive_failures": [
+        "display:none on inactive panels → SKIP rule removes them entirely from JSON",
+        "Tab buttons with JS click handlers → HTML_WIDGET_ANIMATED (overly aggressive for simple class toggles)",
+        "Result: only the active tab panel is converted, all other content lost"
+      ],
+      "corrected_output": {
+        "strategy": "ENTIRE_COMPONENT_AS_HTML_WIDGET",
+        "reason": [
+          "Tab show/hide is JS-driven — inseparable from the toggle script",
+          "display:none panels must NOT be skipped — they contain real content",
+          "The JS is simple enough to include inline in HTML widget"
+        ],
+        "editability_note": "Tab component is HTML_WIDGET. Label text and content is in the widget HTML source. Editability: 5/10 — a developer can update content in the widget, not a click-and-type experience.",
+        "content_extraction_note": "Extract all tab panel content into the HTML widget with clear HTML comments: <!-- TAB: PIPELINES --> so editor knows where to find each tab's content"
+      },
+      "delta": {
+        "root_cause": "display:none detection rule skips hidden elements — correct for static hidden elements, wrong for JS-toggled tab panels",
+        "fix": "SKIP rule exception: if hidden element has a sibling JS script containing querySelector + style.display toggle referencing this element's ID → do NOT skip, include in HTML_WIDGET",
+        "display_none_rule_refinement": {
+          "skip_if": "display:none AND no JS references to this element's ID/class AND no data-tab/data-panel attribute",
+          "include_if": "display:none AND JS toggles its display OR has data-tab/data-panel attribute (tab system)"
+        }
+      },
+      "extracted_signals": {
+        "tab_component_signals": [
+          {
+            "name": "has_tab_nav_buttons_with_data_tab_attribute",
+            "weight": 0.95
+          },
+          {
+            "name": "has_corresponding_panels_with_display_none",
+            "weight": 0.9
+          },
+          {
+            "name": "has_js_click_handler_toggling_display",
+            "weight": 0.9
+          },
+          {
+            "name": "one_panel_active_others_hidden",
+            "weight": 0.85
+          }
+        ],
+        "display_none_exception_rule": {
+          "rule": "display:none siblings where one sibling is visible and others are hidden with same class pattern → TAB_SYSTEM, include all in HTML_WIDGET",
+          "additional_trigger": "data-tab, data-panel, data-target attributes on nav elements"
+        }
+      }
+    },
+    {
+      "id": "SIM-071",
+      "pattern": "accordion_faq",
+      "description": "Expandable question/answer list. Very common in pricing and help sections.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<section class=\"faq\">\n  <div class=\"faq-list\">\n    <div class=\"faq-item\" style=\"border-bottom:1px solid rgba(255,255,255,.1);\">\n      <button class=\"faq-question\" style=\"display:flex;justify-content:space-between;width:100%;padding:24px 0;background:none;border:none;color:#f5f3ee;font-family:Syne;font-weight:700;font-size:18px;text-align:left;cursor:pointer;\">\n        How does the multi-model routing work?\n        <span class=\"faq-icon\" style=\"font-size:24px;transition:transform .3s;\">+</span>\n      </button>\n      <div class=\"faq-answer\" style=\"display:none;padding-bottom:24px;\">\n        <p style=\"font-size:15px;color:rgba(245,243,238,.55);line-height:1.75;\">NEXUS analyses each task...</p>\n      </div>\n    </div>\n    <div class=\"faq-item\">...</div>\n  </div>\n</section>",
+      "naive_failures": [
+        "faq-answer with display:none → SKIP (wrong — same tab panel problem)",
+        "faq-question <button> → BUTTON_WIDGET (wrong — it's an accordion trigger, not a CTA)",
+        "faq-icon span (+/-) → DECORATIVE (correct)"
+      ],
+      "corrected_output": {
+        "strategy": "HTML_WIDGET for entire faq-list",
+        "elementor_native_alternative": "Elementor Pro has an Accordion widget. If Pro is detected, suggest using it instead. For Free: HTML_WIDGET.",
+        "pro_detection": "Check if Elementor Pro active via WP plugin check during conversion",
+        "free_version": "HTML_WIDGET with inline expand/collapse JS",
+        "content_structure_in_widget": "Each faq-item has clear HTML structure — questions and answers are easily editable in widget source",
+        "editability": "6/10 — questions and answers in HTML widget source, easy to find and update"
+      },
+      "delta": {
+        "root_cause": "display:none on faq-answer triggers SKIP — same issue as tabs",
+        "fix": "Extend display:none exception: if hidden element is sibling of a <button> with click handler → ACCORDION_SYSTEM, include in HTML_WIDGET",
+        "pro_recommendation": "When Elementor Pro is active, offer Accordion widget as alternative to HTML_WIDGET for FAQ patterns"
+      },
+      "extracted_signals": {
+        "accordion_signals": [
+          {
+            "name": "button_sibling_of_hidden_div",
+            "weight": 0.9
+          },
+          {
+            "name": "section_name_contains_faq_accordion_questions",
+            "weight": 0.85
+          },
+          {
+            "name": "click_handler_toggles_sibling_display",
+            "weight": 0.9
+          },
+          {
+            "name": "plus_minus_or_chevron_icon_in_button",
+            "weight": 0.75
+          }
+        ]
+      }
+    },
+    {
+      "id": "SIM-072",
+      "pattern": "split_screen",
+      "description": "Hero or section split exactly 50/50 where one half is a solid colour and the other is content or image.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<section class=\"split-hero\" style=\"display:grid;grid-template-columns:1fr 1fr;min-height:100vh;\">\n  <div class=\"split-left\" style=\"background:#c8ff00;display:flex;flex-direction:column;justify-content:center;padding:80px;\">\n    <div class=\"split-tag\" style=\"font-family:'Space Mono';font-size:11px;letter-spacing:.2em;color:rgba(5,5,10,.5);margin-bottom:24px;\">AI PLATFORM</div>\n    <h1 class=\"split-headline\" style=\"font-family:Syne;font-weight:800;font-size:72px;color:#05050a;line-height:1;letter-spacing:-2px;\">Build<br>faster.</h1>\n    <a href=\"#\" class=\"split-cta\" style=\"display:inline-flex;padding:16px 32px;background:#05050a;color:#c8ff00;font-family:'Space Mono';font-weight:700;margin-top:40px;align-self:flex-start;\">GET STARTED →</a>\n  </div>\n  <div class=\"split-right\" style=\"background:#0a0a12;display:flex;align-items:center;justify-content:center;\">\n    <img src=\"product-screenshot.png\" alt=\"Dashboard\" style=\"max-width:90%;border:1px solid rgba(255,255,255,.1);\">\n  </div>\n</section>",
+      "naive_failures": [
+        "grid-template-columns:1fr 1fr → GRID_CONTAINER (correct)",
+        "split-left with padding:80px → correct as FLEX_COLUMN inner container",
+        "split-tag div → TEXT_WIDGET (should be HTML_WIDGET for ::before decoration OR just TEXT_EDITOR with class)",
+        "split-cta align-self:flex-start → not settable in Elementor button widget settings → companion CSS needed",
+        "split-right as image column → correct as FLEX_COLUMN with IMAGE_WIDGET"
+      ],
+      "corrected_output": {
+        "container": "GRID_CONTAINER — 1fr 1fr, min-height 100vh",
+        "split_left": "FLEX_COLUMN inner container — bg:#c8ff00, padding:80px, justify:center",
+        "split_tag": "TEXT_EDITOR (with class nx-split-tag — companion CSS handles ::before decoration if needed)",
+        "split_headline": "HEADING_WIDGET h1 — color:#05050a",
+        "split_cta": "BUTTON_WIDGET — companion CSS: .nx-split-cta .elementor-button-wrapper { align-self: flex-start; }",
+        "split_right": "FLEX_COLUMN inner container — bg:#0a0a12, align:center, justify:center",
+        "image": "IMAGE_WIDGET",
+        "align_self_rule": "align-self on a button or widget → companion CSS targeting .elementor-widget-[type] or .elementor-widget-container"
+      },
+      "delta": {
+        "root_cause": "align-self property on individual child not settable in Elementor",
+        "fix": "ALIGN_SELF companion CSS rule: detect align-self on any element → companion CSS targeting the widget's elementor-widget-container wrapper",
+        "new_rule": "ALIGN_SELF: element has align-self → companion CSS: .nx-[class] .elementor-widget, .nx-[class].elementor-widget { align-self: [value]; }"
+      },
+      "extracted_signals": {
+        "split_screen_signals": [
+          {
+            "name": "grid_exactly_2_equal_columns",
+            "weight": 0.8
+          },
+          {
+            "name": "each_column_has_different_background_color",
+            "weight": 0.9
+          },
+          {
+            "name": "min_height_100vh",
+            "weight": 0.75
+          },
+          {
+            "name": "one_column_text_content_one_column_image",
+            "weight": 0.85
+          }
+        ],
+        "align_self_rule": {
+          "detection": "align-self: flex-start | center | flex-end | stretch on any element",
+          "action": "Companion CSS. Target .nx-[class].elementor-widget OR .nx-[class] { align-self: [value]; }"
+        }
+      }
+    },
+    {
+      "id": "SIM-073",
+      "pattern": "numbered_steps_solo",
+      "description": "Process steps without a visual panel — just the numbered list taking full width or 2-column grid.",
+      "difficulty": "easy",
+      "input_html_pattern": "\n<section class=\"steps\">\n  <div class=\"steps-grid\" style=\"display:grid;grid-template-columns:repeat(2,1fr);gap:48px 80px;\">\n    <div class=\"step\">\n      <div class=\"step-number\" style=\"font-family:'Space Mono';font-size:48px;font-weight:700;color:rgba(200,255,0,.2);line-height:1;margin-bottom:16px;\">01</div>\n      <h3 class=\"step-title\" style=\"font-size:20px;font-weight:700;color:#f5f3ee;margin-bottom:10px;\">Connect</h3>\n      <p class=\"step-desc\" style=\"font-size:14px;color:rgba(245,243,238,.45);line-height:1.75;\">Link your data sources in minutes.</p>\n    </div>\n    <div class=\"step\">\n      <div class=\"step-number\" style=\"...\">02</div>\n      <h3 class=\"step-title\">Configure</h3>\n      <p class=\"step-desc\">...</p>\n    </div>\n  </div>\n</section>",
+      "naive_failures": [
+        "step-number with large font (48px) + low opacity → correctly classified as TEXT_WIDGET but editability wrongly set to 8/10 (it's actually 3/10 — clients rarely change step numbers)",
+        "2-col grid of steps → GRID_CONTAINER correct",
+        "Overall classification: mostly correct, editability scoring wrong"
+      ],
+      "corrected_output": {
+        "steps-grid": "GRID_CONTAINER — 2 columns, 1fr 1fr, column-gap:80px, row-gap:48px",
+        "each_step": "FLEX_COLUMN inner container (class: nx-step)",
+        "step-number": "TEXT_EDITOR (class: nx-step-number, editability: 3/10)",
+        "step-title h3": "HEADING_WIDGET h3 (editability: 9/10)",
+        "step-desc p": "TEXT_EDITOR (editability: 9/10)",
+        "companion_css": ".nx-step-number .elementor-widget-text-editor p { font-family: var(--font-mono); font-size: 48px; font-weight: 700; color: rgba(200,255,0,.2); line-height: 1; }"
+      },
+      "delta": {
+        "root_cause": "Large decorative numbers (01, 02, 03) get high editability score because they are headings — but they are ordinal markers, not client-editable copy",
+        "fix": "ORDINAL_MARKER detection: element contains only 1-2 digit number + font-size >= 40px + low opacity (< 0.4) → editability: 3/10 (not 8/10)",
+        "new_signal": "ordinal_marker_fingerprint: number-only text + large font + low opacity = decorative ordinal, low editability"
+      },
+      "extracted_signals": {
+        "ordinal_marker_fingerprint": {
+          "signals": [
+            "text content is 1-2 digits (01-99)",
+            "font-size >= 36px",
+            "opacity < 0.4 OR color has alpha < 0.4"
+          ],
+          "classification": "TEXT_EDITOR (native, editable) but editability_score: 3",
+          "confidence": 0.88
+        }
+      }
+    },
+    {
+      "id": "SIM-074",
+      "pattern": "team_grid",
+      "description": "Grid of team member cards with photo, name, title.",
+      "difficulty": "easy",
+      "input_html_pattern": "\n<section class=\"team\">\n  <div class=\"team-grid\" style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:32px;\">\n    <div class=\"team-card\">\n      <div class=\"team-photo\" style=\"aspect-ratio:1;overflow:hidden;border-radius:8px;margin-bottom:16px;\">\n        <img src=\"team/sarah.jpg\" alt=\"Sarah Kim\" style=\"width:100%;height:100%;object-fit:cover;\">\n      </div>\n      <h4 class=\"team-name\" style=\"font-size:16px;font-weight:600;color:#f5f3ee;margin-bottom:4px;\">Sarah Kim</h4>\n      <p class=\"team-role\" style=\"font-size:13px;color:rgba(245,243,238,.45);font-family:'Space Mono';\">VP of Engineering</p>\n      <div class=\"team-socials\" style=\"display:flex;gap:8px;margin-top:12px;\">\n        <a href=\"https://linkedin.com/in/sarah\" class=\"social-link\">\n          <svg><!-- LinkedIn icon --></svg>\n        </a>\n        <a href=\"https://twitter.com/sarah\" class=\"social-link\">\n          <svg><!-- Twitter icon --></svg>\n        </a>\n      </div>\n    </div>\n  </div>\n</section>",
+      "naive_failures": [
+        "team-socials with SVG links → HTML_WIDGET_COMPLEX on entire card",
+        "team-photo with aspect-ratio:1 → not settable in Elementor image settings",
+        "object-fit:cover on img → not settable in IMAGE_WIDGET settings"
+      ],
+      "corrected_output": {
+        "team-grid": "GRID_CONTAINER — 4 columns, 1fr 1fr 1fr 1fr",
+        "team-card": "FLEX_COLUMN inner container",
+        "team-photo": "IMAGE_WIDGET (class: nx-team-photo) — companion CSS: .nx-team-photo img { aspect-ratio:1; object-fit:cover; width:100%; border-radius:8px; }",
+        "team-name h4": "HEADING_WIDGET h4",
+        "team-role p": "TEXT_EDITOR",
+        "team-socials": "HTML_WIDGET — social links with SVG icons (low editability: 2/10, designer-maintained)",
+        "key_insight": "Social icon links are low-editability decorative components. Make them HTML_WIDGET. The rest of the card is native."
+      },
+      "delta": {
+        "root_cause_1": "SVG social links causing entire card to become HTML_WIDGET",
+        "root_cause_2": "aspect-ratio and object-fit on images not in Elementor settings",
+        "fix_1": "SVG isolation rule applied — social links become HTML_WIDGET, card stays native (same rule as SIM-067 icon)",
+        "fix_2": "aspect-ratio + object-fit → companion CSS on IMAGE_WIDGET class",
+        "new_css_rules": [
+          "ASPECT_RATIO: aspect-ratio on image container → companion CSS on nx-[class] img",
+          "OBJECT_FIT: object-fit:cover on img → companion CSS on nx-[class] img { object-fit:cover; }"
+        ]
+      },
+      "extracted_signals": {
+        "team_grid_signals": [
+          {
+            "name": "grid_of_4_or_more_equal_cards",
+            "weight": 0.8
+          },
+          {
+            "name": "each_card_has_image_name_and_title",
+            "weight": 0.9
+          },
+          {
+            "name": "images_are_square_or_portrait_headshots",
+            "weight": 0.8
+          },
+          {
+            "name": "section_contains_person_names_and_job_titles",
+            "weight": 0.85
+          }
+        ],
+        "image_css_properties_companion_rule": {
+          "aspect_ratio": "companion CSS: .nx-[class] img { aspect-ratio: [value]; }",
+          "object_fit": "companion CSS: .nx-[class] img { object-fit: [value]; }",
+          "object_position": "companion CSS: .nx-[class] img { object-position: [value]; }"
+        }
+      }
+    },
+    {
+      "id": "SIM-075",
+      "pattern": "pull_quote",
+      "description": "Large styled blockquote or pull quote, often full-width with distinct typography.",
+      "difficulty": "easy",
+      "input_html_pattern": "\n<div class=\"pull-quote\" style=\"padding:80px 120px;background:rgba(200,255,0,.04);border-left:4px solid #c8ff00;margin:0 60px;\">\n  <blockquote class=\"pull-quote__text\" style=\"font-family:Syne;font-style:italic;font-size:32px;font-weight:400;color:#f5f3ee;line-height:1.4;letter-spacing:-.5px;margin:0 0 32px;\">\n    \"NEXUS didn't just automate our workflows — it made us rethink how we build products.\"\n  </blockquote>\n  <cite class=\"pull-quote__attribution\" style=\"font-family:'Space Mono';font-size:12px;color:rgba(245,243,238,.5);letter-spacing:.1em;font-style:normal;\">— MARCUS OSEI, HEAD OF AI AT CORTEX LABS</cite>\n</div>",
+      "naive_failures": [
+        "blockquote tag → TEXT_WIDGET (correct structure, wrong styling)",
+        "border-left:4px solid #c8ff00 → Elementor border settings only support uniform borders, not single-side",
+        "cite → TEXT_WIDGET (correct)",
+        "Italic large text styling → lost without companion CSS"
+      ],
+      "corrected_output": {
+        "pull-quote container": "FLEX_COLUMN container — bg:rgba(200,255,0,.04), padding:80px 120px, margin:0 60px",
+        "border_left": "Cannot set single-side border in Elementor container settings. Companion CSS: .nx-pull-quote { border-left: 4px solid var(--color-accent); }",
+        "blockquote": "TEXT_EDITOR (class: nx-pull-quote-text) — companion CSS for italic + large size + letter-spacing",
+        "cite": "TEXT_EDITOR (class: nx-pull-quote-attribution)",
+        "single_side_border_rule": "Single-side border (border-left, border-top, border-bottom, border-right only) → companion CSS always"
+      },
+      "delta": {
+        "root_cause": "Elementor container border settings apply to all sides — cannot set border on one side only via panel",
+        "fix": "SINGLE_SIDE_BORDER: detect border-left/right/top/bottom (only one side set) → companion CSS only",
+        "new_rule": "SINGLE_SIDE_BORDER: any border property targeting only one side → companion CSS. Elementor panel border is set to none."
+      },
+      "extracted_signals": {
+        "single_side_border_rule": {
+          "detection": "Only one of border-top, border-right, border-bottom, border-left is set (others absent or border:none)",
+          "action": "Companion CSS only. Set border: none in Elementor settings.",
+          "companion_css": ".nx-[class] { border-[side]: [width] [style] [color]; }"
+        },
+        "blockquote_tag_rule": {
+          "detection": "<blockquote> tag",
+          "action": "TEXT_EDITOR widget — blockquote content is client-editable",
+          "companion_css": "Font styling (italic, size, color) → companion CSS targeting .nx-[class] .elementor-widget-text-editor"
+        }
+      }
+    },
+    {
+      "id": "SIM-076",
+      "pattern": "data_table",
+      "description": "Comparison table or data table — feature comparison, spec sheet, pricing comparison.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<div class=\"comparison-table\" style=\"overflow-x:auto;\">\n  <table style=\"width:100%;border-collapse:collapse;\">\n    <thead>\n      <tr>\n        <th style=\"padding:20px 24px;text-align:left;font-family:'Space Mono';font-size:11px;letter-spacing:.1em;color:rgba(245,243,238,.4);border-bottom:1px solid rgba(255,255,255,.1);\">FEATURE</th>\n        <th style=\"...\">STARTER</th>\n        <th style=\"...;background:rgba(200,255,0,.06);\">GROWTH ★</th>\n        <th style=\"...\">ENTERPRISE</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td style=\"padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.06);color:#f5f3ee;\">Pipeline count</td>\n        <td style=\"text-align:center;...\">3</td>\n        <td style=\"text-align:center;background:rgba(200,255,0,.03);\">Unlimited</td>\n        <td style=\"text-align:center;\">Unlimited</td>\n      </tr>\n    </tbody>\n  </table>\n</div>",
+      "naive_failures": [
+        "<table> → HTML_WIDGET_COMPLEX (too aggressive for simple data tables)",
+        "Table has perfectly editable content (text in cells)",
+        "But Elementor Free has no native table widget",
+        "Elementor Pro has a Table widget"
+      ],
+      "corrected_output": {
+        "strategy": "HTML_WIDGET — always, for any <table> element",
+        "reason": "Elementor Free has no native table widget. Even Elementor Pro's table widget is limited compared to styled HTML tables.",
+        "html_widget_enhancement": {
+          "structure": "Keep full table HTML in widget",
+          "companion_css": "Table styles go in companion CSS targeting .nx-comparison-table table, th, td",
+          "overflow": "Add overflow-x:auto to companion CSS on .nx-comparison-table wrapper for mobile"
+        },
+        "editability": "7/10 — table content (text in cells) is straightforward to edit in HTML widget source. Rows and columns have clear structure.",
+        "report_note": "Comparison table preserved as HTML widget. Cell content is editable in the widget source. Each row is a <tr>, each cell is <td>."
+      },
+      "delta": {
+        "root_cause": "Table elements have no Elementor native equivalent",
+        "fix": "TABLE_HARD_RULE: any <table> element → HTML_WIDGET. No confidence calculation needed.",
+        "new_hard_rule": "TABLE: <table> element → HTML_WIDGET, unconditional"
+      },
+      "extracted_signals": {
+        "table_hard_rule": {
+          "trigger": "<table> tag",
+          "action": "HTML_WIDGET — hard rule, no confidence cascade",
+          "priority": "Same level as position:fixed hard rule"
+        }
+      }
+    },
+    {
+      "id": "SIM-077",
+      "pattern": "filter_chips",
+      "description": "Row of clickable filter buttons — used for portfolio filters, blog category filters, feature toggles.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<div class=\"filter-bar\" style=\"display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px;\">\n  <button class=\"filter-chip filter-chip--active\" data-filter=\"all\" style=\"padding:8px 20px;background:#c8ff00;color:#05050a;font-family:'Space Mono';font-size:11px;border:none;cursor:pointer;\">ALL</button>\n  <button class=\"filter-chip\" data-filter=\"automation\" style=\"padding:8px 20px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(245,243,238,.5);font-family:'Space Mono';font-size:11px;cursor:pointer;\">AUTOMATION</button>\n  <button class=\"filter-chip\" data-filter=\"analytics\" style=\"...\">ANALYTICS</button>\n</div>\n<div class=\"filter-content\">\n  <div class=\"filter-item\" data-category=\"automation\">...</div>\n  <div class=\"filter-item\" data-category=\"analytics\" style=\"display:none;\">...</div>\n</div>\n<script>\n  document.querySelectorAll('.filter-chip').forEach(chip => {\n    chip.addEventListener('click', function() {\n      const filter = this.dataset.filter;\n      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-chip--active'));\n      this.classList.add('filter-chip--active');\n      document.querySelectorAll('.filter-item').forEach(item => {\n        item.style.display = filter === 'all' || item.dataset.category === filter ? 'block' : 'none';\n      });\n    });\n  });\n</script>",
+      "naive_failures": [
+        "filter-chip buttons with click handlers → BUTTON_WIDGET (wrong — these are toggle buttons, not CTAs)",
+        "filter-content items with display:none → SKIP (wrong — filtered content exists)",
+        "JS click handler with display toggle → same problem as tabs"
+      ],
+      "corrected_output": {
+        "entire_component": "HTML_WIDGET — filter bar + filter content + JS are inseparable",
+        "reason": "JS toggles display:none on content items — same pattern as tabs. Content must not be skipped.",
+        "editability": "5/10 — filter labels and content items are in the HTML. Adding/removing filter items requires editing the HTML widget but is straightforward.",
+        "content_structure_note": "Add HTML comments marking each filter section: <!-- FILTER: AUTOMATION --> for developer clarity"
+      },
+      "delta": {
+        "root_cause": "data-filter attribute on buttons + display:none on content items = FILTER_SYSTEM, same family as TAB_SYSTEM",
+        "fix": "Extend display:none exception to cover data-filter, data-category patterns alongside data-tab patterns"
+      },
+      "extracted_signals": {
+        "filter_system_signals": [
+          {
+            "name": "buttons_with_data_filter_or_data_category",
+            "weight": 0.95
+          },
+          {
+            "name": "sibling_items_with_matching_data_category",
+            "weight": 0.9
+          },
+          {
+            "name": "js_toggles_display_based_on_data_attribute",
+            "weight": 0.9
+          }
+        ]
+      }
+    },
+    {
+      "id": "SIM-078",
+      "pattern": "static_stats",
+      "description": "Static number showcase — no count-up animation, just large numbers with context.",
+      "difficulty": "easy",
+      "input_html_pattern": "\n<div class=\"metrics-row\" style=\"display:flex;gap:60px;justify-content:center;padding:60px;\">\n  <div class=\"metric\">\n    <div class=\"metric-num\" style=\"font-family:Syne;font-weight:800;font-size:64px;letter-spacing:-2px;color:#f5f3ee;line-height:1;\">4.2B<span style=\"color:#c8ff00\">+</span></div>\n    <div class=\"metric-label\" style=\"font-size:13px;color:rgba(245,243,238,.4);font-family:'Space Mono';letter-spacing:.08em;margin-top:8px;\">API CALLS / MONTH</div>\n  </div>\n</div>",
+      "naive_failures": [
+        "metric-num with large font → TEXT_EDITOR (correct! No JS here)",
+        "Inline <span style='color:#c8ff00'> inside metric-num → TEXT_EDITOR with inline HTML (correct)",
+        "No count-up JS detected → classified as native correctly",
+        "This is actually a success case — static stats work fine as native"
+      ],
+      "corrected_output": {
+        "metrics-row": "FLEX_ROW container — justify:center, gap:60px",
+        "each_metric": "FLEX_COLUMN inner container (class: nx-metric)",
+        "metric-num": "TEXT_EDITOR (class: nx-metric-num) — the span with accent colour is preserved in HTML editor content",
+        "metric-label": "TEXT_EDITOR (class: nx-metric-label)",
+        "no_html_widget_needed": "Static numbers are fully native and editable"
+      },
+      "delta": {
+        "root_cause": "None — this pattern classifies correctly already. Simulation confirms: when no JS animation, stats are native.",
+        "confirmation": "Static stats with no IntersectionObserver, no data-target, no count-up script → ALWAYS native TEXT_EDITOR",
+        "distinction_from_SIM016": "SIM-016 had count-up JS → HTML_WIDGET. This has no JS → native TEXT_EDITOR. The presence of animation JS is the critical differentiator."
+      },
+      "extracted_signals": {
+        "static_vs_animated_stat_rule": {
+          "rule": "Stat display is HTML_WIDGET ONLY when: data-target attribute present OR count-up script present OR IntersectionObserver modifying textContent",
+          "otherwise": "Native TEXT_EDITOR — large numbers are perfectly fine as native widgets"
+        }
+      }
+    },
+    {
+      "id": "SIM-079",
+      "pattern": "masonry_grid",
+      "description": "Auto-fill or masonry image/card grid where items have variable heights.",
+      "difficulty": "hard",
+      "input_html_pattern": "\n<div class=\"gallery\" style=\"columns:3;column-gap:20px;\">\n  <div class=\"gallery-item\" style=\"break-inside:avoid;margin-bottom:20px;\">\n    <img src=\"img1.jpg\" style=\"width:100%;display:block;\">\n  </div>\n  <div class=\"gallery-item\" style=\"break-inside:avoid;margin-bottom:20px;\">\n    <img src=\"img2.jpg\" style=\"width:100%;display:block;height:400px;object-fit:cover;\">\n  </div>\n</div>",
+      "naive_failures": [
+        "columns:3 → CSS Columns layout — not CSS Grid, not Flexbox. Elementor has no CSS Columns equivalent.",
+        "break-inside:avoid → no Elementor equivalent",
+        "Naive engine tries to convert to GRID_CONTAINER → breaks masonry layout"
+      ],
+      "corrected_output": {
+        "strategy": "HTML_WIDGET for the gallery container",
+        "reason": "CSS Columns layout (not Grid, not Flex) has no Elementor equivalent. The visual masonry effect depends on browser column reflow.",
+        "companion_css_approach": "Gallery stays HTML_WIDGET. Companion CSS handles column count responsive behaviour.",
+        "editability": "4/10 — images are in HTML widget source with clear <img> tags. Swapping images requires updating src attributes.",
+        "report_note": "Masonry/columns gallery detected. Preserved as HTML widget — CSS Columns layout cannot be replicated in Elementor containers. To update images: edit the HTML widget and update the img src values."
+      },
+      "delta": {
+        "root_cause": "CSS Columns layout (columns: N) is not CSS Grid or Flexbox — has no Elementor panel equivalent",
+        "fix": "CSS_COLUMNS detection: columns: N on a container → HTML_WIDGET. No native equivalent exists.",
+        "new_rule": "CSS_COLUMNS_HARD_RULE: columns property (CSS Columns layout) → HTML_WIDGET, unconditional"
+      },
+      "extracted_signals": {
+        "css_columns_hard_rule": {
+          "trigger": "columns: [integer] OR column-count: [integer] CSS property on container",
+          "action": "HTML_WIDGET — hard rule, CSS Columns has no Elementor native equivalent",
+          "priority": "Same level as <table> hard rule"
+        },
+        "auto_fill_grid": {
+          "detection": "grid-template-columns: repeat(auto-fill, minmax(Npx, 1fr)) OR repeat(auto-fit, minmax(Npx, 1fr))",
+          "elementor_handling": "Convert to closest fixed column count. auto-fill with minmax(300px, 1fr) in 1200px container ≈ 3 columns. Document in report.",
+          "companion_css": "Add responsive override: @media (max-width: 768px) { .nx-[class] { grid-template-columns: 1fr; } }"
+        }
+      }
+    },
+    {
+      "id": "SIM-080",
+      "pattern": "mega_menu",
+      "description": "Navigation with dropdown or mega menu panels.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<nav class=\"navbar\" style=\"position:fixed;...\">\n  <div class=\"nav-links\" style=\"display:flex;gap:32px;\">\n    <div class=\"nav-item nav-item--has-dropdown\">\n      <a href=\"#\" class=\"nav-link\">PRODUCT <span class=\"nav-arrow\">▾</span></a>\n      <div class=\"nav-dropdown\" style=\"position:absolute;top:100%;left:0;background:rgba(10,10,18,.95);border:1px solid rgba(255,255,255,.1);padding:24px;display:none;min-width:400px;\">\n        <div class=\"dropdown-grid\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:20px;\">\n          <a href=\"/pipelines\" class=\"dropdown-item\">\n            <div class=\"dropdown-item__icon\">⚙</div>\n            <div class=\"dropdown-item__text\">\n              <strong>Pipelines</strong>\n              <span>Build and deploy AI workflows</span>\n            </div>\n          </a>\n        </div>\n      </div>\n    </div>\n    <a href=\"#\" class=\"nav-link\">PRICING</a>\n  </div>\n</nav>",
+      "naive_failures": [
+        "position:fixed → HTML_WIDGET (correct — this is the nav hard rule)",
+        "nav-dropdown with display:none → SKIP (wrong — same tab/accordion problem)",
+        "Entire nav is already HTML_WIDGET so dropdown being skipped is less critical — it just won't appear in the template"
+      ],
+      "corrected_output": {
+        "strategy": "ENTIRE_NAV_IS_HTML_WIDGET — dropdown content included",
+        "display_none_exception": "Within HTML_WIDGET content, display:none elements are preserved as-is — the JS toggle handles them at runtime",
+        "key_insight": "When the entire containing section is already HTML_WIDGET, display:none child elements do NOT get SKIP applied. SKIP rule applies only to potential NATIVE widget elements.",
+        "scoping_rule": "display:none SKIP rule scope = NATIVE widget classification pass only. HTML_WIDGET content is copied verbatim, including hidden elements."
+      },
+      "delta": {
+        "root_cause": "display:none SKIP rule applied too broadly — also affected HTML widget internal content",
+        "fix": "SCOPE the display:none SKIP rule: only apply when classifying elements as potential NATIVE widgets. Once a container is classified as HTML_WIDGET, its descendants are copied as-is.",
+        "new_rule": "HTML_WIDGET_COPY_VERBATIM: once an element is classified as HTML_WIDGET, copy its entire innerHTML verbatim. Do NOT apply child classification rules to its descendants."
+      },
+      "extracted_signals": {
+        "html_widget_verbatim_rule": {
+          "rule": "After classifying a container as HTML_WIDGET, stop descending into its children. Copy innerHTML directly.",
+          "exceptions": "Only exception: if the HTML_WIDGET child contains an editable text region flagged by editability score >= 8. In that case, note it in the report as manually extractable.",
+          "rationale": "Prevents partial classification of HTML widget internals which produces malformed output"
+        }
+      }
+    },
+    {
+      "id": "SIM-081",
+      "pattern": "gradient_mesh_background",
+      "description": "Complex radial/mesh gradient backgrounds — multiple overlapping radial gradients creating a glow effect.",
+      "difficulty": "medium",
+      "input_html_pattern": "\n<section class=\"hero\" style=\"position:relative;overflow:hidden;background:#0a0a12;\">\n  <div class=\"bg-gradient\" style=\"position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(200,255,0,.12) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 20%, rgba(100,200,255,.08) 0%, transparent 50%);pointer-events:none;z-index:0;\"></div>\n  <div class=\"hero-content\" style=\"position:relative;z-index:2;\">\n    <h1>Build workflows</h1>\n  </div>\n</section>",
+      "naive_failures": [
+        "bg-gradient div with complex radial-gradient → companion CSS (correct)",
+        "But position:absolute on bg-gradient div → HTML_WIDGET (wrong — too aggressive for a background element)",
+        "Content layer (hero-content) gets buried inside HTML_WIDGET when bg-gradient triggers it"
+      ],
+      "corrected_output": {
+        "hero_section": "FLEX_COLUMN container (native, correct)",
+        "bg_gradient": "SKIP from JSON — recreate as hero::before in companion CSS",
+        "hero_content": "Keep as native container with native heading/button widgets",
+        "companion_css_gradient": ".nx-hero { position: relative; overflow: hidden; } .nx-hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 20% 50%, rgba(200,255,0,.12) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 20%, rgba(100,200,255,.08) 0%, transparent 50%); pointer-events:none; z-index:0; } .nx-hero > * { position:relative; z-index:2; }",
+        "key_insight": "Absolutely positioned decorative overlay divs (bg effects, gradient meshes, noise overlays) should become parent::before, not HTML_WIDGET. They have no content."
+      },
+      "delta": {
+        "root_cause": "position:absolute on bg-gradient overlay triggering HTML_WIDGET hard rule — but the element has no content, is purely decorative",
+        "rule_refinement": "REFINE position:fixed hard rule. position:absolute alone is NOT enough to trigger HTML_WIDGET. Must also have interactive content, animation, or JS dependency.",
+        "updated_absolute_rule": "position:absolute + no text content + no interactive elements + no animation + no JS dependency → DECORATIVE_OVERLAY → companion CSS ::before pseudo-element"
+      },
+      "extracted_signals": {
+        "decorative_overlay_rule": {
+          "trigger": "position:absolute OR position:fixed + (no text content) + (no interactive children) + (pointer-events:none OR no click handlers) + (z-index < 1 OR inset:0)",
+          "action": "SKIP from JSON, recreate as parent::before or parent::after in companion CSS",
+          "priority": "Check this BEFORE applying position:fixed → HTML_WIDGET hard rule"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "round": 3,
+    "total": 15,
+    "patterns": [
+      "alternating_feature_rows",
+      "static_stats",
+      "pull_quote",
+      "data_table",
+      "team_grid",
+      "accordion_faq",
+      "split_screen",
+      "timeline",
+      "gradient_mesh_background",
+      "filter_chips",
+      "masonry_grid",
+      "icon_feature_grid",
+      "tabbed_content",
+      "numbered_steps_solo",
+      "mega_menu"
+    ],
+    "new_hard_rules": [
+      "<table> → HTML_WIDGET",
+      "CSS columns layout → HTML_WIDGET",
+      "HTML_WIDGET_COPY_VERBATIM"
+    ],
+    "rule_refinements": [
+      "position:absolute alone does NOT trigger HTML_WIDGET (must have content/animation/JS)",
+      "display:none SKIP rule scoped to native classification only",
+      "SVG isolation: small icon container → HTML_WIDGET for icon only, not parent card",
+      "flex-direction:row-reverse handling (reorder or companion CSS)",
+      "align-self → companion CSS on elementor-widget wrapper"
+    ],
+    "new_companion_css_rules": [
+      "CALC() values → companion CSS with px fallback in Elementor",
+      "Single-side border → companion CSS, panel border = none",
+      "aspect-ratio + object-fit on images → companion CSS",
+      "Decorative absolute overlays → parent::before in companion CSS",
+      "align-self → companion CSS on .elementor-widget wrapper"
+    ]
+  }
+}

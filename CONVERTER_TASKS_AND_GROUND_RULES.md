@@ -15,6 +15,8 @@ References used to build this tracker:
 - `AUDIT.md`
 - `CHANGELOG.md`
 - `ELEMENTOR_FREE_WIDGET_MATRIX.md`
+- `IMPLEMENTATION_STATE_CONFIRMATION.md`
+- `CONVERTER_REBUILD_EXECUTION_PLAN.md`
 - `includes/converter/class-native-converter.php`
 
 ## Non-Negotiable Ground Rules
