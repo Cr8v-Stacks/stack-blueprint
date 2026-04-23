@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Intended for developer-maintained sites.
  */
 class ConverterV1 {
-	// Logic is handled via ApiClient system prompts.
-	// Future: pre-processing HTML analysis before API call.
+	/**
+	 * V1 is fidelity-first and keeps more full HTML sections.
+	 *
+	 * @var string[]
+	 */
+	private array $force_html_types = [ 'video', 'slider', 'logos', 'gallery', 'contact', 'newsletter' ];
+
+	public function should_force_html_type( string $type ): bool {
+		return in_array( $type, $this->force_html_types, true );
+	}
+
+	public function allows_payload_preservation( string $type ): bool {
+		return true;
+	}
 }

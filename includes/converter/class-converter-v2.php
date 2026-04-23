@@ -21,6 +21,25 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Intended for client-maintained sites.
  */
 class ConverterV2 {
-	// Logic is handled via ApiClient system prompts.
-	// Future: structured HTML analysis, section-by-section conversion pipeline.
+	/**
+	 * Section types that are generally behavior-heavy and usually better preserved.
+	 *
+	 * @var string[]
+	 */
+	private array $force_html_types = [ 'video', 'slider', 'logos', 'newsletter' ];
+
+	/**
+	 * In V2, only preserve unresolved payloads for genuinely behavior-locked types.
+	 *
+	 * @var string[]
+	 */
+	private array $preservation_allowed_types = [ 'marquee', 'stats' ];
+
+	public function should_force_html_type( string $type ): bool {
+		return in_array( $type, $this->force_html_types, true );
+	}
+
+	public function allows_payload_preservation( string $type ): bool {
+		return in_array( $type, $this->preservation_allowed_types, true );
+	}
 }

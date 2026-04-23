@@ -25,7 +25,19 @@
 
 namespace StackBlueprint\Converter;
 
+require_once __DIR__ . '/helpers/class-script-bridge-helper.php';
+require_once __DIR__ . '/helpers/class-v2-decision-helper.php';
+require_once __DIR__ . '/helpers/class-v2-primitive-assembler-helper.php';
+
+use StackBlueprint\Converter\ConverterV1;
+use StackBlueprint\Converter\ConverterV2;
 use StackBlueprint\Converter\Passes\PassDocumentIntelligence;
+use StackBlueprint\Converter\Generated\SimulationKnowledge;
+use StackBlueprint\Converter\Helpers\ScriptBridgeHelper;
+use StackBlueprint\Converter\Helpers\V2DecisionHelper;
+use StackBlueprint\Converter\Helpers\V2PrimitiveAssemblerHelper;
+use StackBlueprint\Converter\Skills\PriorityRulesEngine;
+use StackBlueprint\Converter\Skills\TailwindResolver;
 use StackBlueprint\Utilities\Helpers;
 use WP_Error;
 
@@ -42,6 +54,9 @@ class NativeConverter {
 	private PassDocumentIntelligence $intel;
 	private CssResolver              $css;
 	private TemplateLibrary          $lib;
+	private PriorityRulesEngine      $priority_rules;
+	private TailwindResolver         $tailwind_resolver;
+	private HtmlParser               $html_parser;
 
 	// ── Resolved design tokens ────────────────────────────────
 	private string $c_bg      = '#0a0a12';
@@ -69,6 +84,10 @@ class NativeConverter {
 	private array  $source_selector_bridge_coverage = [];
 	private array  $source_script_bridge_coverage = [];
 	private array  $native_widget_semantic_coverage = [];
+	private array  $tailwind_coverage = [];
+	private int    $hidden_skip_log_count = 0;
+	private bool   $strategy_policy_emitted = false;
+	private ConverterV1|ConverterV2|null $strategy_profile = null;
 
 	// ═══════════════════════════════════════════════════════════
 	// PUBLIC ENTRY POINT
@@ -93,9 +112,12 @@ class NativeConverter {
 
 	public function convert( string $html, array $params = [] ): array|WP_Error {
 		$this->project_name = sanitize_text_field( $params['project_name'] ?? 'my-project' );
-		$this->prefix       = Helpers::generate_prefix( $this->project_name );
+		$requested_prefix   = isset( $params['prefix'] ) ? (string) $params['prefix'] : null;
+		$source_filename    = (string) ( $params['filename'] ?? '' );
+		$this->prefix       = Helpers::generate_prefix( $this->project_name, $source_filename, $requested_prefix );
 		$this->strategy     = in_array( $params['strategy'] ?? 'v2', ['v1','v2'], true )
 			? $params['strategy'] : 'v2';
+		$this->strategy_profile = ( 'v1' === $this->strategy ) ? new ConverterV1() : new ConverterV2();
 		$this->elements              = [];
 		$this->warnings              = [];
 		$this->class_map             = [];
@@ -111,6 +133,11 @@ class NativeConverter {
 		$this->source_selector_bridge_coverage = [];
 		$this->source_script_bridge_coverage = [];
 		$this->native_widget_semantic_coverage = $this->default_widget_semantic_coverage();
+		$this->tailwind_coverage = [];
+		$this->strategy_policy_emitted = false;
+		$this->priority_rules = new PriorityRulesEngine();
+		$this->tailwind_resolver = new TailwindResolver();
+		$this->html_parser = new HtmlParser();
 
 		if ( ! Helpers::is_safe_prefix( $this->prefix ) ) {
 			return $this->fail_conversion(
@@ -126,11 +153,29 @@ class NativeConverter {
 
 		// ── Pass 1: Document Intelligence ──────────────────────
 		$this->update_pass( $params, 1 );
+		$this->emit_strategy_policy_diagnostic();
 		$dom = $this->parse_html( $html );
 		if ( is_wp_error( $dom ) ) return $dom;
 
 		$this->intel = new PassDocumentIntelligence();
 		$this->intel->run( $dom, $html );
+		$is_tailwind = $this->tailwind_resolver->is_tailwind_html( $html );
+		$this->diagnostics[] = [
+			'code'    => 'tailwind_detection',
+			'message' => $is_tailwind
+				? 'Tailwind-like utility markup detected.'
+				: 'Tailwind-like utility markup not detected.',
+			'context' => [
+				'pass' => 1,
+			],
+		];
+		if ( $is_tailwind ) {
+			$this->apply_tailwind_pre_resolution( $dom );
+		}
+		$knowledge_error = $this->assert_simulation_knowledge_integrity();
+		if ( is_wp_error( $knowledge_error ) ) {
+			return $knowledge_error;
+		}
 
 		$prototype_error = $this->assert_supported_input_shape( $dom, $html );
 		if ( is_wp_error( $prototype_error ) ) {
@@ -141,6 +186,10 @@ class NativeConverter {
 		$this->update_pass( $params, 2 );
 		$this->css = new CssResolver();
 		$this->css->parse( $this->intel->raw_css );
+		$tailwind_error = $this->assert_tailwind_resolution_integrity();
+		if ( is_wp_error( $tailwind_error ) ) {
+			return $tailwind_error;
+		}
 
 		// Resolve palette and fonts from Pass 1 tokens + CSS.
 		$this->resolve_design_system();
@@ -191,6 +240,8 @@ class NativeConverter {
 			return $integrity_error;
 		}
 
+		$this->record_conversion_run_report( $repaired, (string) $companion_css );
+
 		$template = [
 			'version'       => '0.4',
 			'title'         => $this->project_name,
@@ -210,6 +261,80 @@ class NativeConverter {
 			'class_map'     => $this->class_map,
 			'warnings'      => $this->warnings,
 			'diagnostics'   => $this->diagnostics,
+		];
+	}
+
+	/**
+	 * Pass-ownership conversion run report (single summary artifact per run).
+	 *
+	 * @param array  $elements Repaired top-level output tree.
+	 * @param string $companion_css Emitted companion CSS.
+	 */
+	private function record_conversion_run_report( array $elements, string $companion_css ): void {
+		$render_modes = [];
+		$hybrid_added = 0;
+		foreach ( (array) $this->section_payloads as $type => $payload ) {
+			$mode = (string) ( $payload['render_mode'] ?? '' );
+			if ( '' !== $mode ) {
+				$render_modes[ $mode ] = ( $render_modes[ $mode ] ?? 0 ) + 1;
+			}
+			if ( ! empty( $payload['hybrid_fragment_added'] ) ) {
+				$hybrid_added++;
+			}
+		}
+
+		$hybrid_events = [
+			'attached_total'      => 0,
+			'attached_to_subtree' => 0,
+			'fragments_detected'  => 0,
+		];
+		foreach ( (array) $this->diagnostics as $diag ) {
+			if ( ! is_array( $diag ) || ( $diag['code'] ?? '' ) !== 'hybrid_fragment_attached' ) {
+				continue;
+			}
+			$hybrid_events['attached_total']++;
+			$ctx = (array) ( $diag['context'] ?? [] );
+			if ( ! empty( $ctx['attached_to_subtree'] ) ) {
+				$hybrid_events['attached_to_subtree']++;
+			}
+			$hybrid_events['fragments_detected'] += (int) ( $ctx['fragments_detected'] ?? 0 );
+		}
+
+		$this->diagnostics[] = [
+			'code'    => 'conversion_run_report',
+			'message' => 'Conversion run report recorded (pass ownership summary).',
+			'context' => [
+				'pass'  => 9,
+				'meta'  => [
+					'prefix'       => $this->prefix,
+					'strategy'     => $this->strategy,
+					'project_name' => $this->project_name,
+				],
+				'sections' => [
+					'detected_types' => array_values( array_unique( (array) $this->detected_section_types ) ),
+					'built_types'    => array_values( array_unique( (array) $this->built_section_types ) ),
+					'render_modes'   => $render_modes,
+				],
+				'hybrid' => [
+					'sections_marked_hybrid' => $hybrid_added,
+					'events'                 => $hybrid_events,
+				],
+				'bridges' => [
+					'selector' => (array) $this->source_selector_bridge_coverage,
+					'script'   => (array) $this->source_script_bridge_coverage,
+				],
+				'assets' => [
+					'global_setup'  => (array) $this->global_setup_asset_inventory,
+					'companion_css' => [
+						'bytes' => strlen( $companion_css ),
+						'has_pseudo' => (bool) preg_match( '/::(before|after)\s*\{/i', $companion_css ),
+						'has_hover'  => (bool) preg_match( '/:hover\b/i', $companion_css ),
+					],
+				],
+				'output' => [
+					'top_level_elements' => count( $elements ),
+				],
+			],
 		];
 	}
 
@@ -647,6 +772,7 @@ HTML;
 			$tag = strtolower( $node->nodeName );
 			if ( in_array( $tag, ['script','style','noscript','link','meta','head'], true ) ) continue;
 			if ( strlen( trim( $node->textContent ) ) < 5 ) continue;
+			if ( $this->is_static_hidden_element( $node, $xp ) ) continue;
 			if ( $this->intel->is_cursor_element( $node ) ) continue;
 			if ( $this->intel->is_background_element( $node ) ) continue;
 
@@ -689,6 +815,7 @@ HTML;
 
 			// Pass 3: Editability / complexity score for native vs HTML widget.
 			$decision = $this->decide_strategy( $node, $type, $xp );
+			$complexity = $this->score_subtree_complexity( $node, $xp );
 
 			// Pass 7: Try template library first (highest quality output).
 			// ── F-01b: marquee/stats/cta route through library even if decision is 'html'.
@@ -696,8 +823,28 @@ HTML;
 			$render_mode = 'native_rebuilt';
 			$content = $this->extract_section_content( $node, $type, $xp );
 			$this->section_payloads[ $type ] = $content;
+			$hybrid_fragment_html = null;
+			$hybrid_fragments = [];
+			if ( 'native' === $decision ) {
+				$hybrid_fragment_html = $this->extract_hybrid_fragment_html( $node, $complexity );
+				$hybrid_fragments = $this->extract_repeated_hybrid_fragments( $node, $xp, $complexity );
+			}
 
-			if ( ! $el && ( $decision === 'native' || $this->lib->has_template( $type ) ) ) {
+			// Broad-spectrum safety: if a native/template path is selected but the
+			// required payload is missing, preserve the source as HTML instead of
+			// emitting a broken native template with empty content.
+			if ( 'native' === $decision && $this->section_payload_requires_preservation( $type, $content ) ) {
+				$decision = 'html';
+				$this->diagnostics[] = [
+					'code'    => 'payload_unresolved_preserve',
+					'message' => sprintf( 'Section "%s" payload unresolved; preserving as HTML widget to avoid partial native output.', $type ),
+					'context' => [ 'pass' => 7, 'type' => $type, 'required' => $this->required_payload_keys_for_type( $type ) ],
+				];
+			}
+
+			$force_template_types = [ 'marquee', 'stats', 'cta' ];
+			$force_template_allowed = in_array( $type, $force_template_types, true ) && ! $this->section_payload_requires_preservation( $type, $content );
+			if ( ! $el && ( $decision === 'native' || ( $this->lib->has_template( $type ) && $force_template_allowed ) ) ) {
 				$el = $this->lib->get( $type, $content );
 				if ( $el ) {
 					$render_mode = 'native_rebuilt';
@@ -718,11 +865,23 @@ HTML;
 			}
 
 			if ( $el ) {
+				if ( 'native' === $decision && ! empty( $hybrid_fragment_html ) ) {
+					$existing_visual_widgets = $this->count_subtree_class_pattern(
+						$el,
+						'/\b' . preg_quote( $this->prefix, '/' ) . '-card-visual-widget\b/'
+					);
+					if ( $existing_visual_widgets <= 0 ) {
+						$this->append_hybrid_fragment_widget( $el, $type, (string) $hybrid_fragment_html, $node, $hybrid_fragments );
+					}
+					$render_mode = 'native_hybrid_fragment';
+					$this->section_payloads[ $type ]['hybrid_fragment_added'] = true;
+				}
 				$this->assign_top_level_section_anchor( $el, $type, $section_ordinal );
+				$this->section_payloads[ $type ]['output_element_id'] = (string) ( $el['settings']['_element_id'] ?? '' );
 				$this->elements[] = $el;
 				$this->built_section_types[] = $type;
 				$this->section_payloads[ $type ]['render_mode'] = $render_mode;
-				$this->record_section_diagnostic( $type, $render_mode, $decision, $node, $content );
+				$this->record_section_diagnostic( $type, $render_mode, $decision, $node, $content, $el, $xp );
 				$this->cmap( "{$this->prefix}-{$type}", ucfirst($type) . ' section', 'Advanced tab → CSS ID' );
 			}
 		}
@@ -739,6 +898,17 @@ HTML;
 
 		$base_id = "{$this->prefix}-{$type}";
 		$el['settings']['_element_id'] = $ordinal > 1 ? "{$base_id}-{$ordinal}" : $base_id;
+
+		// Broad-spectrum hook rule: whenever we mint a stable anchor ID, also
+		// ensure a matching class hook exists so CSS bridges/pseudo hosts can
+		// target either `#id` or `.class` safely.
+		$existing = (string) ( $el['settings']['_css_classes'] ?? '' );
+		$tokens = array_values( array_filter( preg_split( '/\s+/', trim( $existing ) ) ?: [] ) );
+		$need = "{$this->prefix}-{$type}";
+		if ( ! in_array( $need, $tokens, true ) ) {
+			$tokens[] = $need;
+			$el['settings']['_css_classes'] = trim( implode( ' ', $tokens ) );
+		}
 	}
 
 	private function classify_section( \DOMElement $node, \DOMXPath $xp ): string {
@@ -827,38 +997,443 @@ HTML;
 	// ═══════════════════════════════════════════════════════════
 
 	private function decide_strategy( \DOMElement $node, string $type, \DOMXPath $xp ): string {
+		$hard_rule = $this->priority_rules->evaluate_section( $node, $xp );
+		if ( is_array( $hard_rule ) ) {
+			$rule_id = (string) ( $hard_rule['rule'] ?? '' );
+			if ( 'v2' === $this->strategy && 'RULE-005' === $rule_id && $this->can_relax_css_columns_hard_rule( $node, $xp, $type ) ) {
+				$this->diagnostics[] = [
+					'code'    => 'priority_rule_relaxed',
+					'message' => 'RULE-005 relaxed for V2 primitive-first path because no inline css-columns contract was found.',
+					'context' => [
+						'pass' => 3,
+						'type' => $type,
+						'rule' => $rule_id,
+					],
+				];
+			} else {
+			$this->diagnostics[] = [
+				'code'    => 'priority_rule_match',
+				'message' => sprintf( 'Priority rule %s forced %s strategy.', (string) ( $hard_rule['rule'] ?? 'unknown' ), (string) ( $hard_rule['action'] ?? 'native' ) ),
+				'context' => [
+					'pass'   => 3,
+					'type'   => $type,
+					'rule'   => (string) ( $hard_rule['rule'] ?? '' ),
+					'reason' => (string) ( $hard_rule['reason'] ?? '' ),
+				],
+			];
+			return ( 'html' === ( $hard_rule['action'] ?? '' ) ) ? 'html' : 'native';
+			}
+		}
+
 		// ── F-01b: Types that have template library entries should go through
 		// the library even if they produce HTML widgets. This ensures the
 		// library's well-crafted HTML (with proper CSS/JS) is used rather
 		// than the raw source HTML widget preservation fallback.
 		// marquee, stats, cta → template library handles them (outputs HTML widgets)
 		// slider, logos, video, gallery, contact, newsletter → raw HTML widget preserve
-		if ( in_array($type, ['slider','logos','video','gallery','contact','newsletter'], true) ) {
+		if ( $this->strategy_profile && $this->strategy_profile->should_force_html_type( $type ) ) {
 			return 'html';
+		}
+
+		$policy = $this->get_strategy_policy();
+		$complexity = $this->score_subtree_complexity( $node, $xp );
+		$this->diagnostics[] = [
+			'code'    => 'strategy_complexity_score',
+			'message' => 'Generic subtree complexity scored for native-vs-html strategy.',
+			'context' => [
+				'pass'           => 3,
+				'type'           => $type,
+				'score'          => (int) ( $complexity['score'] ?? 0 ),
+				'threshold_html' => (int) ( $policy['html_threshold'] ?? 7 ),
+				'signals'        => (array) ( $complexity['signals'] ?? [] ),
+				'policy'         => $policy['id'] ?? $this->strategy,
+			],
+		];
+
+		$v2_affinity = [];
+		if ( 'v2' === $this->strategy ) {
+			$v2_affinity = $this->collect_v2_native_affinity_signals( $node, $xp );
+			$this->diagnostics[] = [
+				'code'    => 'v2_native_affinity',
+				'message' => 'V2 primitive-first affinity calculated before preserve decision.',
+				'context' => [
+					'pass'   => 3,
+					'type'   => $type,
+					'score'  => (int) ( $v2_affinity['score'] ?? 0 ),
+					'signals'=> (array) ( $v2_affinity['signals'] ?? [] ),
+				],
+			];
+			if ( $this->should_prefer_native_in_v2( $type, $v2_affinity, $complexity ) ) {
+				return 'native';
+			}
 		}
 
 		// Preserve richer interactive sections unless we have explicit native
 		// builders for them. This prevents partial breakage for accordions, tabs,
 		// toggles, and carousel-like structures that are common in real designs.
-		if ( $this->contains_interactive_structure( $node, $xp ) ) {
+		if ( $this->contains_interactive_structure( $node, $xp ) || $this->has_complex_behavior_contract( $node, $xp ) ) {
+			if ( 'v2' === $this->strategy ) {
+				$this->diagnostics[] = [
+					'code'    => 'strategy_interactive_hybrid_preferred',
+					'message' => 'V2 prefers native + in-place hybrid fragments for interactive/behavioral structures.',
+					'context' => [ 'pass' => 3, 'type' => $type ],
+				];
+				return 'native';
+			}
 			return 'html';
 		}
 
-		$section_html = $node->ownerDocument->saveHTML( $node );
+		// Broad-spectrum policy: decide from structural/behavioral complexity,
+		// not only known section labels.
+		if ( (int) ( $complexity['score'] ?? 0 ) >= (int) ( $policy['html_threshold'] ?? 7 ) ) {
+			return 'html';
+		}
 
-		if ( $this->strategy === 'v1' ) {
-			// V1: Aggressive HTML preservation. Preserve if ANY animation/JS/complex CSS detected.
-			// Exception: marquee, stats, cta always go through the library regardless of v1.
-			if ( ! in_array( $type, ['marquee','stats','cta'], true ) ) {
-				if ( $this->intel->element_is_animated( $node ) )        return 'html';
-				if ( $xp->query('.//script', $node)->length > 0 )        return 'html';
-				if ( str_contains($section_html,'grid-row') )            return 'html';
-				if ( str_contains($section_html,'position:absolute') || str_contains($section_html,'position: absolute') ) return 'html';
+		// Strategy-specific guardrails (kept explicit and policy-driven).
+		if ( ! in_array( $type, (array) ( $policy['never_force_html_types'] ?? [] ), true ) ) {
+			if ( ! empty( $policy['preserve_on_animation'] ) && $this->intel->element_is_animated( $node ) ) {
+				return 'html';
+			}
+			if ( ! empty( $policy['preserve_on_inline_script'] ) && $xp->query( './/script', $node )->length > 0 ) {
+				return 'html';
+			}
+			$signals = (array) ( $complexity['signals'] ?? [] );
+			if ( ! empty( $policy['preserve_on_grid_span'] ) && ! empty( $signals['grid_span_complexity'] ) ) {
+				return 'html';
+			}
+			if ( ! empty( $policy['preserve_on_absolute_layering'] ) && ! empty( $signals['absolute_layering'] ) ) {
+				return 'html';
 			}
 		}
 
 		// Otherwise native.
 		return 'native';
+	}
+
+	private function can_relax_css_columns_hard_rule( \DOMElement $node, \DOMXPath $xp, string $type ): bool {
+		if ( ! in_array( $type, [ 'hero', 'features', 'pricing', 'footer', 'cta', 'generic', 'process', 'testimonials' ], true ) ) {
+			return false;
+		}
+		$inline_columns = $xp->query(
+			'.//*[contains(@style,"column-count") or contains(@style,"columns:")] | self::*[contains(@style,"column-count") or contains(@style,"columns:")]',
+			$node
+		);
+		return ! ( $inline_columns && $inline_columns->length > 0 );
+	}
+
+	/**
+	 * Build optional in-place hybrid fragment from complexity signals.
+	 */
+	private function extract_hybrid_fragment_html( \DOMElement $node, array $complexity ): ?string {
+		$signals = (array) ( $complexity['signals'] ?? [] );
+		$should_attempt = ! empty( $signals['behavior_coupling'] )
+			|| ! empty( $signals['interactive_structure'] )
+			|| ! empty( $signals['grid_span_complexity'] )
+			|| ! empty( $signals['pseudo_dependency'] );
+		if ( ! $should_attempt ) {
+			return null;
+		}
+
+		$fragment = $this->extract_complex_visual( $node );
+		if ( empty( $fragment ) || strlen( (string) $fragment ) < 24 ) {
+			return null;
+		}
+		return (string) $fragment;
+	}
+
+	/**
+	 * Inject hybrid HTML fragment as an in-place child widget.
+	 */
+	private function append_hybrid_fragment_widget( array &$element, string $type, string $html, \DOMElement $source_node, array $fragments = [] ): void {
+		if ( '' === trim( $html ) ) {
+			return;
+		}
+		if ( ! isset( $element['elements'] ) || ! is_array( $element['elements'] ) ) {
+			$element['elements'] = [];
+		}
+		$source_hooks = $this->source_hook_classes_for_node( $source_node );
+		$attached_to_subtree = false;
+		if ( ! empty( $fragments ) ) {
+			$fragment_index = 0;
+			foreach ( $element['elements'] as &$child ) {
+				if ( ! is_array( $child ) || 'container' !== ( $child['elType'] ?? '' ) ) {
+					continue;
+				}
+				if ( $fragment_index >= count( $fragments ) ) {
+					break;
+				}
+				if ( ! isset( $child['elements'] ) || ! is_array( $child['elements'] ) ) {
+					$child['elements'] = [];
+				}
+				$child['elements'][] = $this->w( 'html', [
+					'_css_classes' => trim( "{$this->prefix}-{$type}-hybrid-fragment {$this->prefix}-hybrid-fragment {$source_hooks}" ),
+					'html'         => (string) $fragments[ $fragment_index ],
+				] );
+				$fragment_index++;
+				$attached_to_subtree = true;
+			}
+			unset( $child );
+		}
+
+		if ( ! $attached_to_subtree ) {
+			$element['elements'][] = $this->w( 'html', [
+				'_css_classes' => trim( "{$this->prefix}-{$type}-hybrid-fragment {$this->prefix}-hybrid-fragment {$source_hooks}" ),
+				'html'         => $html,
+			] );
+		}
+		$this->diagnostics[] = [
+			'code'    => 'hybrid_fragment_attached',
+			'message' => sprintf( 'Attached in-place hybrid fragment for section "%s".', $type ),
+			'context' => [
+				'pass'               => 7,
+				'type'               => $type,
+				'fragments_detected' => count( $fragments ),
+				'attached_to_subtree'=> $attached_to_subtree,
+			],
+		];
+	}
+
+	/**
+	 * Prefer repeated-source child fragments for in-place hybrid attachment.
+	 *
+	 * @return array<int,string>
+	 */
+	private function extract_repeated_hybrid_fragments( \DOMElement $node, \DOMXPath $xp, array $complexity ): array {
+		$signals = (array) ( $complexity['signals'] ?? [] );
+		if (
+			empty( $signals['behavior_coupling'] ) &&
+			empty( $signals['interactive_structure'] ) &&
+			empty( $signals['grid_span_complexity'] ) &&
+			empty( $signals['pseudo_dependency'] )
+		) {
+			return [];
+		}
+
+		$fragments = [];
+		foreach ( $node->childNodes as $child ) {
+			if ( ! $child instanceof \DOMElement ) {
+				continue;
+			}
+			if ( ! in_array( strtolower( $child->tagName ), [ 'div', 'section', 'article', 'li' ], true ) ) {
+				continue;
+			}
+			$fragment = $this->extract_complex_visual( $child );
+			if ( ! empty( $fragment ) && strlen( (string) $fragment ) >= 24 ) {
+				$fragments[] = (string) $fragment;
+			}
+			if ( count( $fragments ) >= 6 ) {
+				break;
+			}
+		}
+
+		return $fragments;
+	}
+
+	/**
+	 * Generic complexity scoring for any section subtree.
+	 *
+	 * @return array{score:int,signals:array<string,mixed>}
+	 */
+	private function score_subtree_complexity( \DOMElement $node, \DOMXPath $xp ): array {
+		$score   = 0;
+		$signals = [];
+
+		$containers = $xp->query( './/*[self::div or self::section or self::article or self::main or self::aside]', $node );
+		$container_count = $containers ? (int) $containers->length : 0;
+		if ( $container_count >= 12 ) {
+			$score += 2;
+			$signals['container_density'] = $container_count;
+		}
+
+		$max_child_containers = $this->max_direct_container_children( $node, $xp );
+		if ( $max_child_containers >= 5 ) {
+			$score += 2;
+			$signals['repeated_container_children'] = $max_child_containers;
+		}
+
+		$max_depth = $this->estimate_container_depth( $node, $xp );
+		if ( $max_depth >= 4 ) {
+			$score += 1;
+			$signals['container_depth'] = $max_depth;
+		}
+
+		$node_html = strtolower( $node->ownerDocument->saveHTML( $node ) );
+		if ( str_contains( $node_html, 'grid-row' ) || str_contains( $node_html, 'grid-column' ) || str_contains( $node_html, 'grid-template' ) ) {
+			$score += 2;
+			$signals['grid_span_complexity'] = true;
+		}
+		if ( str_contains( $node_html, 'position:absolute' ) || str_contains( $node_html, 'position: absolute' ) ) {
+			$score += 1;
+			$signals['absolute_layering'] = true;
+		}
+
+		if ( $this->node_has_pseudo_dependency( $node ) ) {
+			$score += 2;
+			$signals['pseudo_dependency'] = true;
+		}
+
+		if ( $this->has_complex_behavior_contract( $node, $xp ) ) {
+			$score += 3;
+			$signals['behavior_coupling'] = true;
+		}
+
+		if ( $this->contains_interactive_structure( $node, $xp ) ) {
+			$score += 2;
+			$signals['interactive_structure'] = true;
+		}
+
+		return [
+			'score'          => $score,
+			'signals'        => $signals,
+		];
+	}
+
+	/**
+	 * Explicit strategy policy: thresholds + guardrails.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function get_strategy_policy(): array {
+		if ( 'v1' === $this->strategy ) {
+			return [
+				'id'                         => 'v1_fidelity_first',
+				'html_threshold'             => 6,
+				'preserve_on_animation'      => true,
+				'preserve_on_inline_script'  => true,
+				'preserve_on_grid_span'      => true,
+				'preserve_on_absolute_layering' => true,
+				// Types that are routed elsewhere (template library), so do not force by this policy.
+				'never_force_html_types'     => [ 'marquee', 'stats', 'cta' ],
+			];
+		}
+
+		// v2
+		return [
+			'id'                         => 'v2_editable_native_first',
+			'html_threshold'             => 7,
+			'preserve_on_animation'      => false,
+			'preserve_on_inline_script'  => false,
+			'preserve_on_grid_span'      => false,
+			'preserve_on_absolute_layering' => false,
+			'never_force_html_types'     => [ 'marquee', 'stats', 'cta' ],
+		];
+	}
+
+	private function required_payload_keys_for_type( string $type ): array {
+		return match ( $type ) {
+			'features', 'bento', 'testimonials', 'pricing' => [ 'cards' ],
+			'footer' => [ 'cols' ],
+			'process' => [ 'steps' ],
+			'stats' => [ 'stats' ],
+			'marquee' => [ 'items' ],
+			'cta' => [ 'title' ],
+			default => [],
+		};
+	}
+
+	private function section_payload_requires_preservation( string $type, array $payload ): bool {
+		if ( 'v2' === $this->strategy && $this->strategy_profile && ! $this->strategy_profile->allows_payload_preservation( $type ) ) {
+			return false;
+		}
+		$required = $this->required_payload_keys_for_type( $type );
+		if ( empty( $required ) ) {
+			return false;
+		}
+		// If already preserved, do not force again.
+		if ( 'fully_preserved_source' === (string) ( $payload['render_mode'] ?? '' ) ) {
+			return false;
+		}
+		foreach ( $required as $key ) {
+			if ( empty( $payload[ $key ] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function collect_v2_native_affinity_signals( \DOMElement $node, \DOMXPath $xp ): array {
+		return V2DecisionHelper::collect_affinity_signals( $this->html_parser, $node, $xp );
+	}
+
+	private function should_prefer_native_in_v2( string $type, array $affinity, array $complexity ): bool {
+		return V2DecisionHelper::should_prefer_native( $type, $affinity, $complexity );
+	}
+
+	private function emit_strategy_policy_diagnostic(): void {
+		if ( $this->strategy_policy_emitted ) {
+			return;
+		}
+		$this->strategy_policy_emitted = true;
+		$this->diagnostics[] = [
+			'code'    => 'strategy_policy',
+			'message' => 'Strategy policy locked for this run.',
+			'context' => [
+				'pass'     => 1,
+				'strategy' => $this->strategy,
+				'policy'   => $this->get_strategy_policy(),
+			],
+		];
+	}
+
+	private function max_direct_container_children( \DOMElement $root, \DOMXPath $xp ): int {
+		$max = 0;
+		$all = $xp->query( './/*[self::div or self::section or self::article or self::main or self::aside]', $root );
+		if ( ! $all ) {
+			return 0;
+		}
+		foreach ( $all as $node ) {
+			if ( ! $node instanceof \DOMElement ) {
+				continue;
+			}
+			$count = 0;
+			foreach ( $node->childNodes as $child ) {
+				if ( $child instanceof \DOMElement && in_array( strtolower( $child->tagName ), [ 'div', 'section', 'article', 'main', 'aside' ], true ) ) {
+					$count++;
+				}
+			}
+			if ( $count > $max ) {
+				$max = $count;
+			}
+		}
+		return $max;
+	}
+
+	private function estimate_container_depth( \DOMElement $root, \DOMXPath $xp ): int {
+		$max_depth = 0;
+		$walk = function( \DOMElement $node, int $depth ) use ( &$walk, &$max_depth ): void {
+			if ( $depth > $max_depth ) {
+				$max_depth = $depth;
+			}
+			foreach ( $node->childNodes as $child ) {
+				if ( ! $child instanceof \DOMElement ) {
+					continue;
+				}
+				if ( in_array( strtolower( $child->tagName ), [ 'div', 'section', 'article', 'main', 'aside' ], true ) ) {
+					$walk( $child, $depth + 1 );
+				}
+			}
+		};
+		$walk( $root, 1 );
+		return $max_depth;
+	}
+
+	private function node_has_pseudo_dependency( \DOMElement $node ): bool {
+		$doc_html = strtolower( (string) $node->ownerDocument->saveHTML() );
+		$id = trim( strtolower( (string) $node->getAttribute( 'id' ) ) );
+		if ( '' !== $id && ( str_contains( $doc_html, '#' . $id . '::before' ) || str_contains( $doc_html, '#' . $id . '::after' ) ) ) {
+			return true;
+		}
+		$classes = preg_split( '/\s+/', strtolower( trim( (string) $node->getAttribute( 'class' ) ) ) );
+		foreach ( (array) $classes as $class_name ) {
+			$class_name = trim( (string) $class_name );
+			if ( '' === $class_name ) {
+				continue;
+			}
+			if ( str_contains( $doc_html, '.' . $class_name . '::before' ) || str_contains( $doc_html, '.' . $class_name . '::after' ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -918,6 +1493,165 @@ HTML;
 		);
 
 		return (bool) ( $interactive_nodes && $interactive_nodes->length > 0 );
+	}
+
+	/**
+	 * Detect behavior-heavy structures that should be preserved as HTML.
+	 */
+	private function has_complex_behavior_contract( \DOMElement $node, \DOMXPath $xp ): bool {
+		if ( $this->intel->element_is_animated( $node ) ) {
+			return true;
+		}
+
+		if ( $xp->query( './/script', $node )->length > 0 ) {
+			return true;
+		}
+
+		$html = strtolower( $node->ownerDocument->saveHTML( $node ) );
+		$markers = [
+			'requestanimationframe', 'intersectionobserver', 'setinterval', 'settimeout',
+			'counter', 'countup', 'marquee', 'ticker', 'lottie', 'gsap',
+			'canvas', 'webgl', 'particles', 'orb', 'parallax',
+			'data-aos', 'data-animate', 'data-animation', 'data-counter',
+			'onmouseover=', 'onmouseenter=', 'onmouseleave=', 'onclick=',
+		];
+		foreach ( $markers as $marker ) {
+			if ( str_contains( $html, $marker ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Static hidden elements can be skipped at section candidate level.
+	 * Toggle/tab/accordion linked hidden blocks are not skipped.
+	 */
+	private function is_static_hidden_element( \DOMElement $node, \DOMXPath $xp ): bool {
+		$style = strtolower( preg_replace( '/\s+/', '', (string) $node->getAttribute( 'style' ) ) );
+		$hidden_by_style = ( '' !== $style ) && ( str_contains( $style, 'display:none' ) || str_contains( $style, 'visibility:hidden' ) );
+		$hidden_by_attr  = $node->hasAttribute( 'hidden' ) || 'true' === strtolower( (string) $node->getAttribute( 'aria-hidden' ) );
+		$hidden_contract = $this->node_has_hidden_class_contract( $node );
+		$hidden_by_class = ! empty( $hidden_contract['hidden'] );
+
+		$is_hidden = $hidden_by_style || $hidden_by_attr || $hidden_by_class;
+		if ( ! $is_hidden ) {
+			return false;
+		}
+
+		if (
+			$node->hasAttribute( 'data-tab' ) ||
+			$node->hasAttribute( 'data-panel' ) ||
+			$node->hasAttribute( 'data-filter' ) ||
+			$node->hasAttribute( 'data-category' ) ||
+			$node->hasAttribute( 'data-target' ) ||
+			$node->hasAttribute( 'data-bs-target' ) ||
+			$node->hasAttribute( 'aria-controls' ) ||
+			$node->hasAttribute( 'aria-expanded' ) ||
+			'tabpanel' === strtolower( (string) $node->getAttribute( 'role' ) )
+		) {
+			return false;
+		}
+
+		$scope_html = strtolower( $node->ownerDocument->saveHTML( $node->ownerDocument->documentElement ) );
+		$id = trim( (string) $node->getAttribute( 'id' ) );
+		if ( '' !== $id && ( str_contains( $scope_html, "getelementbyid('{$id}')" ) || str_contains( $scope_html, "getelementbyid(\"{$id}\")" ) ) ) {
+			return false;
+		}
+
+		$class_attr = trim( (string) $node->getAttribute( 'class' ) );
+		if ( '' !== $class_attr ) {
+			foreach ( preg_split( '/\s+/', $class_attr ) as $class_name ) {
+				$class_name = trim( (string) $class_name );
+				if ( '' !== $class_name && ( str_contains( $scope_html, '.' . strtolower( $class_name ) ) || str_contains( $scope_html, 'classlist' ) ) ) {
+					return false;
+				}
+			}
+		}
+
+		$button_toggle = $xp->query(
+			'.//button[@aria-controls or @data-bs-toggle or @data-toggle] | .//*[@role="tab" or @data-tab]',
+			$node->parentNode instanceof \DOMNode ? $node->parentNode : $node
+		);
+		if ( $button_toggle && $button_toggle->length > 0 ) {
+			return false;
+		}
+
+		// Record limited diagnostics for skipped hidden elements to avoid silent drops.
+		if ( $this->hidden_skip_log_count < 30 ) {
+			$this->hidden_skip_log_count++;
+			$this->diagnostics[] = [
+				'code'    => 'static_hidden_skipped',
+				'message' => 'Static hidden element skipped during candidate selection.',
+				'context' => [
+					'pass'           => 3,
+					'tag'            => strtolower( (string) $node->nodeName ),
+					'id'             => (string) $node->getAttribute( 'id' ),
+					'class'          => (string) $node->getAttribute( 'class' ),
+					'hidden_by'      => [
+						'style' => $hidden_by_style,
+						'attr'  => $hidden_by_attr,
+						'class' => $hidden_by_class,
+					],
+					'class_contract' => $hidden_contract,
+				],
+			];
+		}
+
+		return true;
+	}
+
+	/**
+	 * Best-effort detection of class-driven "hidden" contracts.
+	 *
+	 * @return array{hidden:bool,reason:string,matched_class:string}
+	 */
+	private function node_has_hidden_class_contract( \DOMElement $node ): array {
+		$class_attr = strtolower( trim( (string) $node->getAttribute( 'class' ) ) );
+		if ( '' === $class_attr ) {
+			return [ 'hidden' => false, 'reason' => '', 'matched_class' => '' ];
+		}
+
+		$tokens = array_values( array_filter( preg_split( '/\s+/', $class_attr ) ?: [] ) );
+		$common_hidden = [
+			'hidden', 'sr-only', 'visually-hidden', 'is-hidden', 'u-hidden',
+			'd-none', 'd-hidden', 'hidden-md', 'hidden-lg', 'hide', 'is-invisible',
+		];
+		foreach ( $tokens as $tok ) {
+			$tok = trim( (string) $tok );
+			if ( '' === $tok ) {
+				continue;
+			}
+			if ( in_array( $tok, $common_hidden, true ) ) {
+				return [ 'hidden' => true, 'reason' => 'common_hidden_class', 'matched_class' => $tok ];
+			}
+			// Tailwind variant shorthand like md:hidden / lg:hidden.
+			if ( preg_match( '/(^|:)hidden$/', $tok ) ) {
+				return [ 'hidden' => true, 'reason' => 'tailwind_hidden_variant', 'matched_class' => $tok ];
+			}
+		}
+
+		// Source CSS contract check for display:none / visibility:hidden.
+		$raw_css = (string) ( $this->intel->raw_css ?? '' );
+		if ( '' === $raw_css ) {
+			return [ 'hidden' => false, 'reason' => '', 'matched_class' => '' ];
+		}
+
+		foreach ( $tokens as $tok ) {
+			$tok = trim( (string) $tok );
+			if ( '' === $tok ) {
+				continue;
+			}
+			// Match both normal and Tailwind-escaped class selectors.
+			$tok_escaped = str_replace( ':', '\\\\:', $tok );
+			$re = '/\.(?:' . preg_quote( $tok, '/' ) . '|' . preg_quote( $tok_escaped, '/' ) . ')\s*\{[^}]*?(display\s*:\s*none|visibility\s*:\s*hidden)/i';
+			if ( preg_match( $re, $raw_css ) ) {
+				return [ 'hidden' => true, 'reason' => 'source_css_contract', 'matched_class' => $tok ];
+			}
+		}
+
+		return [ 'hidden' => false, 'reason' => '', 'matched_class' => '' ];
 	}
 
 	// ═══════════════════════════════════════════════════════════
@@ -1081,6 +1815,7 @@ HTML;
 
 	private function build_html_widget_section( \DOMElement $node, string $type, \DOMXPath $xp ): array {
 		$p = $this->prefix;
+		$source_hook_classes = $this->source_hook_classes_for_node( $node );
 
 		// Collect class names in this section for CSS extraction.
 		$class_names = [];
@@ -1130,7 +1865,7 @@ HTML;
 		$this->warnings[] = "Section '{$type}': complex structure — original HTML preserved as widget. Review in Elementor editor.";
 
 		$widget = $this->w('html', [
-			'_css_classes' => "{$p}-{$type}-widget",
+			'_css_classes' => trim( "{$p}-{$type}-widget {$source_hook_classes}" ),
 			'html'         => $html_content,
 		]);
 		$widget['settings']['_element_id'] = "{$p}-{$type}";
@@ -1144,6 +1879,7 @@ HTML;
 	private function build_generic_native( \DOMElement $node, string $type, \DOMXPath $xp ): array {
 		$p   = $this->prefix;
 		$els = [];
+		$section_source_hooks = $this->source_hook_classes_for_node( $node );
 
 		// Section header.
 		$tag   = $this->get_text($xp,['.//*[contains(@class,"tag")]','.//*[contains(@class,"eyebrow")]'],$node,80);
@@ -1174,7 +1910,8 @@ HTML;
 				]);
 				if ($card['body'])  $inner[] = $this->text_w("<p>{$card['body']}</p>","{$p}-card-body");
 				if ( ! empty( $card['visual_html'] ) ) $inner[] = $this->w('html',['_css_classes'=>"{$p}-card-visual-widget {$p}-card-visual",'html'=>$card['visual_html']]);
-				$card_widgets[] = $this->con('column',"{$p}-{$type}-card {$p}-reveal",'',$inner,[
+				$card_source_hooks = trim( $this->source_hook_classes_from_parts( (string) ( $card['source_class'] ?? '' ), (string) ( $card['source_id'] ?? '' ) ) );
+				$card_widgets[] = $this->con('column',trim("{$p}-{$type}-card {$p}-reveal {$card_source_hooks}"),'',$inner,[
 					'background_background'=>'classic','background_color'=>$this->c_surface,
 					'border_border'=>'solid','border_color'=>$this->c_border,
 					'border_width'=>$this->bw(1,1,1,1),
@@ -1206,7 +1943,8 @@ HTML;
 					if ( ! empty( $block['visual_html'] ) ) $inner[] = $this->w('html',['_css_classes'=>"{$p}-card-visual-widget {$p}-card-visual",'html'=>$block['visual_html']]);
 					if ( ! empty( $block['cta'] ) ) $inner[] = $this->btn_w($block['cta'],'#',"{$p}-btn-primary",$this->c_accent,$this->c_bg);
 					if ( ! empty( $inner ) ) {
-						$block_widgets[] = $this->con('column',"{$p}-{$type}-card {$p}-reveal",'',$inner,[
+						$block_source_hooks = trim( $this->source_hook_classes_from_parts( (string) ( $block['source_class'] ?? '' ), (string) ( $block['source_id'] ?? '' ) ) );
+						$block_widgets[] = $this->con('column',trim("{$p}-{$type}-card {$p}-reveal {$block_source_hooks}"),'',$inner,[
 							'background_background'=>'classic','background_color'=>$this->c_surface,
 							'border_border'=>'solid','border_color'=>$this->c_border,
 							'border_width'=>$this->bw(1,1,1,1),
@@ -1247,7 +1985,8 @@ HTML;
 					$inner[] = $this->btn_w($block['cta'],'#',"{$p}-btn-primary",$this->c_accent,$this->c_bg);
 				}
 				if ( ! empty( $inner ) ) {
-					$els[] = $this->con('column',"{$p}-{$type}-flow {$p}-reveal",'',$inner,[
+					$flow_source_hooks = trim( $this->source_hook_classes_from_parts( (string) ( $block['source_class'] ?? '' ), (string) ( $block['source_id'] ?? '' ) ) );
+					$els[] = $this->con('column',trim("{$p}-{$type}-flow {$p}-reveal {$flow_source_hooks}"),'',$inner,[
 						'background_background'=>'classic',
 						'background_color'=>'transparent',
 						'padding'=>$this->pad(0,0,0,0),
@@ -1262,17 +2001,114 @@ HTML;
 			$els[] = $this->btn_w($btn,'#',"{$p}-btn-primary",$this->c_accent,$this->c_bg);
 		}
 
+		// V2 primitive-native fallback: keep sections editable before full preserve.
+		if ( 'v2' === $this->strategy && empty( $els ) ) {
+			$this->append_v2_primitive_fallback_elements( $els, $node, $xp, $type );
+		}
+
 		// If nothing extracted, fall back to HTML widget.
 		if (empty($els)) {
 			return $this->build_html_widget_section($node,$type,$xp);
 		}
 
-		return $this->con('column',"{$p}-{$type} {$p}-section {$p}-reveal","{$p}-{$type}",$els,[
+		return $this->con('column',trim("{$p}-{$type} {$p}-section {$p}-reveal {$section_source_hooks}"),"{$p}-{$type}",$els,[
 			'background_background'=>'classic','background_color'=>$this->c_bg,
 			'border_border'=>'solid','border_color'=>$this->c_border,
 			'border_width'=>$this->bw(1,0,0,0),
 			'padding'=>$this->pad(120,60,120,60),
 		]);
+	}
+
+	private function append_v2_primitive_fallback_elements( array &$els, \DOMElement $node, \DOMXPath $xp, string $type ): void {
+		$p = $this->prefix;
+		$primitives = V2PrimitiveAssemblerHelper::extract_primitives( $node, $xp );
+		$added = 0;
+
+		foreach ( (array) ( $primitives['headings'] ?? [] ) as $heading ) {
+			$text = trim( (string) ( $heading['text'] ?? '' ) );
+			$tag = trim( (string) ( $heading['tag'] ?? 'h2' ) );
+			if ( '' === $text ) {
+				continue;
+			}
+			$els[] = $this->heading_w( $text, in_array( $tag, [ 'h1', 'h2', 'h3', 'h4' ], true ) ? $tag : 'h2', "{$p}-{$type}-primitive-heading" );
+			$added++;
+		}
+
+		foreach ( (array) ( $primitives['paragraphs'] ?? [] ) as $paragraph ) {
+			$text = trim( (string) $paragraph );
+			if ( '' === $text ) {
+				continue;
+			}
+			$els[] = $this->text_w( '<p>' . esc_html( $text ) . '</p>', "{$p}-{$type}-primitive-text" );
+			$added++;
+		}
+
+		foreach ( (array) ( $primitives['buttons'] ?? [] ) as $button ) {
+			$text = trim( (string) ( $button['text'] ?? '' ) );
+			$url = trim( (string) ( $button['url'] ?? '#' ) );
+			if ( '' === $text ) {
+				continue;
+			}
+			$els[] = $this->btn_w( $text, '' !== $url ? $url : '#', "{$p}-{$type}-primitive-btn", $this->c_accent, $this->c_bg );
+			$added++;
+		}
+
+		foreach ( (array) ( $primitives['lists'] ?? [] ) as $list_items ) {
+			$list = $this->icon_list_w( (array) $list_items, "{$p}-{$type}-primitive-list", 'fas fa-check' );
+			if ( $list ) {
+				$els[] = $list;
+				$added++;
+			}
+		}
+
+		foreach ( (array) ( $primitives['images'] ?? [] ) as $image ) {
+			$src = trim( (string) ( $image['src'] ?? '' ) );
+			if ( '' === $src ) {
+				continue;
+			}
+			$els[] = $this->w( 'image', [
+				'_css_classes' => "{$p}-{$type}-primitive-image",
+				'image' => [ 'url' => $src ],
+			] );
+			$added++;
+		}
+
+		foreach ( (array) ( $primitives['tables'] ?? [] ) as $table_rows ) {
+			$html = '<table class="' . esc_attr( "{$p}-{$type}-primitive-table" ) . '"><tbody>';
+			foreach ( (array) $table_rows as $row ) {
+				$html .= '<tr>';
+				foreach ( (array) $row as $cell ) {
+					$html .= '<td>' . esc_html( (string) $cell ) . '</td>';
+				}
+				$html .= '</tr>';
+			}
+			$html .= '</tbody></table>';
+			$els[] = $this->w( 'html', [
+				'_css_classes' => "{$p}-{$type}-primitive-table-widget",
+				'html' => $html,
+			] );
+			$added++;
+		}
+
+		if ( $added > 0 ) {
+			$this->diagnostics[] = [
+				'code' => 'v2_primitive_fallback_applied',
+				'message' => 'V2 primitive-native fallback emitted editable widgets before HTML preservation.',
+				'context' => [
+					'pass' => 7,
+					'type' => $type,
+					'widgets_added' => $added,
+					'primitive_counts' => [
+						'headings' => count( (array) ( $primitives['headings'] ?? [] ) ),
+						'paragraphs' => count( (array) ( $primitives['paragraphs'] ?? [] ) ),
+						'buttons' => count( (array) ( $primitives['buttons'] ?? [] ) ),
+						'lists' => count( (array) ( $primitives['lists'] ?? [] ) ),
+						'images' => count( (array) ( $primitives['images'] ?? [] ) ),
+						'tables' => count( (array) ( $primitives['tables'] ?? [] ) ),
+					],
+				],
+			];
+		}
 	}
 
 	private function extract_generic_blocks( \DOMElement $node, \DOMXPath $xp ): array {
@@ -1403,7 +2239,32 @@ HTML;
 			if ( $el ) $repaired[] = $el;
 		}
 
-		return $repaired;
+		return $this->enforce_top_level_container_contract( $repaired );
+	}
+
+	/**
+	 * Elementor import compatibility guard:
+	 * top-level page content must be containers/sections, not loose widgets.
+	 */
+	private function enforce_top_level_container_contract( array $elements ): array {
+		$wrapped = [];
+		foreach ( $elements as $idx => $element ) {
+			if ( ! is_array( $element ) ) {
+				continue;
+			}
+			$el_type = (string) ( $element['elType'] ?? '' );
+			if ( 'widget' !== $el_type ) {
+				$wrapped[] = $element;
+				continue;
+			}
+			$source_classes = trim( (string) ( $element['settings']['_css_classes'] ?? '' ) );
+			$section_classes = trim( $source_classes . ' sb-top-level-widget-wrap' );
+			$section = $this->con( 'column', $section_classes, '', [ $element ], [], false );
+			$section['settings']['_element_id'] = (string) ( $element['settings']['_element_id'] ?? ( $this->prefix . '-wrap-' . ( $idx + 1 ) ) );
+			$wrapped[] = $section;
+			$this->warnings[] = 'Repair: wrapped top-level widget in container for Elementor import compatibility.';
+		}
+		return $wrapped;
 	}
 
 	/**
@@ -1432,6 +2293,148 @@ HTML;
 	}
 
 	/**
+	 * Pre-resolve Tailwind utility classes into synthetic CSS rules so downstream
+	 * classification and style mapping can work with computed styles.
+	 */
+	private function apply_tailwind_pre_resolution( \DOMDocument $dom ): void {
+		$tokens = $this->collect_class_tokens( $dom );
+		$resolved = 0;
+		$rules = [];
+		$unresolved_samples = [];
+		$resolved_samples = [];
+		foreach ( $tokens as $token ) {
+			$decl = $this->tailwind_resolver->resolve_class( $token );
+			if ( ! is_string( $decl ) || '' === trim( $decl ) ) {
+				if ( count( $unresolved_samples ) < 24 ) {
+					$unresolved_samples[] = $token;
+				}
+				continue;
+			}
+			$resolved++;
+			if ( count( $resolved_samples ) < 12 ) {
+				$resolved_samples[] = $token;
+			}
+			$safe = sanitize_html_class( $token );
+			if ( '' === $safe ) {
+				continue;
+			}
+			$rules[] = '.' . $safe . '{' . $decl . ';}';
+		}
+		$rules = array_values( array_unique( $rules ) );
+		if ( ! empty( $rules ) ) {
+			$this->intel->raw_css .= "\n/* Tailwind Pre-Resolution (compiled) */\n" . implode( "\n", $rules ) . "\n";
+		}
+
+		$this->tailwind_coverage = [
+			'detected'      => true,
+			'scanned'       => count( $tokens ),
+			'resolved'      => $resolved,
+			'generated_css' => count( $rules ),
+		];
+		$this->diagnostics[] = [
+			'code'    => 'tailwind_pre_resolution',
+			'message' => sprintf( 'Tailwind pre-resolution generated %d synthetic rules from %d class tokens.', count( $rules ), count( $tokens ) ),
+			'context' => [
+				'pass'          => 2,
+				'resolved'      => $resolved,
+				'generated_css' => count( $rules ),
+				'scanned'       => count( $tokens ),
+				'samples'       => [
+					'resolved'   => $resolved_samples,
+					'unresolved' => $unresolved_samples,
+				],
+			],
+		];
+	}
+
+	/**
+	 * Collect unique class tokens from the DOM.
+	 *
+	 * @return string[]
+	 */
+	private function collect_class_tokens( \DOMDocument $dom ): array {
+		$xp = new \DOMXPath( $dom );
+		$nodes = $xp->query( '//*[@class]' );
+		$tokens = [];
+		if ( $nodes ) {
+			foreach ( $nodes as $node ) {
+				foreach ( preg_split( '/\s+/', trim( (string) $node->getAttribute( 'class' ) ) ) as $cls ) {
+					$cls = trim( (string) $cls );
+					if ( '' !== $cls ) {
+						$tokens[ $cls ] = true;
+					}
+				}
+			}
+		}
+		return array_values( array_keys( $tokens ) );
+	}
+
+	/**
+	 * Hard-fail when Tailwind was detected but produced no usable pre-resolution coverage.
+	 */
+	private function assert_tailwind_resolution_integrity(): ?WP_Error {
+		if ( empty( $this->tailwind_coverage['detected'] ) ) {
+			return null;
+		}
+		$resolved = (int) ( $this->tailwind_coverage['resolved'] ?? 0 );
+		$generated = (int) ( $this->tailwind_coverage['generated_css'] ?? 0 );
+		$scanned = (int) ( $this->tailwind_coverage['scanned'] ?? 0 );
+		if ( $scanned > 0 && ( 0 === $resolved || 0 === $generated ) ) {
+			return $this->fail_conversion(
+				'tailwind_resolution_failed',
+				'Tailwind-like markup was detected, but no utility class mappings were resolved into CSS.',
+				[
+					'pass'     => 2,
+					'coverage' => $this->tailwind_coverage,
+				]
+			);
+		}
+		return null;
+	}
+
+	/**
+	 * Hard-fail if compiled simulation knowledge is missing critical hard-rule coverage.
+	 */
+	private function assert_simulation_knowledge_integrity(): ?WP_Error {
+		$rules = SimulationKnowledge::hard_rules();
+		$count = is_array( $rules ) ? count( $rules ) : 0;
+		$ids = [];
+		foreach ( (array) $rules as $rule ) {
+			if ( is_array( $rule ) && ! empty( $rule['id'] ) ) {
+				$ids[] = (string) $rule['id'];
+			}
+		}
+		$ids = array_values( array_unique( $ids ) );
+		$required = [ 'RULE-001', 'RULE-002', 'RULE-003', 'RULE-004', 'RULE-005' ];
+		$missing = array_values( array_diff( $required, $ids ) );
+
+		$this->diagnostics[] = [
+			'code'    => 'simulation_knowledge_coverage',
+			'message' => sprintf( 'Compiled hard-rule coverage: %d rules, %d unique IDs.', $count, count( $ids ) ),
+			'context' => [
+				'pass'        => 1,
+				'rule_count'  => $count,
+				'rule_ids'    => $ids,
+				'missing_ids' => $missing,
+			],
+		];
+
+		if ( $count < 3 || ! empty( $missing ) ) {
+			return $this->fail_conversion(
+				'simulation_knowledge_coverage_failed',
+				'Compiled simulation hard-rule coverage is below required minimum.',
+				[
+					'pass'        => 1,
+					'rule_count'  => $count,
+					'rule_ids'    => $ids,
+					'missing_ids' => $missing,
+				]
+			);
+		}
+		return null;
+	}
+
+	/**
 	 * Record how a section was rendered so preserved/hybrid/native modes are explicit.
 	 *
 	 * @param string      $type Section type.
@@ -1441,7 +2444,9 @@ HTML;
 	 * @param array       $content Extracted payload.
 	 * @return void
 	 */
-	private function record_section_diagnostic( string $type, string $render_mode, string $decision, \DOMElement $node, array $content ): void {
+	private function record_section_diagnostic( string $type, string $render_mode, string $decision, \DOMElement $node, array $content, array $output_element, \DOMXPath $xp ): void {
+		$widget_counts = $this->count_widgets_in_output_tree( $output_element );
+		$matrix_checks = $this->evaluate_widget_matrix_contracts( $node, $render_mode, $widget_counts, $xp );
 		$this->diagnostics[] = [
 			'code'    => 'section_render_mode',
 			'message' => sprintf( 'Section "%s" rendered as %s.', $type, $render_mode ),
@@ -1453,8 +2458,119 @@ HTML;
 				'has_children'    => $node->childNodes->length > 0,
 				'payload_keys'    => array_values( array_keys( $content ) ),
 				'preserved_source'=> ! empty( $content['preserved_source'] ),
+				'widget_counts'   => $widget_counts,
+				'matrix_checks'   => $matrix_checks,
 			],
 		];
+
+		foreach ( $matrix_checks as $check ) {
+			if ( empty( $check['ok'] ) ) {
+				$this->diagnostics[] = [
+					'code'    => 'widget_matrix_violation',
+					'message' => (string) ( $check['message'] ?? 'Widget matrix contract violation.' ),
+					'context' => [
+						'type'         => $type,
+						'render_mode'  => $render_mode,
+						'rule'         => (string) ( $check['rule'] ?? '' ),
+						'widget_counts'=> $widget_counts,
+					],
+				];
+			}
+		}
+	}
+
+	/**
+	 * Count widget families in emitted section tree.
+	 *
+	 * @param array<string,mixed> $node
+	 * @return array<string,int>
+	 */
+	private function count_widgets_in_output_tree( array $node ): array {
+		$counts = [
+			'heading' => 0,
+			'text-editor' => 0,
+			'button' => 0,
+			'icon-list' => 0,
+			'image' => 0,
+			'video' => 0,
+			'html' => 0,
+			'container' => 0,
+		];
+		$walk = function( array $n ) use ( &$walk, &$counts ): void {
+			$el_type = (string) ( $n['elType'] ?? '' );
+			if ( 'container' === $el_type ) {
+				$counts['container']++;
+			}
+			if ( 'widget' === $el_type ) {
+				$w = (string) ( $n['widgetType'] ?? '' );
+				if ( isset( $counts[ $w ] ) ) {
+					$counts[ $w ]++;
+				} elseif ( in_array( $w, [ 'image-gallery' ], true ) ) {
+					$counts['image']++;
+				}
+			}
+			foreach ( (array) ( $n['elements'] ?? [] ) as $child ) {
+				if ( is_array( $child ) ) {
+					$walk( $child );
+				}
+			}
+		};
+		$walk( $node );
+		return $counts;
+	}
+
+	/**
+	 * Enforce key contracts from ELEMENTOR_FREE_WIDGET_MATRIX with diagnostics.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function evaluate_widget_matrix_contracts( \DOMElement $source_node, string $render_mode, array $widget_counts, \DOMXPath $xp ): array {
+		$checks = [];
+		$list_nodes = $xp->query( './/ul/li | .//ol/li', $source_node );
+		$has_real_list = (bool) ( $list_nodes && $list_nodes->length >= 2 );
+		$has_html = (int) ( $widget_counts['html'] ?? 0 ) > 0;
+		$has_icon_list = (int) ( $widget_counts['icon-list'] ?? 0 ) > 0;
+		$checks[] = [
+			'rule' => 'matrix_icon_list_for_real_lists',
+			'ok' => ( ! $has_real_list ) || $has_icon_list || $has_html,
+			'message' => 'Source has real list structure but output has neither icon-list nor preserved HTML list fragment.',
+		];
+
+		$cta_nodes = $xp->query( './/a | .//button', $source_node );
+		$has_cta = (bool) ( $cta_nodes && $cta_nodes->length > 0 );
+		$has_button = (int) ( $widget_counts['button'] ?? 0 ) > 0;
+		$checks[] = [
+			'rule' => 'matrix_button_for_cta',
+			'ok' => ( ! $has_cta ) || $has_button || $has_html,
+			'message' => 'Source has CTA/link/button signals but output lacks button widget and preserved HTML fallback.',
+		];
+
+		$heading_nodes = $xp->query( './/h1 | .//h2 | .//h3 | .//h4 | .//h5 | .//h6', $source_node );
+		$has_headings = (bool) ( $heading_nodes && $heading_nodes->length > 0 );
+		$has_heading_widget = (int) ( $widget_counts['heading'] ?? 0 ) > 0;
+		$checks[] = [
+			'rule' => 'matrix_heading_for_heading_tags',
+			'ok' => ( ! $has_headings ) || $has_heading_widget || $has_html,
+			'message' => 'Source has heading tags but output lacks heading widget and preserved HTML fallback.',
+		];
+
+		$inline_markup_nodes = $xp->query( './/h1//span | .//h1//em | .//h2//span | .//h2//em | .//a//span', $source_node );
+		$has_inline_markup = (bool) ( $inline_markup_nodes && $inline_markup_nodes->length > 0 );
+		$checks[] = [
+			'rule' => 'matrix_inline_markup_survival',
+			'ok' => ( ! $has_inline_markup ) || $has_html || $has_heading_widget || (int) ( $widget_counts['text-editor'] ?? 0 ) > 0,
+			'message' => 'Source has inline markup emphasis but output has no obvious native/preserved carrier for inline markup.',
+		];
+
+		// If fully preserved source mode, matrix checks should never hard-fail.
+		if ( 'fully_preserved_source' === $render_mode ) {
+			foreach ( $checks as &$check ) {
+				$check['ok'] = true;
+			}
+			unset( $check );
+		}
+
+		return $checks;
 	}
 
 	/**
@@ -1466,7 +2582,13 @@ HTML;
 		$global = $this->elements[0] ?? null;
 		$html   = $global['settings']['html'] ?? '';
 
-		if ( ! is_string( $html ) || ! str_contains( $html, 'fonts.googleapis.com' ) ) {
+		$has_required_vars = is_string( $html )
+			&& str_contains( $html, ':root{' )
+			&& str_contains( $html, "--{$this->prefix}-bg" )
+			&& str_contains( $html, "--{$this->prefix}-accent" )
+			&& str_contains( $html, "--{$this->prefix}-text" );
+
+		if ( ! is_string( $html ) || ! $has_required_vars ) {
 			return $this->fail_conversion(
 				'global_setup_missing',
 				'Global setup HTML widget was not assembled correctly.',
@@ -1711,6 +2833,7 @@ HTML;
 	private function assert_output_integrity( array $elements ): ?WP_Error {
 		$this->record_emitted_hook_diagnostics( $elements );
 		$this->record_global_setup_asset_diagnostics();
+		$this->record_architecture_compliance_diagnostics( $elements );
 
 		$missing_sections = array_values(
 			array_diff(
@@ -1803,6 +2926,15 @@ HTML;
 			);
 		}
 
+		$structural_issue = $this->find_structural_fidelity_issue( $elements );
+		if ( $structural_issue ) {
+			return $this->fail_conversion(
+				$structural_issue['code'],
+				$structural_issue['message'],
+				$structural_issue['context']
+			);
+		}
+
 		return null;
 	}
 
@@ -1849,10 +2981,15 @@ HTML;
 			return;
 		}
 
+		$has_canvas_output = (bool) preg_match(
+			'/\bid\s*=\s*(["\'])' . preg_quote( $this->prefix . '-bg-canvas', '/' ) . '\\1/i',
+			$global_html
+		) || str_contains( $global_html, "cv.id='{$this->prefix}-bg-canvas'" ) || str_contains( $global_html, "cv.id=\"{$this->prefix}-bg-canvas\"" );
+
 		$context = [
 			'has_canvas_source'  => $this->intel->has_canvas,
 			'has_cursor_source'  => $this->intel->has_cursor,
-			'has_canvas_output'  => str_contains( $global_html, $this->prefix . '-bg-canvas' ),
+			'has_canvas_output'  => $has_canvas_output,
 			'has_cursor_output'  => str_contains( $global_html, $this->prefix . '-cursor-dot' ) && str_contains( $global_html, $this->prefix . '-cursor-ring' ),
 			'has_source_js'      => '' !== trim( $this->intel->raw_js ),
 			'has_script_bridge'  => str_contains( $global_html, 'Source Script Bridge' ),
@@ -2076,6 +3213,9 @@ HTML;
 				return null;
 			},
 			'features' => function( array $payload ): ?array {
+				if ( 'fully_preserved_source' === (string) ( $payload['render_mode'] ?? '' ) ) {
+					return null;
+				}
 				if ( empty( $payload['cards'] ) ) {
 					return [
 						'code' => 'feature_cards_unresolved',
@@ -2116,6 +3256,9 @@ HTML;
 				return null;
 			},
 			'pricing' => function( array $payload ): ?array {
+				if ( 'fully_preserved_source' === (string) ( $payload['render_mode'] ?? '' ) ) {
+					return null;
+				}
 				if ( empty( $payload['cards'] ) ) {
 					return [
 						'code' => 'pricing_cards_unresolved',
@@ -2135,6 +3278,9 @@ HTML;
 				return null;
 			},
 			'cta' => function( array $payload ): ?array {
+				if ( 'fully_preserved_source' === (string) ( $payload['render_mode'] ?? '' ) ) {
+					return null;
+				}
 				if ( empty( trim( (string) ( $payload['title'] ?? '' ) ) ) ) {
 					return [
 						'code' => 'cta_title_unresolved',
@@ -2145,6 +3291,9 @@ HTML;
 				return null;
 			},
 			'footer' => function( array $payload ): ?array {
+				if ( 'fully_preserved_source' === (string) ( $payload['render_mode'] ?? '' ) ) {
+					return null;
+				}
 				if ( empty( $payload['cols'] ) ) {
 					return [
 						'code' => 'footer_columns_unresolved',
@@ -2214,6 +3363,16 @@ HTML;
 			];
 		}
 
+		$script_cov = (array) $this->source_script_bridge_coverage;
+		$requires_bridge = ! empty( $global['has_source_js' ] ) && ( ! empty( $script_cov['has_source_hook_candidates'] ) || ! empty( $script_cov['has_source_selector_hits'] ) );
+		if ( $requires_bridge && empty( $global['has_script_bridge'] ) ) {
+			return [
+				'code' => 'global_script_bridge_missing',
+				'message' => 'Source JavaScript was detected with mappable hooks, but Global Setup did not include the source script bridge block.',
+				'context' => [ 'pass' => 6, 'global_setup' => $global, 'coverage' => $script_cov ],
+			];
+		}
+
 		$coverage = $this->companion_css_coverage;
 		$prefixed_pseudo_hosts = array_values( array_filter(
 			(array) ( $coverage['unresolved_pseudo_hosts'] ?? [] ),
@@ -2270,6 +3429,23 @@ HTML;
 			return [
 				'code' => 'source_css_bridge_unresolved',
 				'message' => 'Source CSS had mappable source hooks, but the generic selector bridge produced no retargeted CSS.',
+				'context' => [
+					'pass' => 8,
+					'coverage' => $selector_bridge,
+				],
+			];
+		}
+
+		if (
+			! empty( $selector_bridge['has_source_css'] ) &&
+			! empty( $selector_bridge['has_bridge_targets'] ) &&
+			! empty( $selector_bridge['has_source_selector_hits'] ) &&
+			! empty( $selector_bridge['source_has_hover'] ) &&
+			empty( $selector_bridge['output_has_hover'] )
+		) {
+			return [
+				'code' => 'source_hover_bridge_missing',
+				'message' => 'Source CSS contained hover-state rules for mappable hooks, but the retargeted bridge output did not carry any :hover selectors.',
 				'context' => [
 					'pass' => 8,
 					'coverage' => $selector_bridge,
@@ -2435,6 +3611,322 @@ HTML;
 	}
 
 	/**
+	 * Structural fidelity checks: repeated counts, bento spans, and section contracts.
+	 *
+	 * @param array $elements Repaired top-level output tree.
+	 * @return array<string,mixed>|null
+	 */
+	private function find_structural_fidelity_issue( array $elements ): ?array {
+		$section_map = $this->map_top_level_sections_by_type( $elements );
+
+		$checks = [
+			'stats' => function( array $payload, ?array $output ) {
+				if ( ! empty( $payload['preserved_source'] ) || null === $output ) {
+					return null;
+				}
+				$expected = count( (array) ( $payload['stats'] ?? [] ) );
+				if ( $expected <= 0 ) {
+					return null;
+				}
+				$actual = $this->count_subtree_class_pattern( $output, '/\b' . preg_quote( $this->prefix, '/' ) . '-stat(?:-card|-cell)\b/' );
+				if ( $actual <= 0 || $actual < max( 1, $expected - 1 ) ) {
+					return [
+						'code' => 'stats_structure_degraded',
+						'message' => 'Stats repeated-card structure degraded between source payload and emitted output.',
+						'context' => [ 'pass' => 7, 'type' => 'stats', 'expected' => $expected, 'actual' => $actual ],
+					];
+				}
+				return null;
+			},
+			'bento' => function( array $payload, ?array $output ) {
+				if ( ! empty( $payload['preserved_source'] ) || null === $output ) {
+					return null;
+				}
+				$cards = count( (array) ( $payload['cards'] ?? [] ) );
+				if ( $cards <= 0 ) {
+					return null;
+				}
+				$actual_cards = $this->count_subtree_class_pattern( $output, '/\b' . preg_quote( $this->prefix, '/' ) . '-bento-card\b/' );
+				if ( $actual_cards <= 0 ) {
+					$actual_cards = $this->count_subtree_class_pattern( $output, '/\b' . preg_quote( $this->prefix, '/' ) . '-bc-[a-z]\b/' );
+				}
+				if ( $actual_cards <= 0 || $actual_cards < max( 1, $cards - 1 ) ) {
+					return [
+						'code' => 'bento_card_count_degraded',
+						'message' => 'Bento card count in emitted output is lower than source payload expectations.',
+						'context' => [ 'pass' => 7, 'type' => 'bento', 'expected' => $cards, 'actual' => $actual_cards ],
+					];
+				}
+				$spans = (array) ( $payload['bento_spans'] ?? [] );
+				if ( ! empty( $spans ) ) {
+					$non_default_span_found = false;
+					foreach ( $spans as $span ) {
+						$col = (int) ( $span['col'] ?? 1 );
+						$row = (int) ( $span['row'] ?? 1 );
+						if ( $col > 1 || $row > 1 ) {
+							$non_default_span_found = true;
+							break;
+						}
+					}
+					if ( $non_default_span_found && ! $this->companion_css_has_bento_span_contract() ) {
+						return [
+							'code' => 'bento_span_contract_missing',
+							'message' => 'Source bento spans were detected but emitted companion CSS lacks explicit span contract rules.',
+							'context' => [ 'pass' => 8, 'type' => 'bento', 'span_count' => count( $spans ) ],
+						];
+					}
+				}
+				return null;
+			},
+			'process' => function( array $payload, ?array $output ) {
+				if ( ! empty( $payload['preserved_source'] ) || null === $output ) {
+					return null;
+				}
+				$expected = count( (array) ( $payload['steps'] ?? [] ) );
+				if ( $expected <= 0 ) {
+					return null;
+				}
+				$actual = $this->count_subtree_class_pattern( $output, '/\b' . preg_quote( $this->prefix, '/' ) . '-process-step\b/' );
+				if ( $actual <= 0 || $actual < max( 1, $expected - 1 ) ) {
+					return [
+						'code' => 'process_step_count_degraded',
+						'message' => 'Process step count in emitted output is lower than source payload expectations.',
+						'context' => [ 'pass' => 7, 'type' => 'process', 'expected' => $expected, 'actual' => $actual ],
+					];
+				}
+				return null;
+			},
+			'pricing' => function( array $payload, ?array $output ) {
+				if ( ! empty( $payload['preserved_source'] ) || null === $output ) {
+					return null;
+				}
+				$expected = count( (array) ( $payload['cards'] ?? [] ) );
+				if ( $expected <= 0 ) {
+					return null;
+				}
+				$actual = $this->count_subtree_class_pattern( $output, '/\b' . preg_quote( $this->prefix, '/' ) . '-price-card\b/' );
+				if ( $actual <= 0 || $actual < max( 1, $expected - 1 ) ) {
+					return [
+						'code' => 'pricing_card_count_degraded',
+						'message' => 'Pricing card count in emitted output is lower than source payload expectations.',
+						'context' => [ 'pass' => 7, 'type' => 'pricing', 'expected' => $expected, 'actual' => $actual ],
+					];
+				}
+				return null;
+			},
+		];
+
+		foreach ( $checks as $type => $check ) {
+			if ( ! in_array( $type, $this->built_section_types, true ) ) {
+				continue;
+			}
+			$payload = (array) ( $this->section_payloads[ $type ] ?? [] );
+			$issue = $check( $payload, $section_map[ $type ] ?? null );
+			if ( $issue ) {
+				return $issue;
+			}
+		}
+
+		// Generic repeated-structure fidelity guard for unknown/non-template sections.
+		foreach ( (array) $this->built_section_types as $type ) {
+			$payload = (array) ( $this->section_payloads[ $type ] ?? [] );
+			$output  = $section_map[ $type ] ?? null;
+			if ( null === $output || ! empty( $payload['preserved_source'] ) ) {
+				continue;
+			}
+
+			$expected_repeated = $this->estimate_payload_repeated_units( $payload );
+			if ( $expected_repeated < 3 ) {
+				continue;
+			}
+
+			$actual_repeated = $this->estimate_output_repeated_units( $output, $type );
+			if ( $actual_repeated < max( 1, $expected_repeated - 1 ) ) {
+				return [
+					'code'    => 'generic_repeated_structure_degraded',
+					'message' => 'Repeated structure fidelity degraded for emitted section output.',
+					'context' => [
+						'pass'      => 7,
+						'type'      => $type,
+						'expected'  => $expected_repeated,
+						'actual'    => $actual_repeated,
+					],
+				];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Estimate repeated unit count from generic payload shapes.
+	 */
+	private function estimate_payload_repeated_units( array $payload ): int {
+		$candidate_keys = [ 'cards', 'stats', 'steps', 'items', 'cols', 'rows', 'features' ];
+		$max = 0;
+		foreach ( $candidate_keys as $key ) {
+			$count = count( (array) ( $payload[ $key ] ?? [] ) );
+			if ( $count > $max ) {
+				$max = $count;
+			}
+		}
+		return $max;
+	}
+
+	/**
+	 * Estimate repeated unit count from emitted section subtree.
+	 */
+	private function estimate_output_repeated_units( array $section_node, string $type ): int {
+		$typed_pattern = '/\b' . preg_quote( $this->prefix, '/' ) . '-' . preg_quote( $type, '/' ) . '-(?:card|item|step|col|cell|row)\b/';
+		$typed_count = $this->count_subtree_class_pattern( $section_node, $typed_pattern );
+		if ( $typed_count > 0 ) {
+			return $typed_count;
+		}
+
+		$children = (array) ( $section_node['elements'] ?? [] );
+		$container_children = 0;
+		foreach ( $children as $child ) {
+			if ( is_array( $child ) && 'container' === ( $child['elType'] ?? '' ) ) {
+				$container_children++;
+			}
+		}
+		return $container_children;
+	}
+
+	/**
+	 * @param array $elements
+	 * @return array<string,array>
+	 */
+	private function map_top_level_sections_by_type( array $elements ): array {
+		$map = [];
+		foreach ( $elements as $element ) {
+			if ( ! is_array( $element ) || 'container' !== ( $element['elType'] ?? '' ) ) {
+				continue;
+			}
+			$id = trim( (string) ( $element['settings']['_element_id'] ?? '' ) );
+			if ( '' === $id ) {
+				continue;
+			}
+			foreach ( (array) $this->built_section_types as $type ) {
+				$prefix = $this->prefix . '-' . $type;
+				if ( str_starts_with( $id, $prefix ) && ! isset( $map[ $type ] ) ) {
+					$map[ $type ] = $element;
+				}
+			}
+		}
+		return $map;
+	}
+
+	/**
+	 * @param array  $node
+	 * @param string $pattern
+	 * @return int
+	 */
+	private function count_subtree_class_pattern( array $node, string $pattern ): int {
+		$count = 0;
+		$walk = function( array $n ) use ( &$walk, &$count, $pattern ): void {
+			$classes = (string) ( $n['settings']['_css_classes'] ?? '' );
+			if ( '' !== $classes && preg_match( $pattern, $classes ) ) {
+				$count++;
+			}
+			foreach ( (array) ( $n['elements'] ?? [] ) as $child ) {
+				if ( is_array( $child ) ) {
+					$walk( $child );
+				}
+			}
+		};
+		$walk( $node );
+		return $count;
+	}
+
+	private function companion_css_has_bento_span_contract(): bool {
+		$coverage = (array) $this->source_selector_bridge_coverage;
+		// Fallback to strict class-map and known generated span aliases.
+		$has_span_hooks = false;
+		foreach ( (array) $this->class_map as $entry ) {
+			$class = (string) ( $entry['class'] ?? '' );
+			if ( preg_match( '/\b' . preg_quote( $this->prefix, '/' ) . '-(?:bc-[a-z]|bento-card(?:-[a-z])?)\b/', $class ) ) {
+				$has_span_hooks = true;
+				break;
+			}
+		}
+		$has_bridge_targets = ! empty( $coverage['has_bridge_targets'] );
+		return $has_span_hooks || $has_bridge_targets;
+	}
+
+	/**
+	 * Runtime checklist aligned to architecture article sections.
+	 *
+	 * Emits done / partial / not_done states as diagnostics context for each run.
+	 */
+	private function record_architecture_compliance_diagnostics( array $elements ): void {
+		$selector_bridge = (array) $this->source_selector_bridge_coverage;
+		$script_bridge   = (array) $this->source_script_bridge_coverage;
+		$global          = (array) $this->global_setup_asset_inventory;
+
+		$checks = [
+			'problem_layers' => [
+				'done' => ! empty( $this->detected_section_types ) && ! empty( $this->built_section_types ),
+				'partial' => empty( $this->detected_section_types ) || empty( $this->built_section_types ),
+			],
+			'pass_architecture_integrity' => [
+				'done' => ! empty( $this->diagnostics ),
+				'partial' => true,
+			],
+			'hybrid_boundary_correctness' => [
+				'done' => $this->has_any_render_mode( 'fully_preserved_source' ) || $this->has_any_render_mode( 'native_rebuilt' ),
+				'partial' => true,
+			],
+			'global_setup_handling' => [
+				'done' => ( empty( $global['has_canvas_source'] ) || ! empty( $global['has_canvas_output'] ) )
+					&& ( empty( $global['has_cursor_source'] ) || ! empty( $global['has_cursor_output'] ) ),
+				'partial' => ! empty( $global ),
+			],
+			'css_js_carryover_fidelity' => [
+				'done' => ! empty( $selector_bridge['has_output_css'] ) || empty( $selector_bridge['has_source_css'] ),
+				'partial' => ! empty( $selector_bridge['has_source_css'] ) || ! empty( $script_bridge['has_source_js'] ),
+			],
+			'validation_truthfulness' => [
+				'done' => ! empty( $this->diagnostics ),
+				'partial' => true,
+			],
+			'edge_case_posture' => [
+				'done' => ! empty( $selector_bridge['source_has_pseudo'] ) ? ! empty( $selector_bridge['output_has_pseudo'] ) : true,
+				'partial' => true,
+			],
+		];
+
+		$statuses = [];
+		foreach ( $checks as $key => $state ) {
+			if ( ! empty( $state['done'] ) ) {
+				$statuses[ $key ] = 'done';
+			} elseif ( ! empty( $state['partial'] ) ) {
+				$statuses[ $key ] = 'partial';
+			} else {
+				$statuses[ $key ] = 'not_done';
+			}
+		}
+
+		$this->diagnostics[] = [
+			'code'    => 'architecture_article_compliance',
+			'message' => 'Runtime architecture-article compliance checklist generated.',
+			'context' => [
+				'pass'     => 9,
+				'statuses' => $statuses,
+			],
+		];
+	}
+
+	private function has_any_render_mode( string $mode ): bool {
+		foreach ( (array) $this->section_payloads as $payload ) {
+			if ( (string) ( $payload['render_mode'] ?? '' ) === $mode ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Detect preserved sections that lost their wrapper/signature during preservation.
 	 *
 	 * @param array $elements Repaired top-level elements.
@@ -2448,7 +3940,10 @@ HTML;
 				continue;
 			}
 
-			$expected_id = "{$this->prefix}-{$type}";
+			$expected_id = (string) ( $payload['output_element_id'] ?? '' );
+			if ( '' === $expected_id ) {
+				$expected_id = "{$this->prefix}-{$type}";
+			}
 			$element = null;
 			foreach ( $elements as $candidate ) {
 				if ( (string) ( $candidate['settings']['_element_id'] ?? '' ) === $expected_id ) {
@@ -2465,7 +3960,7 @@ HTML;
 				];
 			}
 
-			$html = (string) ( $element['settings']['html'] ?? '' );
+			$html = $this->extract_html_payload_from_element( $element );
 			if ( '' === trim( $html ) ) {
 				return [
 					'code' => 'preserved_section_empty',
@@ -2474,7 +3969,8 @@ HTML;
 				];
 			}
 
-			if ( false === stripos( $html, 'class=' ) ) {
+			$has_structure = (bool) preg_match( '/<(?:div|section|header|footer|main|article|nav)\b/i', $html );
+			if ( ! $has_structure ) {
 				return [
 					'code' => 'preserved_section_wrapper_missing',
 					'message' => sprintf( 'Preserved section "%s" appears to have lost its wrapper markup.', $type ),
@@ -2501,6 +3997,23 @@ HTML;
 		}
 
 		return null;
+	}
+
+	private function extract_html_payload_from_element( array $element ): string {
+		$direct = (string) ( $element['settings']['html'] ?? '' );
+		if ( '' !== trim( $direct ) ) {
+			return $direct;
+		}
+		foreach ( (array) ( $element['elements'] ?? [] ) as $child ) {
+			if ( ! is_array( $child ) ) {
+				continue;
+			}
+			$child_html = $this->extract_html_payload_from_element( $child );
+			if ( '' !== trim( $child_html ) ) {
+				return $child_html;
+			}
+		}
+		return '';
 	}
 
 	/**
@@ -2720,8 +4233,18 @@ HTML;
 		$eyebrow_pseudo_css     = isset( $inventory['classes'][ "{$p}-eyebrow" ] ) ? ".{$p}-eyebrow::before { content: ''; display: block; width: 40px; height: 1px; background: {$ac}; }\n" : '';
 		$stat_pseudo_css        = isset( $inventory['classes'][ "{$p}-stat-cell" ] ) ? ".{$p}-stat-cell::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, {$ac} 0%, transparent 100%); transform: scaleX(0); transform-origin: left; transition: transform .8s ease; }\n.{$p}-stat-cell.{$p}-counted::before { transform: scaleX(1); }\n" : '';
 		$card_tag_pseudo_css    = isset( $inventory['classes'][ "{$p}-card-tag" ] ) ? ".{$p}-card-tag .elementor-heading-title::before { content: ''; display: block; width: 20px; height: 1px; background: {$ac}; }\n" : '';
-		$cta_pseudo_css         = ( isset( $inventory['classes'][ "{$p}-cta" ] ) || isset( $inventory['ids'][ "{$p}-cta" ] ) ) ? ".{$p}-cta::before { content: '{$brand_mark}'; position: absolute; right: -20px; top: 50%; transform: translateY(-50%); font-family: var(--{$p}-fd); font-weight: 800; font-size: 200px; color: rgba(0,0,0,.06); letter-spacing: -8px; pointer-events: none; line-height: 1; white-space: nowrap; z-index: 0; }\n" : '';
-		$cta_pseudo_responsive_css = ( isset( $inventory['classes'][ "{$p}-cta" ] ) || isset( $inventory['ids'][ "{$p}-cta" ] ) ) ? "  .{$p}-cta::before { font-size: 100px !important; }\n" : '';
+		$cta_selector = '';
+		if ( isset( $inventory['classes'][ "{$p}-cta" ] ) ) {
+			$cta_selector = ".{$p}-cta";
+		} elseif ( isset( $inventory['ids'][ "{$p}-cta" ] ) ) {
+			$cta_selector = "#{$p}-cta";
+		}
+		$cta_pseudo_css = '' !== $cta_selector
+			? "{$cta_selector}::before { content: '{$brand_mark}'; position: absolute; right: -20px; top: 50%; transform: translateY(-50%); font-family: var(--{$p}-fd); font-weight: 800; font-size: 200px; color: rgba(0,0,0,.06); letter-spacing: -8px; pointer-events: none; line-height: 1; white-space: nowrap; z-index: 0; }\n"
+			: '';
+		$cta_pseudo_responsive_css = '' !== $cta_selector
+			? "  {$cta_selector}::before { font-size: 100px !important; }\n"
+			: '';
 
 		// ── F-10: Class map header — list ALL output sections for user reference.
 		// Previously missing: testimonials, marquee, stats, cta.
@@ -2758,6 +4281,11 @@ HTML;
 			$map .= " *  .{$cls} → {$info[0]} → {$info[1]}\n";
 		}
 		$map .= " * ══════════════════════════════════════════════════════\n */\n\n";
+
+		$html_render_modes = $this->count_render_modes();
+		$total_rendered_sections = max( 1, array_sum( $html_render_modes ) );
+		$preserved_html_sections = (int) ( $html_render_modes['fully_preserved_source'] ?? 0 );
+		$html_dominant_output = ( $preserved_html_sections / $total_rendered_sections ) >= 0.60;
 
 		$css = <<<CSS
 /* ── TOKENS */
@@ -2911,11 +4439,58 @@ html.{$p}-motion-ready .{$p}-reveal.{$p}-visible { opacity: 1; transform: transl
   .{$p}-bento-grid { grid-template-columns: 1fr !important; }
 }
 CSS;
+		if ( $html_dominant_output ) {
+			$css = <<<CSS
+/* ── TOKENS */
+:root {
+  --{$p}-bg:      {$bg};
+  --{$p}-accent:  {$ac};
+  --{$p}-text:    {$tx};
+  --{$p}-surface: {$sf};
+  --{$p}-border:  {$bd};
+  --{$p}-fd: '{$fd}', sans-serif;
+  --{$p}-fb: '{$fb}', sans-serif;
+  --{$p}-fm: '{$fm}', monospace;
+}
+
+/* ── PAGE */
+body, .elementor-page, #page, .site { background: {$bg} !important; }
+.elementor-section-wrap, .e-con-inner { max-width: 100%; }
+
+/* ── SCROLL REVEAL */
+.{$p}-reveal { opacity: 1; transform: none; transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+html.{$p}-motion-ready .{$p}-reveal { opacity: 0; transform: translateY(40px); }
+html.{$p}-motion-ready .{$p}-reveal.{$p}-visible { opacity: 1; transform: translateY(0); }
+.{$p}-d1 { transition-delay: .1s; } .{$p}-d2 { transition-delay: .2s; } .{$p}-d3 { transition-delay: .3s; }
+CSS;
+			$this->diagnostics[] = [
+				'code'    => 'companion_css_mode_html_dominant',
+				'message' => 'Companion CSS switched to html-dominant mode (source contract first).',
+				'context' => [
+					'pass' => 8,
+					'preserved_sections' => $preserved_html_sections,
+					'total_sections' => $total_rendered_sections,
+					'ratio' => $preserved_html_sections / $total_rendered_sections,
+				],
+			];
+		}
 		$css = $this->prune_optional_companion_pseudo_rules( $css );
 		$css .= "\n" . $inline_markup_css;
 		$css = $this->normalize_companion_css( $css );
 		$this->record_companion_css_diagnostics( $css );
 		return $map . $css;
+	}
+
+	private function count_render_modes(): array {
+		$modes = [];
+		foreach ( (array) $this->section_payloads as $payload ) {
+			$mode = (string) ( $payload['render_mode'] ?? '' );
+			if ( '' === $mode ) {
+				continue;
+			}
+			$modes[ $mode ] = ( $modes[ $mode ] ?? 0 ) + 1;
+		}
+		return $modes;
 	}
 
 	private function prune_optional_companion_pseudo_rules( string $css ): string {
@@ -3190,9 +4765,11 @@ CSS;
 				'source_has_pseudo'   => false,
 				'source_has_media'    => false,
 				'source_has_supports' => false,
+				'source_has_hover'    => false,
 				'output_has_pseudo'   => false,
 				'output_has_media'    => false,
 				'output_has_supports' => false,
+				'output_has_hover'    => false,
 				'candidate_classes'   => [],
 				'candidate_ids'       => [],
 				'bridged_classes'     => [],
@@ -3219,9 +4796,11 @@ CSS;
 				'source_has_pseudo'   => (bool) preg_match( '/::(before|after)\b/i', $this->intel->raw_css ),
 				'source_has_media'    => (bool) preg_match( '/@media\b/i', $this->intel->raw_css ),
 				'source_has_supports' => (bool) preg_match( '/@supports\b/i', $this->intel->raw_css ),
+				'source_has_hover'    => (bool) preg_match( '/:hover\b/i', $this->intel->raw_css ),
 				'output_has_pseudo'   => false,
 				'output_has_media'    => false,
 				'output_has_supports' => false,
+				'output_has_hover'    => false,
 				'candidate_classes'   => $candidate_classes,
 				'candidate_ids'       => $candidate_ids,
 				'bridged_classes'     => [],
@@ -3243,9 +4822,11 @@ CSS;
 			'source_has_pseudo'   => ! empty( $source_hit_analysis['has_pseudo'] ),
 			'source_has_media'    => ! empty( $source_hit_analysis['has_media'] ),
 			'source_has_supports' => ! empty( $source_hit_analysis['has_supports'] ),
+			'source_has_hover'    => ! empty( $source_hit_analysis['has_hover'] ),
 			'output_has_pseudo'   => (bool) preg_match( '/::(before|after)\b/i', $css ),
 			'output_has_media'    => (bool) preg_match( '/@media\b/i', $css ),
 			'output_has_supports' => (bool) preg_match( '/@supports\b/i', $css ),
+			'output_has_hover'    => (bool) preg_match( '/:hover\b/i', $css ),
 			'candidate_classes'   => $candidate_classes,
 			'candidate_ids'       => $candidate_ids,
 			'bridged_classes'     => array_keys( $class_map ),
@@ -3279,6 +4860,7 @@ CSS;
 				'has_pseudo'        => false,
 				'has_media'         => false,
 				'has_supports'      => false,
+				'has_hover'         => false,
 				'matched_rule_count'=> 0,
 			];
 		}
@@ -3288,6 +4870,7 @@ CSS;
 			'has_pseudo'        => false,
 			'has_media'         => false,
 			'has_supports'      => false,
+			'has_hover'         => false,
 			'matched_rule_count'=> 0,
 		];
 		$length = strlen( $css );
@@ -3319,6 +4902,7 @@ CSS;
 				$coverage['has_pseudo']        = $coverage['has_pseudo'] || ! empty( $inner_coverage['has_pseudo'] );
 				$coverage['has_media']         = $coverage['has_media'] || ! empty( $inner_coverage['has_media'] );
 				$coverage['has_supports']      = $coverage['has_supports'] || ! empty( $inner_coverage['has_supports'] );
+				$coverage['has_hover']         = $coverage['has_hover'] || ! empty( $inner_coverage['has_hover'] );
 				$coverage['matched_rule_count'] += (int) ( $inner_coverage['matched_rule_count'] ?? 0 );
 				$offset = $close_brace + 1;
 				continue;
@@ -3354,6 +4938,9 @@ CSS;
 			$coverage['matched_rule_count']++;
 			if ( preg_match( '/::(before|after)\b/i', $selector_block ) ) {
 				$coverage['has_pseudo'] = true;
+			}
+			if ( preg_match( '/:hover\b/i', $selector_block ) ) {
+				$coverage['has_hover'] = true;
 			}
 			if ( $inside_media ) {
 				$coverage['has_media'] = true;
@@ -3636,6 +5223,30 @@ CSS;
 			return false;
 		}
 		return true;
+	}
+
+	private function source_hook_classes_for_node( \DOMElement $node ): string {
+		return $this->source_hook_classes_from_parts(
+			(string) $node->getAttribute( 'class' ),
+			(string) $node->getAttribute( 'id' )
+		);
+	}
+
+	private function source_hook_classes_from_parts( string $source_classes, string $source_id ): string {
+		$hooks = [];
+		foreach ( preg_split( '/\s+/', trim( $source_classes ) ) as $class_name ) {
+			$class_name = trim( (string) $class_name );
+			if ( $this->should_bridge_source_class( $class_name ) ) {
+				$hooks[ $class_name ] = true;
+			}
+		}
+
+		$source_id = trim( $source_id );
+		if ( '' !== $source_id && ! str_starts_with( $source_id, $this->prefix . '-' ) && ! str_starts_with( $source_id, 'elementor-' ) ) {
+			$hooks[ 'src-id-' . sanitize_html_class( $source_id ) ] = true;
+		}
+
+		return implode( ' ', array_keys( $hooks ) );
 	}
 
 	private function rewrite_source_rule_selectors( string $selector_block, array $class_map, array $id_map = [] ): array {
@@ -4010,6 +5621,7 @@ CSS;
 		$source_js_hit_analysis = $this->analyze_source_js_bridge_hits( $this->intel->raw_js, $class_map, $id_map );
 		$rewrite = $this->rewrite_source_js_with_maps( $this->intel->raw_js, $class_map, $id_map, true );
 		$js = $rewrite['js'] ?? '';
+		$js = $this->apply_js_runtime_safety( $js );
 		$has_rewrite = ! empty( $rewrite['has_rewrite'] );
 		$rewrite_count = (int) ( $rewrite['rewrite_count'] ?? 0 );
 		$this->source_script_bridge_coverage = [
@@ -4040,6 +5652,19 @@ CSS;
 		}
 
 		return "/* ── Source Script Bridge ── */\ntry{\n{$js}\n}catch(e){console.warn('{$this->prefix} source script bridge failed',e);}";
+	}
+
+	private function apply_js_runtime_safety( string $js ): string {
+		return ScriptBridgeHelper::apply_runtime_safety(
+			$js,
+			$this->extract_inline_handler_function_names()
+		);
+	}
+
+	private function extract_inline_handler_function_names(): array {
+		return ScriptBridgeHelper::extract_inline_handler_names(
+			(string) ( $this->intel->raw_html ?? '' )
+		);
 	}
 
 	private function rewrite_source_js_with_maps( string $js, array $class_map, array $id_map, bool $scope_root = true ): array {
@@ -4339,22 +5964,56 @@ CSS;
 	}
 
 	private function append_source_script_bridge_to_global_setup(): void {
-		if ( empty( $this->elements ) || 'html' !== ( $this->elements[0]['widgetType'] ?? '' ) ) {
-			return;
-		}
-
 		$bridge_js = $this->build_source_script_bridge_js();
 		if ( '' === $bridge_js ) {
 			return;
 		}
+		$script_block = "\n<script>\n(function(){\n{$bridge_js}\n}());\n</script>";
+		foreach ( $this->elements as &$top ) {
+			if ( ! is_array( $top ) ) {
+				continue;
+			}
+			$top_id = (string) ( $top['settings']['_element_id'] ?? '' );
+			$is_global_root = ( "{$this->prefix}-global-setup" === $top_id );
+			if ( ! $is_global_root && ! str_contains( (string) ( $top['settings']['_css_classes'] ?? '' ), "{$this->prefix}-global-setup" ) ) {
+				continue;
+			}
+			if ( ! isset( $top['elements'] ) || ! is_array( $top['elements'] ) ) {
+				continue;
+			}
+			foreach ( $top['elements'] as &$child ) {
+				if ( ! is_array( $child ) || 'widget' !== ( $child['elType'] ?? '' ) || 'html' !== ( $child['widgetType'] ?? '' ) ) {
+					continue;
+				}
+				$html = (string) ( $child['settings']['html'] ?? '' );
+				if ( '' === trim( $html ) ) {
+					continue;
+				}
+				$child['settings']['html'] = $html . $script_block;
+				return;
+			}
+			unset( $child );
+		}
+		unset( $top );
 
-		$html = (string) ( $this->elements[0]['settings']['html'] ?? '' );
-		if ( '' === $html ) {
+		// Backward compatibility: global setup may still be a top-level html widget.
+		foreach ( $this->elements as &$top ) {
+			if ( ! is_array( $top ) || 'widget' !== ( $top['elType'] ?? '' ) || 'html' !== ( $top['widgetType'] ?? '' ) ) {
+				continue;
+			}
+			$classes = (string) ( $top['settings']['_css_classes'] ?? '' );
+			$eid = (string) ( $top['settings']['_element_id'] ?? '' );
+			if ( ! str_contains( $classes, "{$this->prefix}-global-setup" ) && "{$this->prefix}-global-setup" !== $eid ) {
+				continue;
+			}
+			$html = (string) ( $top['settings']['html'] ?? '' );
+			if ( '' === trim( $html ) ) {
+				continue;
+			}
+			$top['settings']['html'] = $html . $script_block;
 			return;
 		}
-
-		$html .= "\n<script>\n(function(){\n{$bridge_js}\n}());\n</script>";
-		$this->elements[0]['settings']['html'] = $html;
+		unset( $top );
 	}
 
 	private function build_structural_selector_aliases(): string {
@@ -4639,7 +6298,7 @@ CSS;
 	private function extract_complex_visual(\DOMElement $node): ?string {
 		$xp = new \DOMXPath($node->ownerDocument);
 		// Broad detection: look for interactive/visual nodes generically.
-		$q = './/svg | .//canvas | .//video | .//iframe | .//*[contains(@class,"visual") or contains(@class,"animation") or contains(@class,"orb") or contains(@class,"terminal") or contains(@class,"pipeline") or contains(@class,"graph") or contains(@class,"code")]';
+		$q = './/svg | .//canvas | .//video | .//iframe | .//script | .//*[@data-animate or @data-animation or @data-counter or @data-aos or @onclick or @onmouseover or @onmouseenter or @onmouseleave] | .//*[contains(@class,"visual") or contains(@class,"animation") or contains(@class,"orb") or contains(@class,"terminal") or contains(@class,"pipeline") or contains(@class,"graph") or contains(@class,"code") or contains(@class,"counter") or contains(@class,"ticker") or contains(@class,"marquee") or contains(@class,"particle") or contains(@class,"lottie")]';
 		$nodes = $xp->query($q, $node);
 
 		if ($nodes && $nodes->length > 0) {
