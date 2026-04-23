@@ -27,6 +27,7 @@ namespace StackBlueprint\Converter;
 
 require_once __DIR__ . '/helpers/class-script-bridge-helper.php';
 require_once __DIR__ . '/helpers/class-v2-decision-helper.php';
+require_once __DIR__ . '/helpers/class-v2-hybrid-preserve-helper.php';
 require_once __DIR__ . '/helpers/class-v2-primitive-assembler-helper.php';
 
 use StackBlueprint\Converter\ConverterV1;
@@ -35,6 +36,7 @@ use StackBlueprint\Converter\Passes\PassDocumentIntelligence;
 use StackBlueprint\Converter\Generated\SimulationKnowledge;
 use StackBlueprint\Converter\Helpers\ScriptBridgeHelper;
 use StackBlueprint\Converter\Helpers\V2DecisionHelper;
+use StackBlueprint\Converter\Helpers\V2HybridPreserveHelper;
 use StackBlueprint\Converter\Helpers\V2PrimitiveAssemblerHelper;
 use StackBlueprint\Converter\Skills\PriorityRulesEngine;
 use StackBlueprint\Converter\Skills\TailwindResolver;
@@ -826,7 +828,7 @@ HTML;
 			$hybrid_fragment_html = null;
 			$hybrid_fragments = [];
 			if ( 'native' === $decision ) {
-				$hybrid_fragment_html = $this->extract_hybrid_fragment_html( $node, $complexity );
+				$hybrid_fragment_html = $this->extract_hybrid_fragment_html( $node, $xp, $complexity );
 				$hybrid_fragments = $this->extract_repeated_hybrid_fragments( $node, $xp, $complexity );
 			}
 
@@ -844,6 +846,9 @@ HTML;
 
 			$force_template_types = [ 'marquee', 'stats', 'cta' ];
 			$force_template_allowed = in_array( $type, $force_template_types, true ) && ! $this->section_payload_requires_preservation( $type, $content );
+			if ( 'cta' === $type && 'html' === $decision ) {
+				$force_template_allowed = false;
+			}
 			if ( ! $el && ( $decision === 'native' || ( $this->lib->has_template( $type ) && $force_template_allowed ) ) ) {
 				$el = $this->lib->get( $type, $content );
 				if ( $el ) {
@@ -1000,10 +1005,22 @@ HTML;
 		$hard_rule = $this->priority_rules->evaluate_section( $node, $xp );
 		if ( is_array( $hard_rule ) ) {
 			$rule_id = (string) ( $hard_rule['rule'] ?? '' );
+			if ( 'v2' === $this->strategy && 'RULE-005' === $rule_id && $this->supports_rule_005_fragment_hybrid( $type ) ) {
+				$this->diagnostics[] = [
+					'code'    => 'priority_rule_fragment_hybrid',
+					'message' => 'RULE-005 routed to V2 native rebuild with in-place hybrid preservation for columns/masonry fragments.',
+					'context' => [
+						'pass' => 3,
+						'type' => $type,
+						'rule' => $rule_id,
+					],
+				];
+				return 'native';
+			}
 			if ( 'v2' === $this->strategy && 'RULE-005' === $rule_id && $this->can_relax_css_columns_hard_rule( $node, $xp, $type ) ) {
 				$this->diagnostics[] = [
 					'code'    => 'priority_rule_relaxed',
-					'message' => 'RULE-005 relaxed for V2 primitive-first path because no inline css-columns contract was found.',
+					'message' => 'RULE-005 relaxed for V2 primitive-first path because no true css-columns contract was found.',
 					'context' => [
 						'pass' => 3,
 						'type' => $type,
@@ -1114,24 +1131,32 @@ HTML;
 		if ( ! in_array( $type, [ 'hero', 'features', 'pricing', 'footer', 'cta', 'generic', 'process', 'testimonials' ], true ) ) {
 			return false;
 		}
-		$inline_columns = $xp->query(
-			'.//*[contains(@style,"column-count") or contains(@style,"columns:")] | self::*[contains(@style,"column-count") or contains(@style,"columns:")]',
-			$node
-		);
-		return ! ( $inline_columns && $inline_columns->length > 0 );
+		return ! V2HybridPreserveHelper::node_has_columns_contract( $node, $xp, (string) ( $this->intel->raw_css ?? '' ) );
+	}
+
+	private function supports_rule_005_fragment_hybrid( string $type ): bool {
+		return in_array( $type, [ 'hero', 'features', 'pricing', 'footer', 'cta', 'generic', 'process', 'testimonials' ], true );
 	}
 
 	/**
 	 * Build optional in-place hybrid fragment from complexity signals.
 	 */
-	private function extract_hybrid_fragment_html( \DOMElement $node, array $complexity ): ?string {
+	private function extract_hybrid_fragment_html( \DOMElement $node, \DOMXPath $xp, array $complexity ): ?string {
 		$signals = (array) ( $complexity['signals'] ?? [] );
 		$should_attempt = ! empty( $signals['behavior_coupling'] )
 			|| ! empty( $signals['interactive_structure'] )
 			|| ! empty( $signals['grid_span_complexity'] )
-			|| ! empty( $signals['pseudo_dependency'] );
+			|| ! empty( $signals['pseudo_dependency'] )
+			|| ! empty( $signals['css_columns_masonry'] );
 		if ( ! $should_attempt ) {
 			return null;
+		}
+
+		if ( ! empty( $signals['css_columns_masonry'] ) ) {
+			$columns_fragment = $this->extract_columns_hybrid_fragment_html( $node, $xp );
+			if ( ! empty( $columns_fragment ) ) {
+				return $columns_fragment;
+			}
 		}
 
 		$fragment = $this->extract_complex_visual( $node );
@@ -1139,6 +1164,43 @@ HTML;
 			return null;
 		}
 		return (string) $fragment;
+	}
+
+	private function extract_columns_hybrid_fragment_html( \DOMElement $node, \DOMXPath $xp ): ?string {
+		$candidates = V2HybridPreserveHelper::find_columns_contract_nodes( $node, $xp, (string) ( $this->intel->raw_css ?? '' ) );
+		if ( empty( $candidates ) ) {
+			$this->diagnostics[] = [
+				'code'    => 'rule_005_fragment_unavailable',
+				'message' => 'RULE-005 columns/masonry contract was detected, but no local fragment root could be isolated.',
+				'context' => [ 'pass' => 7 ],
+			];
+			return null;
+		}
+
+		foreach ( $candidates as $candidate ) {
+			if ( ! $candidate instanceof \DOMElement ) {
+				continue;
+			}
+			$html = (string) $candidate->ownerDocument->saveHTML( $candidate );
+			if ( strlen( trim( wp_strip_all_tags( $html ) ) ) < 4 && ! preg_match( '/<(?:img|svg|canvas|video|iframe)\b/i', $html ) ) {
+				continue;
+			}
+
+			$this->diagnostics[] = [
+				'code'    => 'rule_005_fragment_isolated',
+				'message' => 'RULE-005 columns/masonry behavior isolated to an in-place hybrid fragment.',
+				'context' => [
+					'pass'  => 7,
+					'tag'   => strtolower( $candidate->tagName ),
+					'id'    => (string) $candidate->getAttribute( 'id' ),
+					'class' => trim( (string) $candidate->getAttribute( 'class' ) ),
+					'is_section_root' => $candidate === $node,
+				],
+			];
+			return $this->build_preserved_fragment_html( $candidate );
+		}
+
+		return null;
 	}
 
 	/**
@@ -1204,7 +1266,8 @@ HTML;
 			empty( $signals['behavior_coupling'] ) &&
 			empty( $signals['interactive_structure'] ) &&
 			empty( $signals['grid_span_complexity'] ) &&
-			empty( $signals['pseudo_dependency'] )
+			empty( $signals['pseudo_dependency'] ) &&
+			empty( $signals['css_columns_masonry'] )
 		) {
 			return [];
 		}
@@ -1261,6 +1324,10 @@ HTML;
 		if ( str_contains( $node_html, 'grid-row' ) || str_contains( $node_html, 'grid-column' ) || str_contains( $node_html, 'grid-template' ) ) {
 			$score += 2;
 			$signals['grid_span_complexity'] = true;
+		}
+		if ( V2HybridPreserveHelper::node_has_columns_contract( $node, $xp, (string) ( $this->intel->raw_css ?? '' ) ) ) {
+			$score += 2;
+			$signals['css_columns_masonry'] = true;
 		}
 		if ( str_contains( $node_html, 'position:absolute' ) || str_contains( $node_html, 'position: absolute' ) ) {
 			$score += 1;
@@ -1750,6 +1817,20 @@ HTML;
 			case 'features':
 			case 'bento':
 				$content['cards']       = $this->extract_cards( $node, $xp );
+				if ( 'features' === $type && empty( $content['cards'] ) ) {
+					$content['cards'] = V2PrimitiveAssemblerHelper::extract_feature_cards_from_scripts( $node, $xp );
+					if ( ! empty( $content['cards'] ) ) {
+						$this->diagnostics[] = [
+							'code'    => 'v2_script_data_cards_extracted',
+							'message' => 'Feature cards extracted from source JavaScript data for native V2 widgets.',
+							'context' => [
+								'pass'  => 7,
+								'type'  => $type,
+								'count' => count( $content['cards'] ),
+							],
+						];
+					}
+				}
 				$content['bento_spans'] = $this->get_bento_spans_strict( $content['cards'], $node, $xp );
 				break;
 
@@ -3777,6 +3858,23 @@ HTML;
 	 * Estimate repeated unit count from emitted section subtree.
 	 */
 	private function estimate_output_repeated_units( array $section_node, string $type ): int {
+		if ( 'features' === $type ) {
+			$feature_cards = $this->count_subtree_class_pattern( $section_node, '/\b' . preg_quote( $this->prefix, '/' ) . '-bento-card\b/' );
+			if ( $feature_cards <= 0 ) {
+				$feature_cards = $this->count_subtree_class_pattern( $section_node, '/\b' . preg_quote( $this->prefix, '/' ) . '-bc-[a-z]\b/' );
+			}
+			if ( $feature_cards > 0 ) {
+				return $feature_cards;
+			}
+		}
+
+		if ( 'footer' === $type ) {
+			$footer_cols = $this->count_subtree_class_pattern( $section_node, '/\b' . preg_quote( $this->prefix, '/' ) . '-footer-nav-col\b/' );
+			if ( $footer_cols > 0 ) {
+				return $footer_cols;
+			}
+		}
+
 		$typed_pattern = '/\b' . preg_quote( $this->prefix, '/' ) . '-' . preg_quote( $type, '/' ) . '-(?:card|item|step|col|cell|row)\b/';
 		$typed_count = $this->count_subtree_class_pattern( $section_node, $typed_pattern );
 		if ( $typed_count > 0 ) {

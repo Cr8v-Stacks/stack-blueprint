@@ -11,6 +11,9 @@
 namespace StackBlueprint\Converter\Skills;
 
 use StackBlueprint\Converter\Generated\SimulationKnowledge;
+use StackBlueprint\Converter\Helpers\V2HybridPreserveHelper;
+
+require_once __DIR__ . '/../helpers/class-v2-hybrid-preserve-helper.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -163,11 +166,7 @@ class PriorityRulesEngine {
 	}
 
 	private function has_css_columns_signal( \DOMElement $node, \DOMXPath $xp ): bool {
-		$inline_nodes = $xp->query(
-			'.//*[contains(@style,"column-count") or contains(@style,"columns:")] | self::*[contains(@style,"column-count") or contains(@style,"columns:")]',
-			$node
-		);
-		if ( $inline_nodes && $inline_nodes->length > 0 ) {
+		if ( V2HybridPreserveHelper::node_has_inline_columns_contract( $node, $xp ) ) {
 			return true;
 		}
 
@@ -195,7 +194,7 @@ class PriorityRulesEngine {
 				if ( '' === $selector || '' === $body ) {
 					continue;
 				}
-				if ( ! str_contains( $body, 'column-count' ) && ! str_contains( $body, 'columns:' ) ) {
+				if ( ! V2HybridPreserveHelper::has_columns_or_masonry_declaration( $body ) ) {
 					continue;
 				}
 				foreach ( $tokens as $token ) {

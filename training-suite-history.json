@@ -371,5 +371,28 @@
                 "v2.script_rewrite_ratio_min"
             ]
         }
+    },
+    {
+        "timestamp": "2026-04-23T12:15:10+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 12,
+            "fail": 10
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5454545454545454,
+            "selector_output_css_ratio": 0.16666666666666666,
+            "script_rewrite_ratio": 0.6666666666666666,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
     }
 ]
