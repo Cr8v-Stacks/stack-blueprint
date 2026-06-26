@@ -1,0 +1,1979 @@
+{
+    "version": "0.4",
+    "title": "my-project-saas-geometric",
+    "type": "page",
+    "content": [
+        {
+            "id": "e85012be",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-global-setup sb-top-level-widget-wrap",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "_element_id": "my-project-s-global-setup"
+            },
+            "elements": [
+                {
+                    "id": "f91919a2",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-global-setup",
+                        "_element_id": "my-project-s-global-setup",
+                        "html": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;300;500;600&family=Syne:wght@400;700;800&display=swap\" rel=\"stylesheet\">\n<style>\n:root{--my-project-s-bg:#0a0a12;--my-project-s-accent:#c8ff00;--my-project-s-text:#f5f3ee;--my-project-s-surface:rgba(255,255,255,0.03);--my-project-s-border:rgba(255,255,255,0.1);--my-project-s-fd:'Syne',sans-serif;--my-project-s-fb:'DM Sans',sans-serif;--my-project-s-fm:'Space Mono',monospace;}\nbody,.elementor-page,#page,.site{background:#0a0a12!important;color:#f5f3ee;font-family:'DM Sans',sans-serif;overflow-x:hidden;}\n\n.elementor-section,.e-con,.elementor-container{position:relative;z-index:2;}\n\n.my-project-s-reveal{opacity:1;transform:none;transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}\nhtml.my-project-s-motion-ready .my-project-s-reveal{opacity:0;transform:translateY(40px);}\nhtml.my-project-s-motion-ready .my-project-s-reveal.my-project-s-visible{opacity:1;transform:translateY(0);}\n.my-project-s-d1{transition-delay:.1s;}.my-project-s-d2{transition-delay:.2s;}.my-project-s-d3{transition-delay:.3s;}\n::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0a0a12;}\n::-webkit-scrollbar-thumb{background:rgba(200,255,0,.3);}::-webkit-scrollbar-thumb:hover{background:#c8ff00;}\n.elementor-editor-active .my-project-s-reveal, .elementor-editor-active [class*='reveal'], .elementor-editor-active [class*='hidden'] { opacity: 1 !important; visibility: visible !important; transform: none !important; transition: none !important; }\n@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }\n</style>\n<script>\n(function(){\n'use strict';\ndocument.documentElement.classList.add('my-project-s-motion-ready');\nif(document.body){document.body.classList.add('my-project-s-page');}\nelse{document.addEventListener('DOMContentLoaded',function(){if(document.body){document.body.classList.add('my-project-s-page');}});}\n\n\n\n\n\n/* ── Scroll Reveal ── */\nvar sObs=new IntersectionObserver(function(entries){\n  entries.forEach(function(e){\n    if(e.isIntersecting || window.elementor) e.target.classList.add('my-project-s-visible');\n  });\n},{threshold:.1});\n\nfunction initR(){\n  var revs=document.querySelectorAll('.my-project-s-reveal');\n  revs.forEach(function(el){\n    // Safe reveal: if element is already in viewport or we are in Elementor editor\n    var rect=el.getBoundingClientRect();\n    if((rect.top<window.innerHeight&&rect.bottom>0)||window.elementor){\n      el.classList.add('my-project-s-visible');\n    }\n    sObs.observe(el);\n  });\n  // Fail-safe: show everything if JS fails or taking too long\n  setTimeout(function(){document.querySelectorAll('.my-project-s-reveal:not(.my-project-s-visible)').forEach(function(f){f.classList.add('my-project-s-visible');});},2500);\n}\nif(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initR);}else{initR();}\n\nfunction initStatCounters(){\n  var statCards=document.querySelectorAll('.my-project-s-stat-cell');\n  if(!statCards.length || !('IntersectionObserver' in window)){return;}\n  var seen=new WeakSet();\n  var parseValue=function(text){\n    var raw=(text||'').trim();\n    var match=raw.match(/^([\\d.,]+)(.*)$/);\n    if(!match){return null;}\n    var num=parseFloat(match[1].replace(/,/g,''));\n    if(isNaN(num)){return null;}\n    var decimals=(match[1].split('.')[1]||'').length;\n    return { value:num, decimals:decimals, suffix:(match[2]||'').trim() };\n  };\n  var obs=new IntersectionObserver(function(entries){\n    entries.forEach(function(entry){\n      if(!entry.isIntersecting || seen.has(entry.target)){return;}\n      seen.add(entry.target);\n      entry.target.classList.add('my-project-s-counted');\n      var heading=entry.target.querySelector('.my-project-s-stat-num .elementor-heading-title');\n      if(!heading){return;}\n      var parsed=parseValue(heading.textContent);\n      if(!parsed){return;}\n      var cur=0, steps=60, inc=parsed.value/steps;\n      var iv=setInterval(function(){\n        cur+=inc;\n        if(cur>=parsed.value){cur=parsed.value;clearInterval(iv);}\n        heading.textContent=cur.toFixed(parsed.decimals)+parsed.suffix;\n      },30);\n    });\n  },{threshold:.3});\n  statCards.forEach(function(card){obs.observe(card);});\n}\ninitStatCounters();\n\n/* ── Nav scroll class ── */\nwindow.addEventListener('scroll',function(){\nvar nav=document.getElementById('my-project-s-fixed-nav');\nif(nav)nav.classList.toggle('my-project-s-scrolled',window.scrollY>60);\n},{passive:true});\n\n}());\n</script>\n<script>\n(function(){\n/* ── Source Script Bridge ── */\ntry{\n\n\n    // Navbar scroll\n    window.addEventListener('scroll', () => {\n      const nav = document.getElementById('navbar');\n      if (window.scrollY > 40) {\n        nav.style.background = 'rgba(247,245,240,0.95)';\n        nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.06)';\n        nav.style.backdropFilter = 'blur(12px)';\n      } else {\n        nav.style.background = 'transparent';\n        nav.style.boxShadow = 'none';\n      }\n    });\n\n    // Hero entrance\n    window.addEventListener('load', () => {\n      setTimeout(() => {\n        document.getElementById('hero-text')?.style.opacity = '1';\n        document.getElementById('hero-text')?.style.transform = 'translateY(0)';\n        document.getElementById('hero-visual')?.style.opacity = '1';\n        document.getElementById('hero-visual')?.style.transform = 'translateX(0)';\n      }, 200);\n\n      // Animate bars\n      setTimeout(() => {\n        document.querySelectorAll('.bar').forEach(bar => {\n          bar.style.height = bar.dataset.h + '%';\n        });\n      }, 700);\n\n      // Count up stats\n      setTimeout(() => animateCounter('stat-deals', 0, 47, 0), 1000);\n      setTimeout(() => animateCounter('stat-rev', 0, 284, 1, '$', 'k'), 1000);\n      setTimeout(() => animateCounter('stat-rate', 0, 68, 0, '', '%'), 1100);\n    });\n\n    function animateCounter(id, from, to, decimals, prefix = '', suffix = '') {\n      const el = document.getElementById(id);\n      const duration = 1200;\n      const start = performance.now();\n      function step(now) {\n        const t = Math.min((now - start) / duration, 1);\n        const ease = 1 - Math.pow(1 - t, 3);\n        const val = from + (to - from) * ease;\n        el.textContent = prefix + val.toFixed(decimals) + suffix;\n        if (t < 1) requestAnimationFrame(step);\n      }\n      requestAnimationFrame(step);\n    }\n\n    // Pricing toggle\n    function setPricing(mode) {\n      const btnM = document.getElementById('my-project-s-pricing');\n      const btnA = document.getElementById('btn-annual');\n      document.querySelectorAll('.price').forEach(el => {\n        el.textContent = el.dataset[mode];\n      });\n      if (mode === 'monthly') {\n        btnM.style.cssText += 'background:#1A1A2E;color:#FFF;';\n        btnA.style.cssText += 'background:transparent;color:#666;';\n      } else {\n        btnA.style.cssText += 'background:#1A1A2E;color:#FFF;';\n        btnM.style.cssText += 'background:transparent;color:#666;';\n      }\n    }\n\n    // Scroll reveal\n    const observer = new IntersectionObserver((entries) => {\n      entries.forEach(e => {\n        if (e.isIntersecting) {\n          e.target.style.opacity = '1';\n          e.target.style.transform = 'translateY(0)';\n        }\n      });\n    }, { threshold: 0.1 });\n\n    document.querySelectorAll('body.my-project-s-page #my-project-s-features, body.my-project-s-page .my-project-s-bento-card, body.my-project-s-page .my-project-s-bento-card-a, body.my-project-s-page .my-project-s-bc-a, body.my-project-s-page #my-project-s-bento-card-a, body.my-project-s-page .my-project-s-bento-card-b, body.my-project-s-page .my-project-s-bc-b, body.my-project-s-page #my-project-s-bento-card-b, body.my-project-s-page .my-project-s-bento-card-c, body.my-project-s-page .my-project-s-bc-c, body.my-project-s-page #my-project-s-bento-card-c').forEach(card => {\n      card.style.opacity = '0';\n      card.style.transform = 'translateY(24px)';\n      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';\n      observer.observe(card);\n    });\n  \n}catch(e){console.warn('my-project-s source script bridge failed',e);}\n}());\n</script>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "59cd0d41",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-nav-widget sb-top-level-widget-wrap",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "_element_id": "my-project-s-nav"
+            },
+            "elements": [
+                {
+                    "id": "26c77207",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-nav-widget",
+                        "_element_id": "my-project-s-nav",
+                        "html": "<style>\n.my-project-s-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all .4s;}\n.my-project-s-nav.my-project-s-scrolled{background:rgba(10,10,18,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:rgba(255,255,255,0.1);padding:16px 60px;}\n.my-project-s-nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px;color:#f5f3ee;text-decoration:none;}\n.my-project-s-nav-logo span,.my-project-s-nav-link span{color:#c8ff00;}\n.my-project-s-nav-links{display:flex;gap:40px;list-style:none;margin:0;padding:0;}\n.my-project-s-nav-link{font-size:13px;font-family:'Space Mono',monospace;color:rgba(245,243,238,.5);text-decoration:none;letter-spacing:.05em;transition:color .2s;}\n.my-project-s-nav-link:hover{color:#f5f3ee;}\n.my-project-s-nav-cta{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;padding:10px 22px;background:#c8ff00;color:#0a0a12;border:none;font-weight:700;transition:all .2s;}\n.my-project-s-nav-cta:hover{opacity:.85;transform:translateY(-1px);}\n@media(max-width:768px){.my-project-s-nav-links{display:none;}.my-project-s-nav{padding:16px 24px;}}\n</style>\n<nav class=\"my-project-s-nav\" id=\"my-project-s-fixed-nav\">\n  <a href=\"#\" class=\"my-project-s-nav-logo\"></a>\n  <ul class=\"my-project-s-nav-links\">\n<li><a href=\"#features\" class=\"my-project-s-nav-link\">Features</a></li>\n<li><a href=\"#how\" class=\"my-project-s-nav-link\">How it works</a></li>\n<li><a href=\"#pricing\" class=\"my-project-s-nav-link\">Pricing</a></li>\n<li><a href=\"#\" class=\"my-project-s-nav-link\">Log in</a></li>\n<li><a href=\"#\" class=\"my-project-s-nav-link\">Get started free</a></li>\n  </ul>\n  \n</nav>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "69632223",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-hero my-project-s-section my-project-s-reveal",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "min_height": {
+                    "unit": "vh",
+                    "size": 100
+                },
+                "min_height_type": "min-height",
+                "align_items": "flex-start",
+                "justify_content": "flex-end",
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "overflow": "hidden",
+                "padding": {
+                    "unit": "px",
+                    "top": "0",
+                    "right": "60",
+                    "bottom": "80",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-hero"
+            },
+            "elements": [
+                {
+                    "id": "7d0ee8cc",
+                    "elType": "widget",
+                    "widgetType": "heading",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-hero-headline",
+                        "title": "Revenue<br>pipeline that<br><em>thinks ahead.</em>",
+                        "header_size": "h1",
+                        "align": "left",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Syne",
+                        "typography_font_weight": "800",
+                        "typography_font_size": {
+                            "unit": "px",
+                            "size": 120
+                        },
+                        "typography_letter_spacing": {
+                            "unit": "px",
+                            "size": -3
+                        },
+                        "typography_line_height": {
+                            "unit": "em",
+                            "size": 0.92
+                        },
+                        "title_color": "#f5f3ee"
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "ff306551",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-hero-bottom",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 40,
+                            "column": 40,
+                            "row": 40
+                        },
+                        "align_items": "flex-end",
+                        "justify_content": "space-between"
+                    },
+                    "elements": [
+                        {
+                            "id": "ae25cbc7",
+                            "elType": "widget",
+                            "widgetType": "text-editor",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-hero-sub",
+                                "editor": "<p>Veltro connects your CRM signals, call recordings, and deal activity into one intelligence layer — so your team closes faster, not harder.</p>"
+                            },
+                            "elements": []
+                        },
+                        {
+                            "id": "b97b1123",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-hero-hybrid-fragment my-project-s-hybrid-fragment",
+                                "html": "<a href=\"#\" style=\"text-decoration:none;background:#E85D26;color:#fff;font-size:15px;font-weight:600;padding:14px 30px;border-radius:8px;transition:transform 0.15s,box-shadow 0.15s;\" onmouseover=\"this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(232,93,38,0.4)'\" onmouseout=\"this.style.transform='';this.style.boxShadow=''\">Start for free</a>"
+                            },
+                            "elements": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "1966cd37",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-generic my-project-s-section my-project-s-reveal",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "border_border": "solid",
+                "border_color": "rgba(255,255,255,0.1)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-generic"
+            },
+            "elements": [
+                {
+                    "id": "f19a341c",
+                    "elType": "widget",
+                    "widgetType": "text-editor",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-generic-primitive-text",
+                        "editor": "<p>Trusted by teams at</p>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "ff61ffdb",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-generic my-project-s-section my-project-s-reveal",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "border_border": "solid",
+                "border_color": "rgba(255,255,255,0.1)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-generic-2"
+            },
+            "elements": [
+                {
+                    "id": "2cfb95bd",
+                    "elType": "widget",
+                    "widgetType": "heading",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-section-title",
+                        "title": "Ready to close smarter?",
+                        "header_size": "h2",
+                        "align": "left",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Syne",
+                        "typography_font_weight": "800",
+                        "typography_font_size": {
+                            "unit": "px",
+                            "size": 52
+                        },
+                        "title_color": "#f5f3ee",
+                        "typography_letter_spacing": {
+                            "unit": "px",
+                            "size": -2
+                        }
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "df34b072",
+                    "elType": "widget",
+                    "widgetType": "text-editor",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-section-desc",
+                        "editor": "<p>Join 1,200+ revenue teams already using Veltro.</p>"
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "fc8f20a8",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-generic-flow my-project-s-reveal",
+                        "flex_direction": "column",
+                        "flex_wrap": "wrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 24,
+                            "column": 24,
+                            "row": 24
+                        },
+                        "background_background": "classic",
+                        "background_color": "transparent",
+                        "padding": {
+                            "unit": "px",
+                            "top": "0",
+                            "right": "0",
+                            "bottom": "0",
+                            "left": "0",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "12fc487e",
+                            "elType": "widget",
+                            "widgetType": "heading",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-card-title my-project-s-d1",
+                                "title": "Ready to close smarter?",
+                                "header_size": "h3",
+                                "align": "left",
+                                "typography_typography": "custom",
+                                "typography_font_family": "Syne",
+                                "typography_font_weight": "700",
+                                "typography_font_size": {
+                                    "unit": "px",
+                                    "size": 20
+                                },
+                                "title_color": "#f5f3ee"
+                            },
+                            "elements": []
+                        },
+                        {
+                            "id": "392e1311",
+                            "elType": "widget",
+                            "widgetType": "text-editor",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-card-body",
+                                "editor": "<p>Join 1,200+ revenue teams already using Veltro.</p>"
+                            },
+                            "elements": []
+                        },
+                        {
+                            "id": "347db5bb",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-card-visual-widget my-project-s-card-visual",
+                                "html": "<a href=\"#\" style=\"display:inline-block;text-decoration:none;background:#FFF;color:#E85D26;font-size:15px;font-weight:700;padding:16px 36px;border-radius:8px;transition:transform 0.15s,box-shadow 0.15s;\" onmouseover=\"this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)'\" onmouseout=\"this.style.transform='';this.style.boxShadow=''\">Start your free trial →</a>"
+                            },
+                            "elements": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "7c264a6c",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-features my-project-s-section",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-features"
+            },
+            "elements": [
+                {
+                    "id": "904a9412",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-section-header my-project-s-reveal",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 24,
+                            "column": 24,
+                            "row": 24
+                        },
+                        "align_items": "flex-end",
+                        "justify_content": "space-between",
+                        "margin": {
+                            "unit": "px",
+                            "top": "0",
+                            "right": "0",
+                            "bottom": "64",
+                            "left": "0",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "cd71a7b3",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-section-header-left",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "7e3aba13",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-section-title",
+                                        "title": "Intelligence at every stage",
+                                        "header_size": "h2",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "800",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 52
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -2
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.05
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "e47dfbc3",
+                            "elType": "widget",
+                            "widgetType": "text-editor",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-section-desc",
+                                "editor": "<p>Automatically ingests CRM data, email threads, and call transcripts into a unified intelligence graph.</p>"
+                            },
+                            "elements": []
+                        },
+                        {
+                            "id": "4bfc5b25",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-features-hybrid-fragment my-project-s-hybrid-fragment src-id-features",
+                                "html": "<div class=\"feature-card\" style=\"background:#FFF;border-radius:16px;padding:36px;border:1px solid #ECEAE4;transition:transform 0.25s,box-shadow 0.25s;cursor:default;\" onmouseover=\"this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(0,0,0,0.07)'\" onmouseout=\"this.style.transform='';this.style.boxShadow=''\">\n        <div style=\"width:48px;height:48px;background:#FFF0E8;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;\">📡</div>\n        <h3 style=\"font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin:0 0 12px;\">Signal capture</h3>\n        <p style=\"font-size:14px;line-height:1.7;color:#5A5A72;margin:0;\">Automatically ingests CRM data, email threads, and call transcripts into a unified intelligence graph.</p>\n      </div>"
+                            },
+                            "elements": []
+                        }
+                    ]
+                },
+                {
+                    "id": "8be6daf6",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-bento-grid",
+                        "container_type": "grid",
+                        "grid_columns_fr": "1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr",
+                        "gap": {
+                            "unit": "px",
+                            "size": 16,
+                            "column": 16,
+                            "row": 16
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "585d58ba",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-bento-card my-project-s-bc-a my-project-s-bento-card-a my-project-s-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(255,255,255,0.03)",
+                                "border_border": "solid",
+                                "border_color": "rgba(255,255,255,0.1)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "36",
+                                    "right": "36",
+                                    "bottom": "36",
+                                    "left": "36",
+                                    "isLinked": false
+                                },
+                                "overflow": "hidden",
+                                "_element_id": "my-project-s-bento-card-a"
+                            },
+                            "elements": [
+                                {
+                                    "id": "48718912",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-card-title my-project-s-bento-title",
+                                        "title": "Signal capture",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 24
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -1
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.1
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "daec6f05",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-card-body",
+                                        "editor": "<p>Automatically ingests CRM data, email threads, and call transcripts into a unified intelligence graph.</p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "5ea4a1d7",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-bento-card my-project-s-bc-b my-project-s-bento-card-b my-project-s-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(255,255,255,0.03)",
+                                "border_border": "solid",
+                                "border_color": "rgba(255,255,255,0.1)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "36",
+                                    "right": "36",
+                                    "bottom": "36",
+                                    "left": "36",
+                                    "isLinked": false
+                                },
+                                "overflow": "hidden",
+                                "_element_id": "my-project-s-bento-card-b"
+                            },
+                            "elements": [
+                                {
+                                    "id": "2a958765",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-card-title my-project-s-bento-title",
+                                        "title": "Deal scoring",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 24
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -1
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.1
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "c8147181",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-card-body",
+                                        "editor": "<p>Each deal receives a live health score based on engagement patterns, timeline risks, and competitive signals.</p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "6d366a2c",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-bento-card my-project-s-bc-c my-project-s-bento-card-c my-project-s-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(255,255,255,0.03)",
+                                "border_border": "solid",
+                                "border_color": "rgba(255,255,255,0.1)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "36",
+                                    "right": "36",
+                                    "bottom": "36",
+                                    "left": "36",
+                                    "isLinked": false
+                                },
+                                "overflow": "hidden",
+                                "_element_id": "my-project-s-bento-card-c"
+                            },
+                            "elements": [
+                                {
+                                    "id": "264789ce",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-card-title my-project-s-bento-title",
+                                        "title": "Forecast engine",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 24
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -1
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.1
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "aa375c84",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-card-body",
+                                        "editor": "<p>Predictive close dates and revenue projections updated in real time — so you commit to numbers with confidence.</p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "4faeb218",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-process my-project-s-section my-project-s-reveal",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "border_border": "solid",
+                "border_color": "rgba(255,255,255,0.1)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-process"
+            },
+            "elements": [
+                {
+                    "id": "5ef7e253",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-section-header my-project-s-reveal",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 24,
+                            "column": 24,
+                            "row": 24
+                        },
+                        "align_items": "flex-end",
+                        "justify_content": "space-between",
+                        "margin": {
+                            "unit": "px",
+                            "top": "0",
+                            "right": "0",
+                            "bottom": "64",
+                            "left": "0",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "dc41875e",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-section-header-left",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "55729b98",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-section-title",
+                                        "title": "Three steps to clarity",
+                                        "header_size": "h2",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "800",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 52
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -2
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.05
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "f530fc1c",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-process-grid",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 100,
+                            "column": 100,
+                            "row": 100
+                        },
+                        "align_items": "center"
+                    },
+                    "elements": [
+                        {
+                            "id": "6c121228",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-process-steps",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "width": {
+                                    "unit": "%",
+                                    "size": 30
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "5594f8c0",
+                                    "elType": "container",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-process-step my-project-s-process-step-a",
+                                        "flex_direction": "row",
+                                        "flex_wrap": "nowrap",
+                                        "gap": {
+                                            "unit": "px",
+                                            "size": 32,
+                                            "column": 32,
+                                            "row": 32
+                                        },
+                                        "align_items": "flex-start",
+                                        "border_border": "solid",
+                                        "border_color": "rgba(255,255,255,0.1)",
+                                        "border_width": {
+                                            "unit": "px",
+                                            "top": "0",
+                                            "right": "0",
+                                            "bottom": "1",
+                                            "left": "0",
+                                            "isLinked": false
+                                        },
+                                        "padding": {
+                                            "unit": "px",
+                                            "top": "36",
+                                            "right": "0",
+                                            "bottom": "36",
+                                            "left": "0",
+                                            "isLinked": false
+                                        },
+                                        "_element_id": "my-project-s-process-step-a"
+                                    },
+                                    "elements": [
+                                        {
+                                            "id": "72eedbdb",
+                                            "elType": "widget",
+                                            "widgetType": "heading",
+                                            "isInner": true,
+                                            "settings": {
+                                                "_css_classes": "my-project-s-step-num",
+                                                "title": "01",
+                                                "header_size": "h6",
+                                                "align": "left",
+                                                "typography_typography": "custom",
+                                                "typography_font_family": "Space Mono",
+                                                "typography_font_weight": "700",
+                                                "typography_font_size": {
+                                                    "unit": "px",
+                                                    "size": 11
+                                                },
+                                                "typography_letter_spacing": {
+                                                    "unit": "em",
+                                                    "size": 0.1
+                                                },
+                                                "typography_line_height": {
+                                                    "unit": "em",
+                                                    "size": 1.1
+                                                },
+                                                "title_color": "rgba(245,243,238,.2)"
+                                            },
+                                            "elements": []
+                                        },
+                                        {
+                                            "id": "f16990f6",
+                                            "elType": "container",
+                                            "isInner": true,
+                                            "settings": {
+                                                "_css_classes": "my-project-s-step-content",
+                                                "flex_direction": "column",
+                                                "flex_wrap": "nowrap",
+                                                "gap": {
+                                                    "unit": "px",
+                                                    "size": 24,
+                                                    "column": 24,
+                                                    "row": 24
+                                                }
+                                            },
+                                            "elements": [
+                                                {
+                                                    "id": "bdfc986d",
+                                                    "elType": "widget",
+                                                    "widgetType": "heading",
+                                                    "isInner": true,
+                                                    "settings": {
+                                                        "_css_classes": "my-project-s-step-title",
+                                                        "title": "Connect your stack",
+                                                        "header_size": "h4",
+                                                        "align": "left",
+                                                        "typography_typography": "custom",
+                                                        "typography_font_family": "Syne",
+                                                        "typography_font_weight": "700",
+                                                        "typography_font_size": {
+                                                            "unit": "px",
+                                                            "size": 20
+                                                        },
+                                                        "typography_letter_spacing": {
+                                                            "unit": "px",
+                                                            "size": -1
+                                                        },
+                                                        "typography_line_height": {
+                                                            "unit": "em",
+                                                            "size": 1.1
+                                                        },
+                                                        "title_color": "#f5f3ee"
+                                                    },
+                                                    "elements": []
+                                                },
+                                                {
+                                                    "id": "c80c194d",
+                                                    "elType": "widget",
+                                                    "widgetType": "text-editor",
+                                                    "isInner": true,
+                                                    "settings": {
+                                                        "_css_classes": "my-project-s-step-desc",
+                                                        "editor": "<p>One-click integrations with Salesforce, HubSpot, Gong, Outreach and 40+ tools.</p>"
+                                                    },
+                                                    "elements": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "73be0f67",
+                                    "elType": "container",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-process-step my-project-s-process-step-b",
+                                        "flex_direction": "row",
+                                        "flex_wrap": "nowrap",
+                                        "gap": {
+                                            "unit": "px",
+                                            "size": 32,
+                                            "column": 32,
+                                            "row": 32
+                                        },
+                                        "align_items": "flex-start",
+                                        "border_border": "solid",
+                                        "border_color": "rgba(255,255,255,0.1)",
+                                        "border_width": {
+                                            "unit": "px",
+                                            "top": "0",
+                                            "right": "0",
+                                            "bottom": "1",
+                                            "left": "0",
+                                            "isLinked": false
+                                        },
+                                        "padding": {
+                                            "unit": "px",
+                                            "top": "36",
+                                            "right": "0",
+                                            "bottom": "36",
+                                            "left": "0",
+                                            "isLinked": false
+                                        },
+                                        "_element_id": "my-project-s-process-step-b"
+                                    },
+                                    "elements": [
+                                        {
+                                            "id": "8bb6c74a",
+                                            "elType": "widget",
+                                            "widgetType": "heading",
+                                            "isInner": true,
+                                            "settings": {
+                                                "_css_classes": "my-project-s-step-num",
+                                                "title": "02",
+                                                "header_size": "h6",
+                                                "align": "left",
+                                                "typography_typography": "custom",
+                                                "typography_font_family": "Space Mono",
+                                                "typography_font_weight": "700",
+                                                "typography_font_size": {
+                                                    "unit": "px",
+                                                    "size": 11
+                                                },
+                                                "typography_letter_spacing": {
+                                                    "unit": "em",
+                                                    "size": 0.1
+                                                },
+                                                "typography_line_height": {
+                                                    "unit": "em",
+                                                    "size": 1.1
+                                                },
+                                                "title_color": "rgba(245,243,238,.2)"
+                                            },
+                                            "elements": []
+                                        },
+                                        {
+                                            "id": "0c76f3e8",
+                                            "elType": "container",
+                                            "isInner": true,
+                                            "settings": {
+                                                "_css_classes": "my-project-s-step-content",
+                                                "flex_direction": "column",
+                                                "flex_wrap": "nowrap",
+                                                "gap": {
+                                                    "unit": "px",
+                                                    "size": 24,
+                                                    "column": 24,
+                                                    "row": 24
+                                                }
+                                            },
+                                            "elements": [
+                                                {
+                                                    "id": "5443ca29",
+                                                    "elType": "widget",
+                                                    "widgetType": "heading",
+                                                    "isInner": true,
+                                                    "settings": {
+                                                        "_css_classes": "my-project-s-step-title",
+                                                        "title": "Train on your data",
+                                                        "header_size": "h4",
+                                                        "align": "left",
+                                                        "typography_typography": "custom",
+                                                        "typography_font_family": "Syne",
+                                                        "typography_font_weight": "700",
+                                                        "typography_font_size": {
+                                                            "unit": "px",
+                                                            "size": 20
+                                                        },
+                                                        "typography_letter_spacing": {
+                                                            "unit": "px",
+                                                            "size": -1
+                                                        },
+                                                        "typography_line_height": {
+                                                            "unit": "em",
+                                                            "size": 1.1
+                                                        },
+                                                        "title_color": "#f5f3ee"
+                                                    },
+                                                    "elements": []
+                                                },
+                                                {
+                                                    "id": "fe33605b",
+                                                    "elType": "widget",
+                                                    "widgetType": "text-editor",
+                                                    "isInner": true,
+                                                    "settings": {
+                                                        "_css_classes": "my-project-s-step-desc",
+                                                        "editor": "<p>Veltro calibrates its models against your historical deals to learn what winning looks like for your team.</p>"
+                                                    },
+                                                    "elements": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "f2b2c860",
+                                    "elType": "container",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-process-step my-project-s-process-step-c",
+                                        "flex_direction": "row",
+                                        "flex_wrap": "nowrap",
+                                        "gap": {
+                                            "unit": "px",
+                                            "size": 32,
+                                            "column": 32,
+                                            "row": 32
+                                        },
+                                        "align_items": "flex-start",
+                                        "border_border": "solid",
+                                        "border_color": "rgba(255,255,255,0.1)",
+                                        "border_width": {
+                                            "unit": "px",
+                                            "top": "0",
+                                            "right": "0",
+                                            "bottom": "1",
+                                            "left": "0",
+                                            "isLinked": false
+                                        },
+                                        "padding": {
+                                            "unit": "px",
+                                            "top": "36",
+                                            "right": "0",
+                                            "bottom": "36",
+                                            "left": "0",
+                                            "isLinked": false
+                                        },
+                                        "_element_id": "my-project-s-process-step-c"
+                                    },
+                                    "elements": [
+                                        {
+                                            "id": "40d04a84",
+                                            "elType": "widget",
+                                            "widgetType": "heading",
+                                            "isInner": true,
+                                            "settings": {
+                                                "_css_classes": "my-project-s-step-num",
+                                                "title": "03",
+                                                "header_size": "h6",
+                                                "align": "left",
+                                                "typography_typography": "custom",
+                                                "typography_font_family": "Space Mono",
+                                                "typography_font_weight": "700",
+                                                "typography_font_size": {
+                                                    "unit": "px",
+                                                    "size": 11
+                                                },
+                                                "typography_letter_spacing": {
+                                                    "unit": "em",
+                                                    "size": 0.1
+                                                },
+                                                "typography_line_height": {
+                                                    "unit": "em",
+                                                    "size": 1.1
+                                                },
+                                                "title_color": "rgba(245,243,238,.2)"
+                                            },
+                                            "elements": []
+                                        },
+                                        {
+                                            "id": "9ed110f9",
+                                            "elType": "container",
+                                            "isInner": true,
+                                            "settings": {
+                                                "_css_classes": "my-project-s-step-content",
+                                                "flex_direction": "column",
+                                                "flex_wrap": "nowrap",
+                                                "gap": {
+                                                    "unit": "px",
+                                                    "size": 24,
+                                                    "column": 24,
+                                                    "row": 24
+                                                }
+                                            },
+                                            "elements": [
+                                                {
+                                                    "id": "bedadb7a",
+                                                    "elType": "widget",
+                                                    "widgetType": "heading",
+                                                    "isInner": true,
+                                                    "settings": {
+                                                        "_css_classes": "my-project-s-step-title",
+                                                        "title": "Act on insights",
+                                                        "header_size": "h4",
+                                                        "align": "left",
+                                                        "typography_typography": "custom",
+                                                        "typography_font_family": "Syne",
+                                                        "typography_font_weight": "700",
+                                                        "typography_font_size": {
+                                                            "unit": "px",
+                                                            "size": 20
+                                                        },
+                                                        "typography_letter_spacing": {
+                                                            "unit": "px",
+                                                            "size": -1
+                                                        },
+                                                        "typography_line_height": {
+                                                            "unit": "em",
+                                                            "size": 1.1
+                                                        },
+                                                        "title_color": "#f5f3ee"
+                                                    },
+                                                    "elements": []
+                                                },
+                                                {
+                                                    "id": "b26ace21",
+                                                    "elType": "widget",
+                                                    "widgetType": "text-editor",
+                                                    "isInner": true,
+                                                    "settings": {
+                                                        "_css_classes": "my-project-s-step-desc",
+                                                        "editor": "<p>Your reps see prioritised actions in their existing workflow — no new tab, no new habit.</p>"
+                                                    },
+                                                    "elements": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "3ab109b7",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-orbital-widget my-project-s-reveal",
+                                "html": "<style>\n.my-project-s-orb-wrap{position:relative;height:520px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;overflow:hidden;}\n.my-project-s-orb-ring{position:absolute;border-radius:50%;border:1px solid rgba(200,255,0,.2);animation:my-project-s-orb-pulse 4s ease-in-out infinite;}\n.my-project-s-orb-ring:nth-child(1){width:300px;height:300px;}\n.my-project-s-orb-ring:nth-child(2){width:220px;height:220px;animation-delay:-1s;border-color:rgba(200,255,0,.3);}\n.my-project-s-orb-ring:nth-child(3){width:140px;height:140px;animation-delay:-2s;background:rgba(200,255,0,.06);border-color:rgba(200,255,0,.5);}\n.my-project-s-orb-center{width:64px;height:64px;background:#c8ff00;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;color:#0a0a12;font-weight:700;letter-spacing:.05em;}\n.my-project-s-orb-node{position:absolute;width:40px;height:40px;background:rgba(200,255,0,.1);border:1px solid rgba(200,255,0,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}\n@keyframes my-project-s-orb-pulse{0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(1.05);opacity:1;}}\n</style>\n<div class=\"my-project-s-orb-wrap\">\n  <div class=\"my-project-s-orb-ring\"></div>\n  <div class=\"my-project-s-orb-ring\"></div>\n  <div class=\"my-project-s-orb-ring\"></div>\n  <div class=\"my-project-s-orb-center\">AI</div>\n  <div class=\"my-project-s-orb-node\" style=\"top:80px;left:50%;transform:translateX(-50%);\">⚙</div>\n  <div class=\"my-project-s-orb-node\" style=\"bottom:80px;left:50%;transform:translateX(-50%);\">→</div>\n  <div class=\"my-project-s-orb-node\" style=\"left:60px;top:50%;transform:translateY(-50%);\">◈</div>\n  <div class=\"my-project-s-orb-node\" style=\"right:60px;top:50%;transform:translateY(-50%);\">⬡</div>\n</div>",
+                                "width": {
+                                    "unit": "%",
+                                    "size": 70
+                                }
+                            },
+                            "elements": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "9e865120",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-pricing my-project-s-section my-project-s-reveal",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "border_border": "solid",
+                "border_color": "rgba(255,255,255,0.1)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-pricing"
+            },
+            "elements": [
+                {
+                    "id": "7bd83f66",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-section-header my-project-s-reveal",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 24,
+                            "column": 24,
+                            "row": 24
+                        },
+                        "align_items": "flex-end",
+                        "justify_content": "space-between",
+                        "margin": {
+                            "unit": "px",
+                            "top": "0",
+                            "right": "0",
+                            "bottom": "64",
+                            "left": "0",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "f41f5eda",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-section-header-left",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "41f1d04c",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-section-title",
+                                        "title": "Simple, transparent plans",
+                                        "header_size": "h2",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "800",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 52
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -2
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.05
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b41b3270",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-pricing-hybrid-fragment my-project-s-hybrid-fragment src-id-pricing",
+                                "html": "<button id=\"btn-monthly\" onclick=\"setPricing('monthly')\" style=\"padding:8px 20px;border-radius:100px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#1A1A2E;color:#FFF;transition:all 0.2s;\">Monthly</button>"
+                            },
+                            "elements": []
+                        }
+                    ]
+                },
+                {
+                    "id": "06392cbc",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-pricing-grid",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 24,
+                            "column": 24,
+                            "row": 24
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "4d4e795a",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-price-card my-project-s-price-card-a my-project-s-reveal my-project-s-d1",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(255,255,255,0.03)",
+                                "border_border": "solid",
+                                "border_color": "rgba(255,255,255,0.1)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "48",
+                                    "right": "40",
+                                    "bottom": "48",
+                                    "left": "40",
+                                    "isLinked": false
+                                },
+                                "position": "relative",
+                                "_element_id": "my-project-s-price-card-a"
+                            },
+                            "elements": [
+                                {
+                                    "id": "e4660892",
+                                    "elType": "widget",
+                                    "widgetType": "html",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-visual-widget",
+                                        "html": "<button id=\"btn-monthly\" onclick=\"setPricing('monthly')\" style=\"padding:8px 20px;border-radius:100px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#1A1A2E;color:#FFF;transition:all 0.2s;\">Monthly</button>"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "a9ac85c8",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-plan",
+                                        "title": "Simple, transparent plans",
+                                        "header_size": "h6",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Space Mono",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 11
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "em",
+                                            "size": 0.2
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1.1
+                                        },
+                                        "title_color": "rgba(245,243,238,.4)"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "437db0fb",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-period",
+                                        "editor": "<p></p>"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "dba772a7",
+                                    "elType": "widget",
+                                    "widgetType": "button",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-btn-price",
+                                        "text": "Monthly",
+                                        "link": {
+                                            "url": "#",
+                                            "is_external": false,
+                                            "nofollow": false
+                                        },
+                                        "background_color": "transparent",
+                                        "button_text_color": "#f5f3ee",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Space Mono",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 12
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "em",
+                                            "size": 0.1
+                                        },
+                                        "border_radius": {
+                                            "unit": "px",
+                                            "top": 0,
+                                            "right": 0,
+                                            "bottom": 0,
+                                            "left": 0
+                                        },
+                                        "padding": {
+                                            "unit": "px",
+                                            "top": "18",
+                                            "right": "36",
+                                            "bottom": "18",
+                                            "left": "36",
+                                            "isLinked": false
+                                        }
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "f8716663",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-price-card my-project-s-price-card-b my-project-s-reveal my-project-s-d2",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(255,255,255,0.03)",
+                                "border_border": "solid",
+                                "border_color": "rgba(255,255,255,0.1)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "48",
+                                    "right": "40",
+                                    "bottom": "48",
+                                    "left": "40",
+                                    "isLinked": false
+                                },
+                                "position": "relative",
+                                "_element_id": "my-project-s-price-card-b"
+                            },
+                            "elements": [
+                                {
+                                    "id": "ee30f9f7",
+                                    "elType": "widget",
+                                    "widgetType": "html",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-visual-widget",
+                                        "html": "<a href=\"#\" style=\"display:block;text-align:center;text-decoration:none;border:1.5px solid #D0CCC4;color:#1A1A2E;font-size:14px;font-weight:600;padding:13px;border-radius:8px;transition:border-color 0.2s;\" onmouseover=\"this.style.borderColor='#E85D26'\" onmouseout=\"this.style.borderColor='#D0CCC4'\">Get started</a>"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "69d57558",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-amount",
+                                        "title": "$29",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "Syne",
+                                        "typography_font_weight": "800",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 60
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -3
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 1
+                                        },
+                                        "title_color": "#f5f3ee"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "91263e81",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-period",
+                                        "editor": "<p></p>"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "b978df11",
+                                    "elType": "widget",
+                                    "widgetType": "icon-list",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-price-feats-list",
+                                        "icon_list": [
+                                            {
+                                                "text": "✓ Up to 5 users",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ CRM sync",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Basic deal scoring",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Forecast engine",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Unlimited users",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ All integrations",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Advanced deal scoring",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Forecast engine",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Everything in Pro",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ SSO & compliance",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Dedicated CSM",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "✓ Custom AI training",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            }
+                                        ],
+                                        "view": "traditional",
+                                        "icon_align": "left",
+                                        "icon_indent": {
+                                            "unit": "px",
+                                            "size": 10
+                                        },
+                                        "text_indent": {
+                                            "unit": "px",
+                                            "size": 0
+                                        },
+                                        "divider": "none",
+                                        "link_click": "none",
+                                        "icon_color": "#c8ff00",
+                                        "text_color": "#f5f3ee",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "DM Sans",
+                                        "typography_font_weight": "400",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 14
+                                        }
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "84f9d066",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-pricing-hybrid-fragment my-project-s-hybrid-fragment src-id-pricing",
+                                "html": "<a href=\"#\" style=\"display:block;text-align:center;text-decoration:none;border:1.5px solid #D0CCC4;color:#1A1A2E;font-size:14px;font-weight:600;padding:13px;border-radius:8px;transition:border-color 0.2s;\" onmouseover=\"this.style.borderColor='#E85D26'\" onmouseout=\"this.style.borderColor='#D0CCC4'\">Get started</a>"
+                            },
+                            "elements": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "80c5c57d",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "my-project-s-footer my-project-s-section",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0a0a12",
+                "border_border": "solid",
+                "border_color": "rgba(255,255,255,0.1)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "80",
+                    "right": "60",
+                    "bottom": "40",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "my-project-s-footer"
+            },
+            "elements": [
+                {
+                    "id": "a0c84a9a",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "container_type": "grid",
+                        "grid_columns_fr": "2fr 1fr 1fr 1fr",
+                        "gap": {
+                            "unit": "px",
+                            "size": 60,
+                            "column": 60,
+                            "row": 60
+                        },
+                        "_css_classes": "my-project-s-footer-top my-project-s-footer-grid",
+                        "margin": {
+                            "unit": "px",
+                            "top": "0",
+                            "right": "0",
+                            "bottom": "60",
+                            "left": "0",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "571f8fbc",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-footer-nav-col my-project-s-footer-nav-col-a",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 20,
+                                    "column": 20,
+                                    "row": 20
+                                },
+                                "_element_id": "my-project-s-footer-nav-col-a"
+                            },
+                            "elements": [
+                                {
+                                    "id": "c46d9d63",
+                                    "elType": "widget",
+                                    "widgetType": "icon-list",
+                                    "isInner": true,
+                                    "settings": {
+                                        "_css_classes": "my-project-s-footer-links-list",
+                                        "icon_list": [
+                                            {
+                                                "text": "Privacy",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "Terms",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            },
+                                            {
+                                                "text": "Contact",
+                                                "link": {
+                                                    "url": "#",
+                                                    "is_external": false,
+                                                    "nofollow": false
+                                                }
+                                            }
+                                        ],
+                                        "view": "traditional",
+                                        "icon_align": "left",
+                                        "icon_indent": {
+                                            "unit": "px",
+                                            "size": 10
+                                        },
+                                        "text_indent": {
+                                            "unit": "px",
+                                            "size": 0
+                                        },
+                                        "divider": "none",
+                                        "link_click": "none",
+                                        "icon_color": "#c8ff00",
+                                        "text_color": "#f5f3ee",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "DM Sans",
+                                        "typography_font_weight": "400",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 14
+                                        }
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "dbe85ece",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "my-project-s-footer-hybrid-fragment my-project-s-hybrid-fragment",
+                                "html": "<a href=\"#\" style=\"font-size:13px;color:#555568;text-decoration:none;transition:color 0.2s;\" onmouseover=\"this.style.color='#FFF'\" onmouseout=\"this.style.color='#555568'\">Privacy</a>"
+                            },
+                            "elements": []
+                        }
+                    ]
+                },
+                {
+                    "id": "83c0d60f",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "my-project-s-footer-bottom-widget",
+                        "html": "<div class=\"my-project-s-footer-bottom\"><span class=\"my-project-s-footer-copy\">© 2026  — ALL RIGHTS RESERVED.</span><div class=\"my-project-s-footer-status\"><div class=\"my-project-s-status-dot\"></div>ALL SYSTEMS OPERATIONAL</div></div>"
+                    },
+                    "elements": []
+                }
+            ]
+        }
+    ],
+    "page_settings": {
+        "background_background": "classic",
+        "background_color": "#0a0a12",
+        "hide_title": "yes"
+    }
+}

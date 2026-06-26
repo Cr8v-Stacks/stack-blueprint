@@ -1,0 +1,741 @@
+{
+    "source": "elementor",
+    "title": "browser-compare",
+    "counts": {
+        "total_nodes": 63,
+        "containers": 27,
+        "widgets": 36,
+        "native_widgets": 26,
+        "html_widgets": 10,
+        "heading_widgets": 18,
+        "text_widgets": 53,
+        "button_widgets": 9,
+        "list_widgets": 1,
+        "image_widgets": 0
+    },
+    "sections": [
+        {
+            "kind": "global-setup",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "browser-comp-global-setup",
+            "css_classes": [
+                "browser-comp-global-setup",
+                "browser-comp-section"
+            ],
+            "counts": {
+                "total_nodes": 2,
+                "containers": 1,
+                "widgets": 1,
+                "native_widgets": 0,
+                "html_widgets": 1,
+                "heading_widgets": 0,
+                "text_widgets": 1,
+                "button_widgets": 0,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [],
+            "action_samples": [],
+            "text_samples": [
+                "FORMA â Creative Agency"
+            ],
+            "hooks": {
+                "ids": [
+                    "browser-comp-global-setup",
+                    "cursor-dot",
+                    "cursor-ring"
+                ],
+                "classes": [
+                    "browser-comp-global-setup",
+                    "browser-comp-section",
+                    "browser-comp-global-setup-widget",
+                    "browser-comp-source-document-title",
+                    "browser-comp-cursor-dot",
+                    "cursor-dot",
+                    "src-id-cursor-dot",
+                    "browser-comp-cursor-ring",
+                    "cursor-ring",
+                    "src-id-cursor-ring"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 0,
+                "text_count": 1,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "nav",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "browser-comp-nav",
+            "css_classes": [
+                "browser-comp-nav-wrap",
+                "browser-comp-section"
+            ],
+            "counts": {
+                "total_nodes": 2,
+                "containers": 1,
+                "widgets": 1,
+                "native_widgets": 0,
+                "html_widgets": 1,
+                "heading_widgets": 0,
+                "text_widgets": 3,
+                "button_widgets": 4,
+                "list_widgets": 1,
+                "image_widgets": 0
+            },
+            "heading_samples": [],
+            "action_samples": [
+                "Work",
+                "Studio",
+                "Contact"
+            ],
+            "text_samples": [
+                "Work",
+                "Studio",
+                "Contact"
+            ],
+            "hooks": {
+                "ids": [
+                    "browser-comp-nav",
+                    "browser-comp-fixed-nav"
+                ],
+                "classes": [
+                    "browser-comp-nav-wrap",
+                    "browser-comp-section",
+                    "browser-comp-nav-widget",
+                    "browser-comp-nav",
+                    "browser-comp-nav-logo",
+                    "browser-comp-nav-links",
+                    "browser-comp-nav-link",
+                    "nav-link"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 0,
+                "text_count": 3,
+                "action_count": 4,
+                "nav_link_count": 3,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [
+                    "Work",
+                    "Studio",
+                    "Contact"
+                ],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "hero",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "browser-comp-hero",
+            "css_classes": [
+                "browser-comp-hero",
+                "browser-comp-section",
+                "browser-comp-reveal",
+                "src-id-para-bg",
+                "src-id-scroll-indicator",
+                "src-id-hero-main",
+                "src-id-cta-btn"
+            ],
+            "counts": {
+                "total_nodes": 12,
+                "containers": 7,
+                "widgets": 5,
+                "native_widgets": 3,
+                "html_widgets": 2,
+                "heading_widgets": 1,
+                "text_widgets": 4,
+                "button_widgets": 1,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [
+                "WE BUILD BRANDS THAT LAST."
+            ],
+            "action_samples": [
+                "SEE OUR WORK →"
+            ],
+            "text_samples": [
+                "Lagos Â· London Â· Lisbon",
+                "Creative agency —",
+                "Est. 2019"
+            ],
+            "hooks": {
+                "ids": [
+                    "browser-comp-hero",
+                    "para-bg",
+                    "scroll-indicator",
+                    "hero-main",
+                    "cta-btn"
+                ],
+                "classes": [
+                    "browser-comp-hero",
+                    "browser-comp-section",
+                    "browser-comp-reveal",
+                    "src-id-para-bg",
+                    "src-id-scroll-indicator",
+                    "src-id-hero-main",
+                    "src-id-cta-btn",
+                    "browser-comp-hero-layout",
+                    "browser-comp-hero-copy",
+                    "browser-comp-eyebrow-widget",
+                    "browser-comp-eyebrow",
+                    "browser-comp-hero-headline",
+                    "browser-comp-hero-bottom",
+                    "browser-comp-hero-copy-texts",
+                    "browser-comp-hero-sub",
+                    "browser-comp-hero-sub-1",
+                    "browser-comp-hero-actions",
+                    "browser-comp-btn-primary",
+                    "browser-comp-btn-hero-primary",
+                    "browser-comp-hero-visual-island",
+                    "browser-comp-hero-visual-widget"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 1,
+                "text_count": 3,
+                "action_count": 1,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [
+                    "SEE OUR WORK →"
+                ],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "marquee",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "browser-comp-marquee-section",
+            "css_classes": [
+                "browser-comp-marquee-wrap",
+                "browser-comp-section",
+                "src-id-marquee",
+                "browser-comp-marquee"
+            ],
+            "counts": {
+                "total_nodes": 2,
+                "containers": 1,
+                "widgets": 1,
+                "native_widgets": 0,
+                "html_widgets": 1,
+                "heading_widgets": 0,
+                "text_widgets": 10,
+                "button_widgets": 0,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [],
+            "action_samples": [],
+            "text_samples": [
+                "â"
+            ],
+            "hooks": {
+                "ids": [
+                    "browser-comp-marquee-section",
+                    "marquee",
+                    "browser-comp-marquee"
+                ],
+                "classes": [
+                    "browser-comp-marquee-wrap",
+                    "browser-comp-section",
+                    "src-id-marquee",
+                    "browser-comp-marquee",
+                    "browser-comp-marquee-section",
+                    "browser-comp-mq-wrap",
+                    "browser-comp-mq-track",
+                    "browser-comp-mq-item",
+                    "browser-comp-mq-dot"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 0,
+                "text_count": 1,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "gallery",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "browser-comp-features",
+            "css_classes": [
+                "browser-comp-features",
+                "browser-comp-section",
+                "browser-comp-preserved-source",
+                "src-id-work"
+            ],
+            "counts": {
+                "total_nodes": 2,
+                "containers": 1,
+                "widgets": 1,
+                "native_widgets": 0,
+                "html_widgets": 1,
+                "heading_widgets": 6,
+                "text_widgets": 21,
+                "button_widgets": 1,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [
+                "Selectedwork",
+                "Meridian Capital",
+                "Sona Health",
+                "Vox Architecture"
+            ],
+            "action_samples": [
+                "View all projects â"
+            ],
+            "text_samples": [
+                "01",
+                "Brand Identity Â· Visual System",
+                "2024",
+                "â"
+            ],
+            "hooks": {
+                "ids": [
+                    "browser-comp-features",
+                    "work",
+                    "work-grid",
+                    "project-preview",
+                    "preview-label"
+                ],
+                "classes": [
+                    "browser-comp-features",
+                    "browser-comp-section",
+                    "browser-comp-preserved-source",
+                    "src-id-work",
+                    "browser-comp-features-widget",
+                    "work-item",
+                    "work-arrow"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 6,
+                "text_count": 14,
+                "action_count": 1,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 12,
+                "stat_pair_count": 5,
+                "cta_labels": [
+                    "View all projects â"
+                ],
+                "nav_labels": [],
+                "service_labels": [
+                    "Meridian Capital",
+                    "Sona Health",
+                    "Vox Architecture",
+                    "Keller Spirits",
+                    "Dune Fintech"
+                ],
+                "stat_labels": [
+                    "Meridian Capital Brand Identity Â· Visual System",
+                    "Sona Health Web Experience Â· Motion",
+                    "Vox Architecture Brand Identity Â· Print Â· Digital",
+                    "Keller Spirits Packaging Â· Campaign Â· Social",
+                    "Dune Fintech Full Brand Â· Product Design"
+                ]
+            }
+        },
+        {
+            "kind": "studio",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "studio",
+            "css_classes": [
+                "browser-comp-features",
+                "browser-comp-section",
+                "src-id-studio"
+            ],
+            "counts": {
+                "total_nodes": 32,
+                "containers": 13,
+                "widgets": 19,
+                "native_widgets": 18,
+                "html_widgets": 1,
+                "heading_widgets": 9,
+                "text_widgets": 10,
+                "button_widgets": 0,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [
+                "The studio",
+                "140+",
+                "6",
+                "23"
+            ],
+            "action_samples": [],
+            "text_samples": [
+                "clients served",
+                "FORMA is a 12-person creative studio working at the intersection of strategy and craft. We partner with ambitious companies to define and...",
+                "years running"
+            ],
+            "hooks": {
+                "ids": [
+                    "studio",
+                    "browser-comp-bento-card-a",
+                    "browser-comp-bento-card-b",
+                    "browser-comp-bento-card-c",
+                    "browser-comp-bento-card-d"
+                ],
+                "classes": [
+                    "browser-comp-features",
+                    "browser-comp-section",
+                    "src-id-studio",
+                    "browser-comp-section-header",
+                    "browser-comp-reveal",
+                    "browser-comp-section-header-left",
+                    "browser-comp-section-tag-widget",
+                    "browser-comp-section-tag",
+                    "browser-comp-section-title",
+                    "browser-comp-section-desc",
+                    "browser-comp-features-stats-grid",
+                    "browser-comp-feature-stat",
+                    "browser-comp-feature-stat-a",
+                    "browser-comp-stat-num",
+                    "stat-num",
+                    "browser-comp-features-stat-num",
+                    "browser-comp-stat-label",
+                    "stat-label",
+                    "browser-comp-features-stat-label",
+                    "browser-comp-feature-stat-b",
+                    "browser-comp-feature-stat-c",
+                    "browser-comp-feature-stat-d",
+                    "browser-comp-bento-grid",
+                    "browser-comp-bento-card",
+                    "browser-comp-bc-a",
+                    "browser-comp-bento-card-a",
+                    "browser-comp-card-title",
+                    "browser-comp-bento-title",
+                    "browser-comp-card-body",
+                    "browser-comp-card-body-1",
+                    "browser-comp-bc-b",
+                    "browser-comp-bento-card-b",
+                    "browser-comp-bc-c",
+                    "browser-comp-bento-card-c",
+                    "browser-comp-bc-d",
+                    "browser-comp-bento-card-d"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 9,
+                "text_count": 9,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 3,
+                "stat_pair_count": 1,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [
+                    "The studio",
+                    "140+",
+                    "Brand Strategy"
+                ],
+                "stat_labels": [
+                    "clients served"
+                ]
+            }
+        },
+        {
+            "kind": "contact",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "contact",
+            "css_classes": [
+                "browser-comp-contact",
+                "browser-comp-section",
+                "browser-comp-reveal",
+                "src-id-contact"
+            ],
+            "counts": {
+                "total_nodes": 9,
+                "containers": 2,
+                "widgets": 7,
+                "native_widgets": 5,
+                "html_widgets": 2,
+                "heading_widgets": 2,
+                "text_widgets": 2,
+                "button_widgets": 3,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [
+                "Let's buildsomething."
+            ],
+            "action_samples": [
+                "HELLO@FORMA.STUDIO"
+            ],
+            "text_samples": [
+                "Ready to start?"
+            ],
+            "hooks": {
+                "ids": [
+                    "contact",
+                    "email-link"
+                ],
+                "classes": [
+                    "browser-comp-contact",
+                    "browser-comp-section",
+                    "browser-comp-reveal",
+                    "src-id-contact",
+                    "browser-comp-section-tag-widget",
+                    "browser-comp-section-tag",
+                    "browser-comp-section-title",
+                    "browser-comp-contact-flow",
+                    "browser-comp-card-title",
+                    "browser-comp-d1",
+                    "browser-comp-card-body",
+                    "browser-comp-contact-body",
+                    "browser-comp-contact-body-1",
+                    "browser-comp-card-visual-widget",
+                    "browser-comp-card-visual",
+                    "browser-comp-contact-action",
+                    "browser-comp-contact-action-1",
+                    "browser-comp-btn-primary"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 1,
+                "text_count": 1,
+                "action_count": 3,
+                "nav_link_count": 0,
+                "email_link_count": 3,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [
+                    "HELLO@FORMA.STUDIO"
+                ],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "footer",
+            "elType": "container",
+            "widgetType": "",
+            "element_id": "browser-comp-footer",
+            "css_classes": [
+                "browser-comp-footer",
+                "browser-comp-section"
+            ],
+            "counts": {
+                "total_nodes": 2,
+                "containers": 1,
+                "widgets": 1,
+                "native_widgets": 0,
+                "html_widgets": 1,
+                "heading_widgets": 0,
+                "text_widgets": 2,
+                "button_widgets": 0,
+                "list_widgets": 0,
+                "image_widgets": 0
+            },
+            "heading_samples": [],
+            "action_samples": [],
+            "text_samples": [
+                "Â© 2025 FORMA Studio",
+                "All rights reserved"
+            ],
+            "hooks": {
+                "ids": [
+                    "browser-comp-footer"
+                ],
+                "classes": [
+                    "browser-comp-footer",
+                    "browser-comp-section",
+                    "browser-comp-footer-bottom-widget",
+                    "browser-comp-footer-bottom",
+                    "browser-comp-footer-copy"
+                ]
+            },
+            "role_profile": {
+                "heading_count": 0,
+                "text_count": 2,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        }
+    ],
+    "section_kinds": [
+        "global-setup",
+        "nav",
+        "hero",
+        "marquee",
+        "gallery",
+        "studio",
+        "contact",
+        "footer"
+    ],
+    "hooks": {
+        "ids": [
+            "browser-comp-global-setup",
+            "cursor-dot",
+            "cursor-ring",
+            "browser-comp-nav",
+            "browser-comp-fixed-nav",
+            "browser-comp-hero",
+            "para-bg",
+            "scroll-indicator",
+            "hero-main",
+            "cta-btn",
+            "browser-comp-marquee-section",
+            "marquee",
+            "browser-comp-marquee",
+            "browser-comp-features",
+            "work",
+            "work-grid",
+            "project-preview",
+            "preview-label",
+            "studio",
+            "browser-comp-bento-card-a",
+            "browser-comp-bento-card-b",
+            "browser-comp-bento-card-c",
+            "browser-comp-bento-card-d",
+            "contact",
+            "email-link",
+            "browser-comp-footer"
+        ],
+        "classes": [
+            "browser-comp-global-setup",
+            "browser-comp-section",
+            "browser-comp-global-setup-widget",
+            "browser-comp-source-document-title",
+            "browser-comp-cursor-dot",
+            "cursor-dot",
+            "src-id-cursor-dot",
+            "browser-comp-cursor-ring",
+            "cursor-ring",
+            "src-id-cursor-ring",
+            "browser-comp-nav-wrap",
+            "browser-comp-nav-widget",
+            "browser-comp-nav",
+            "browser-comp-nav-logo",
+            "browser-comp-nav-links",
+            "browser-comp-nav-link",
+            "nav-link",
+            "browser-comp-hero",
+            "browser-comp-reveal",
+            "src-id-para-bg",
+            "src-id-scroll-indicator",
+            "src-id-hero-main",
+            "src-id-cta-btn",
+            "browser-comp-hero-layout",
+            "browser-comp-hero-copy",
+            "browser-comp-eyebrow-widget",
+            "browser-comp-eyebrow",
+            "browser-comp-hero-headline",
+            "browser-comp-hero-bottom",
+            "browser-comp-hero-copy-texts",
+            "browser-comp-hero-sub",
+            "browser-comp-hero-sub-1",
+            "browser-comp-hero-actions",
+            "browser-comp-btn-primary",
+            "browser-comp-btn-hero-primary",
+            "browser-comp-hero-visual-island",
+            "browser-comp-hero-visual-widget",
+            "browser-comp-marquee-wrap",
+            "src-id-marquee",
+            "browser-comp-marquee",
+            "browser-comp-marquee-section",
+            "browser-comp-mq-wrap",
+            "browser-comp-mq-track",
+            "browser-comp-mq-item",
+            "browser-comp-mq-dot",
+            "browser-comp-features",
+            "browser-comp-preserved-source",
+            "src-id-work",
+            "browser-comp-features-widget",
+            "work-item",
+            "work-arrow",
+            "src-id-studio",
+            "browser-comp-section-header",
+            "browser-comp-section-header-left",
+            "browser-comp-section-tag-widget",
+            "browser-comp-section-tag",
+            "browser-comp-section-title",
+            "browser-comp-section-desc",
+            "browser-comp-features-stats-grid",
+            "browser-comp-feature-stat",
+            "browser-comp-feature-stat-a",
+            "browser-comp-stat-num",
+            "stat-num",
+            "browser-comp-features-stat-num",
+            "browser-comp-stat-label",
+            "stat-label",
+            "browser-comp-features-stat-label",
+            "browser-comp-feature-stat-b",
+            "browser-comp-feature-stat-c",
+            "browser-comp-feature-stat-d",
+            "browser-comp-bento-grid",
+            "browser-comp-bento-card",
+            "browser-comp-bc-a",
+            "browser-comp-bento-card-a",
+            "browser-comp-card-title",
+            "browser-comp-bento-title",
+            "browser-comp-card-body",
+            "browser-comp-card-body-1",
+            "browser-comp-bc-b",
+            "browser-comp-bento-card-b",
+            "browser-comp-bc-c",
+            "browser-comp-bento-card-c",
+            "browser-comp-bc-d",
+            "browser-comp-bento-card-d",
+            "browser-comp-contact",
+            "src-id-contact",
+            "browser-comp-contact-flow",
+            "browser-comp-d1",
+            "browser-comp-contact-body",
+            "browser-comp-contact-body-1",
+            "browser-comp-card-visual-widget",
+            "browser-comp-card-visual",
+            "browser-comp-contact-action",
+            "browser-comp-contact-action-1",
+            "browser-comp-footer",
+            "browser-comp-footer-bottom-widget",
+            "browser-comp-footer-bottom",
+            "browser-comp-footer-copy"
+        ]
+    },
+    "native_widget_ratio": 0.7222
+}

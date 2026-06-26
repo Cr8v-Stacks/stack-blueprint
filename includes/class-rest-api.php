@@ -223,8 +223,12 @@ class RestApi extends WP_REST_Controller {
 	public function get_settings( WP_REST_Request $request ): WP_REST_Response {
 		$settings = [
 			'api_key'          => ! empty( get_option( 'sb_api_key' ) ) ? str_repeat( '•', 32 ) : '',
-			'api_key_set'      => ! empty( get_option( 'sb_api_key' ) ),
-			'api_model'        => get_option( 'sb_api_model', 'claude-sonnet-4-20250514' ),
+			'openai_key'       => ! empty( get_option( 'sb_openai_key' ) ) ? str_repeat( '•', 32 ) : '',
+			'gemini_key'       => ! empty( get_option( 'sb_gemini_key' ) ) ? str_repeat( '•', 32 ) : '',
+			'api_key_set'      => ! empty( get_option( 'sb_api_key' ) ) || ! empty( get_option( 'sb_openai_key' ) ) || ! empty( get_option( 'sb_gemini_key' ) ),
+			'api_model'        => get_option( 'sb_api_model', 'claude-sonnet-4.6' ),
+			'openai_model'     => get_option( 'sb_openai_model', 'gpt-5.5' ),
+			'gemini_model'     => get_option( 'sb_gemini_model', 'gemini-3.5-flash' ),
 			'api_mode'         => get_option( 'sb_api_mode', 'own' ),
 			'default_strategy' => get_option( 'sb_default_strategy', 'v2' ),
 			'max_file_size'    => (int) get_option( 'sb_max_file_size', 5 ),
@@ -238,12 +242,26 @@ class RestApi extends WP_REST_Controller {
 	public function save_settings( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$body = $request->get_json_params();
 
-		if ( isset( $body['api_key'] ) && ! str_contains( (string) $body['api_key'], '•' ) ) {
+		if ( array_key_exists( 'api_key', $body ) && ! str_contains( (string) $body['api_key'], '•' ) ) {
 			update_option( 'sb_api_key', sanitize_text_field( $body['api_key'] ) );
 		}
+		if ( array_key_exists( 'openai_key', $body ) && ! str_contains( (string) $body['openai_key'], '•' ) ) {
+			update_option( 'sb_openai_key', sanitize_text_field( $body['openai_key'] ) );
+		}
+		if ( array_key_exists( 'gemini_key', $body ) && ! str_contains( (string) $body['gemini_key'], '•' ) ) {
+			update_option( 'sb_gemini_key', sanitize_text_field( $body['gemini_key'] ) );
+		}
+
 		if ( isset( $body['api_model'] ) ) {
 			update_option( 'sb_api_model', sanitize_text_field( $body['api_model'] ) );
 		}
+		if ( isset( $body['openai_model'] ) ) {
+			update_option( 'sb_openai_model', sanitize_text_field( $body['openai_model'] ) );
+		}
+		if ( isset( $body['gemini_model'] ) ) {
+			update_option( 'sb_gemini_model', sanitize_text_field( $body['gemini_model'] ) );
+		}
+
 		if ( isset( $body['api_mode'] ) ) {
 			update_option( 'sb_api_mode', in_array( $body['api_mode'], [ 'own', 'builtin' ], true ) ? $body['api_mode'] : 'own' );
 		}

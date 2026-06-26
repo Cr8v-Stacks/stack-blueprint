@@ -10,8 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $sb_page = 'settings';
 require_once SB_ADMIN_PATH . 'partials/layout-open.php';
 
-$api_key_set = ! empty( get_option( 'sb_api_key' ) );
-$api_mode    = get_option( 'sb_api_mode', 'own' );
+$ant_key = get_option( 'sb_api_key', '' );
+$oai_key = get_option( 'sb_openai_key', '' );
+$gem_key = get_option( 'sb_gemini_key', '' );
+
+$has_any_key = ! empty($ant_key) || ! empty($oai_key) || ! empty($gem_key);
 ?>
 
 <div id="sb-settings-page">
@@ -19,7 +22,7 @@ $api_mode    = get_option( 'sb_api_mode', 'own' );
 	<div class="sb-page-header">
 		<p class="sb-eyebrow"><?php esc_html_e( 'Stack Blueprint', 'stack-blueprint' ); ?></p>
 		<h1 class="sb-page-title"><?php esc_html_e( 'Settings', 'stack-blueprint' ); ?></h1>
-		<p class="sb-page-desc"><?php esc_html_e( 'Configure how Stack Blueprint connects to Claude AI and handles conversions.', 'stack-blueprint' ); ?></p>
+		<p class="sb-page-desc"><?php esc_html_e( 'Configure how Stack Blueprint connects to your preferred AI models.', 'stack-blueprint' ); ?></p>
 	</div>
 
 	<div class="sb-settings-layout">
@@ -31,72 +34,127 @@ $api_mode    = get_option( 'sb_api_mode', 'own' );
 			<div class="sb-panel" style="margin-bottom:14px">
 				<div class="sb-panel__head">
 					<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5.2"/><path d="M4 6.5a2.5 2.5 0 015 0"/><circle cx="6.5" cy="6.5" r="1"/></svg>
-					<p class="sb-panel__title"><?php esc_html_e( 'API Connection', 'stack-blueprint' ); ?></p>
+					<p class="sb-panel__title"><?php esc_html_e( 'API Keys', 'stack-blueprint' ); ?></p>
 					<div class="sb-topbar__conn" id="sb-api-conn-status">
-						<span class="sb-conn-dot <?php echo $api_key_set || 'builtin' === $api_mode ? 'live' : ''; ?>" id="sb-api-dot"></span>
+						<span class="sb-conn-dot <?php echo $has_any_key ? 'live' : ''; ?>" id="sb-api-dot"></span>
 						<span id="sb-api-status-txt" style="font-family:var(--sb-font-mono);font-size:9px;color:var(--sb-text-3)">
-							<?php echo $api_key_set || 'builtin' === $api_mode ? esc_html__( 'Connected', 'stack-blueprint' ) : esc_html__( 'Not connected', 'stack-blueprint' ); ?>
+							<?php echo $has_any_key ? esc_html__( 'Keys Configured', 'stack-blueprint' ) : esc_html__( 'No Keys Configured', 'stack-blueprint' ); ?>
 						</span>
 					</div>
 				</div>
 				<div class="sb-panel__body">
-
-					<!-- Mode tabs -->
-					<div class="sb-mode-tabs" id="sb-api-mode-tabs">
-						<button class="sb-mode-tab<?php echo 'own' === $api_mode ? ' is-active' : ''; ?>" data-mode="own"><?php esc_html_e( 'My Own API Key', 'stack-blueprint' ); ?></button>
-						<button class="sb-mode-tab<?php echo 'builtin' === $api_mode ? ' is-active' : ''; ?>" data-mode="builtin"><?php esc_html_e( 'Built-in (Cr8v Stacks)', 'stack-blueprint' ); ?></button>
+					<div class="sb-tab-nav" id="sb-api-tabs">
+						<button type="button" class="sb-tab-btn active" data-target="tab-anthropic"><?php esc_html_e( 'Anthropic (Claude)', 'stack-blueprint' ); ?></button>
+						<button type="button" class="sb-tab-btn" data-target="tab-openai"><?php esc_html_e( 'OpenAI (ChatGPT)', 'stack-blueprint' ); ?></button>
+						<button type="button" class="sb-tab-btn" data-target="tab-gemini"><?php esc_html_e( 'Google Gemini', 'stack-blueprint' ); ?></button>
 					</div>
-					<input type="hidden" id="sb-api-mode-val" value="<?php echo esc_attr( $api_mode ); ?>">
 
-					<!-- Own key panel -->
-					<div class="sb-mode-panel<?php echo 'own' === $api_mode ? ' is-active' : ''; ?>" id="sb-mode-own">
-						<div class="sb-field" style="margin-bottom:14px">
-							<label class="sb-label" for="sb-api-key"><?php esc_html_e( 'Anthropic API Key', 'stack-blueprint' ); ?></label>
-							<div class="sb-key-wrap">
-								<input type="password" id="sb-api-key" class="sb-input"
-									   placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-								<button type="button" class="sb-key-toggle" aria-label="<?php esc_attr_e( 'Toggle visibility', 'stack-blueprint' ); ?>">
-									<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 7.5s2.5-4.5 6.5-4.5 6.5 4.5 6.5 4.5-2.5 4.5-6.5 4.5-6.5-4.5-6.5-4.5z"/><circle cx="7.5" cy="7.5" r="1.8"/></svg>
-								</button>
+					<!-- Anthropic Key -->
+					<div class="sb-tab-content active" id="tab-anthropic">
+						<div class="sb-field" style="margin-bottom:24px">
+							<label class="sb-label"><?php esc_html_e( 'Anthropic API Key', 'stack-blueprint' ); ?></label>
+							
+							<?php if ( ! empty( $ant_key ) ) : ?>
+								<div class="sb-key-configured" id="sb-ant-configured">
+									<span class="sb-key-dot"></span>
+									<span><?php printf( esc_html__( 'Key configured ending in ••••%s', 'stack-blueprint' ), esc_html( substr( $ant_key, -4 ) ) ); ?></span>
+									<button type="button" class="sb-change-key-btn" data-provider="anthropic"><?php esc_html_e( 'Change Key', 'stack-blueprint' ); ?></button>
+									<button type="button" class="sb-remove-key-btn" data-provider="anthropic"><?php esc_html_e( 'Remove', 'stack-blueprint' ); ?></button>
+								</div>
+							<?php endif; ?>
+
+							<div class="sb-key-edit" id="sb-ant-edit" style="<?php echo ! empty( $ant_key ) ? 'display:none;' : ''; ?>">
+								<div class="sb-key-wrap">
+									<input type="password" id="sb-api-key" name="sb_api_key" class="sb-input"
+										   placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false" value="<?php echo esc_attr($ant_key); ?>">
+									<button type="button" class="sb-toggle-password" title="Show/Hide Password">
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+									</button>
+								</div>
+								<a href="https://console.anthropic.com/settings/keys" target="_blank" class="sb-get-key-link"><?php esc_html_e( 'Get an Anthropic API Key →', 'stack-blueprint' ); ?></a>
 							</div>
-							<p class="sb-hint">
-								<?php printf(
-									/* translators: %s: Anthropic console URL */
-									esc_html__( 'Get your key at %s. Stored securely in WordPress options.', 'stack-blueprint' ),
-									'<a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:var(--sb-accent)">console.anthropic.com</a>'
-								); ?>
-							</p>
+
+							<div class="sb-field" style="margin-top:12px">
+								<label class="sb-label" for="sb-api-model"><?php esc_html_e( 'Claude Model', 'stack-blueprint' ); ?></label>
+								<select id="sb-api-model" name="sb_api_model" class="sb-select">
+									<option value="claude-sonnet-4.6" <?php selected( get_option('sb_api_model'), 'claude-sonnet-4.6' ); ?>>Claude 4.6 Sonnet &mdash; <?php esc_html_e( 'Recommended', 'stack-blueprint' ); ?></option>
+									<option value="claude-fable-5" <?php selected( get_option('sb_api_model'), 'claude-fable-5' ); ?>>Claude Fable 5</option>
+									<option value="claude-opus-4.8" <?php selected( get_option('sb_api_model'), 'claude-opus-4.8' ); ?>>Claude 4.8 Opus</option>
+								</select>
+							</div>
 						</div>
+					</div>
+
+					<!-- OpenAI Key -->
+					<div class="sb-tab-content" id="tab-openai">
+						<div class="sb-field" style="margin-bottom:24px">
+							<label class="sb-label"><?php esc_html_e( 'OpenAI API Key', 'stack-blueprint' ); ?></label>
+							
+							<?php if ( ! empty( $oai_key ) ) : ?>
+								<div class="sb-key-configured" id="sb-oai-configured">
+									<span class="sb-key-dot"></span>
+									<span><?php printf( esc_html__( 'Key configured ending in ••••%s', 'stack-blueprint' ), esc_html( substr( $oai_key, -4 ) ) ); ?></span>
+									<button type="button" class="sb-change-key-btn" data-provider="openai"><?php esc_html_e( 'Change Key', 'stack-blueprint' ); ?></button>
+									<button type="button" class="sb-remove-key-btn" data-provider="openai"><?php esc_html_e( 'Remove', 'stack-blueprint' ); ?></button>
+								</div>
+							<?php endif; ?>
+
+							<div class="sb-key-edit" id="sb-oai-edit" style="<?php echo ! empty( $oai_key ) ? 'display:none;' : ''; ?>">
+								<div class="sb-key-wrap">
+									<input type="password" id="sb-openai-key" name="sb_openai_key" class="sb-input"
+										   placeholder="sk-proj-…" autocomplete="off" spellcheck="false" value="<?php echo esc_attr($oai_key); ?>">
+									<button type="button" class="sb-toggle-password" title="Show/Hide Password">
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+									</button>
+								</div>
+								<a href="https://platform.openai.com/api-keys" target="_blank" class="sb-get-key-link"><?php esc_html_e( 'Get an OpenAI API Key →', 'stack-blueprint' ); ?></a>
+							</div>
+
+							<div class="sb-field" style="margin-top:12px">
+								<label class="sb-label" for="sb-openai-model"><?php esc_html_e( 'OpenAI Model', 'stack-blueprint' ); ?></label>
+								<select id="sb-openai-model" name="sb_openai_model" class="sb-select">
+									<option value="gpt-5.5" <?php selected( get_option('sb_openai_model'), 'gpt-5.5' ); ?>>GPT-5.5 &mdash; <?php esc_html_e( 'Recommended', 'stack-blueprint' ); ?></option>
+									<option value="gpt-5.5-pro" <?php selected( get_option('sb_openai_model'), 'gpt-5.5-pro' ); ?>>GPT-5.5 Pro</option>
+									<option value="gpt-5.4-mini" <?php selected( get_option('sb_openai_model'), 'gpt-5.4-mini' ); ?>>GPT-5.4 Mini</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Gemini Key -->
+					<div class="sb-tab-content" id="tab-gemini">
 						<div class="sb-field" style="margin-bottom:16px">
-							<label class="sb-label" for="sb-api-model"><?php esc_html_e( 'Model', 'stack-blueprint' ); ?></label>
-							<select id="sb-api-model" class="sb-select">
-								<option value="claude-sonnet-4-20250514">claude-sonnet-4 &mdash; <?php esc_html_e( 'Recommended', 'stack-blueprint' ); ?></option>
-								<option value="claude-opus-4-5">claude-opus-4 &mdash; <?php esc_html_e( 'Most capable, slower', 'stack-blueprint' ); ?></option>
-								<option value="claude-haiku-4-5-20251001">claude-haiku-4 &mdash; <?php esc_html_e( 'Fast, lower cost', 'stack-blueprint' ); ?></option>
-							</select>
-						</div>
-						<button id="sb-test-key" class="sb-btn sb-btn--ghost">
-							<span class="sb-btn__spin"></span>
-							<span class="sb-btn__lbl"><?php esc_html_e( 'Test Connection', 'stack-blueprint' ); ?></span>
-						</button>
-					</div>
+							<label class="sb-label"><?php esc_html_e( 'Google Gemini API Key', 'stack-blueprint' ); ?></label>
+							
+							<?php if ( ! empty( $gem_key ) ) : ?>
+								<div class="sb-key-configured" id="sb-gem-configured">
+									<span class="sb-key-dot"></span>
+									<span><?php printf( esc_html__( 'Key configured ending in ••••%s', 'stack-blueprint' ), esc_html( substr( $gem_key, -4 ) ) ); ?></span>
+									<button type="button" class="sb-change-key-btn" data-provider="gemini"><?php esc_html_e( 'Change Key', 'stack-blueprint' ); ?></button>
+									<button type="button" class="sb-remove-key-btn" data-provider="gemini"><?php esc_html_e( 'Remove', 'stack-blueprint' ); ?></button>
+								</div>
+							<?php endif; ?>
 
-					<!-- Built-in panel -->
-					<div class="sb-mode-panel<?php echo 'builtin' === $api_mode ? ' is-active' : ''; ?>" id="sb-mode-builtin">
-						<div class="sb-notice sb-notice--info" style="margin-bottom:0">
-							<svg class="sb-notice__icon" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5.2"/><line x1="6.5" y1="5" x2="6.5" y2="9"/><circle cx="6.5" cy="3.5" r="0.5" fill="currentColor"/></svg>
-							<div class="sb-notice__body">
-								<strong><?php esc_html_e( 'Cr8v Stacks Managed API', 'stack-blueprint' ); ?></strong>
-								<?php esc_html_e( 'Use our API pool — no Anthropic account needed. A small per-conversion fee applies. Conversions are processed via cr8vstacks.com. No prototype content is stored.', 'stack-blueprint' ); ?>
+							<div class="sb-key-edit" id="sb-gem-edit" style="<?php echo ! empty( $gem_key ) ? 'display:none;' : ''; ?>">
+								<div class="sb-key-wrap">
+									<input type="password" id="sb-gemini-key" name="sb_gemini_key" class="sb-input"
+										   placeholder="AIzaSy…" autocomplete="off" spellcheck="false" value="<?php echo esc_attr($gem_key); ?>">
+									<button type="button" class="sb-toggle-password" title="Show/Hide Password">
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+									</button>
+								</div>
+								<a href="https://aistudio.google.com/app/apikey" target="_blank" class="sb-get-key-link"><?php esc_html_e( 'Get a Gemini API Key →', 'stack-blueprint' ); ?></a>
+							</div>
+
+							<div class="sb-field" style="margin-top:12px">
+								<label class="sb-label" for="sb-gemini-model"><?php esc_html_e( 'Gemini Model', 'stack-blueprint' ); ?></label>
+								<select id="sb-gemini-model" name="sb_gemini_model" class="sb-select">
+									<option value="gemini-3.5-flash" <?php selected( get_option('sb_gemini_model'), 'gemini-3.5-flash' ); ?>>Gemini 3.5 Flash &mdash; <?php esc_html_e( 'Recommended', 'stack-blueprint' ); ?></option>
+									<option value="gemini-3.5-pro" <?php selected( get_option('sb_gemini_model'), 'gemini-3.5-pro' ); ?>>Gemini 3.5 Pro</option>
+									<option value="gemini-3.1-flash-lite" <?php selected( get_option('sb_gemini_model'), 'gemini-3.1-flash-lite' ); ?>>Gemini 3.1 Flash Lite</option>
+								</select>
 							</div>
 						</div>
-						<p style="margin-top:12px;font-size:12px;color:var(--sb-text-2)">
-							<?php printf(
-								/* translators: %s: cr8vstacks.com pricing URL */
-								esc_html__( 'See %s for pricing and fair-use details.', 'stack-blueprint' ),
-								'<a href="https://cr8vstacks.com/stack-blueprint/pricing" target="_blank" rel="noopener" style="color:var(--sb-accent)">cr8vstacks.com/stack-blueprint/pricing</a>'
-							); ?>
-						</p>
 					</div>
 
 				</div>
@@ -119,7 +177,7 @@ $api_mode    = get_option( 'sb_api_mode', 'own' );
 						</div>
 						<div class="sb-field">
 							<label class="sb-label" for="sb-max-size"><?php esc_html_e( 'Max Upload Size (MB)', 'stack-blueprint' ); ?></label>
-							<input type="number" id="sb-max-size" class="sb-input" min="1" max="20" step="1" style="max-width:100px">
+							<input type="number" id="sb-max-size" class="sb-input" min="1" max="20" step="1" style="max-width:100px" value="<?php echo esc_attr( get_option('sb_max_upload_size', 5) ); ?>">
 						</div>
 					</div>
 					<p class="sb-hint" style="margin-top:0"><?php esc_html_e( 'The CSS prefix is auto-detected per-conversion from the uploaded file. No need to set a global default.', 'stack-blueprint' ); ?></p>
@@ -137,28 +195,11 @@ $api_mode    = get_option( 'sb_api_mode', 'own' );
 		<div>
 
 			<div class="sb-info">
-				<p class="sb-info__title"><?php esc_html_e( 'Which API mode?', 'stack-blueprint' ); ?></p>
+				<p class="sb-info__title"><?php esc_html_e( 'Which API to choose?', 'stack-blueprint' ); ?></p>
 				<ul class="sb-info__list">
-					<li><strong style="color:var(--sb-accent)"><?php esc_html_e( 'Own Key:', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'Full control, pay Anthropic directly. Best for agencies running many conversions.', 'stack-blueprint' ); ?></li>
-					<li><strong style="color:var(--sb-accent-2)"><?php esc_html_e( 'Built-in:', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'Zero setup — no Anthropic account needed. Per-conversion fee billed through Cr8v Stacks.', 'stack-blueprint' ); ?></li>
-				</ul>
-			</div>
-
-			<div class="sb-info">
-				<p class="sb-info__title"><?php esc_html_e( 'Getting an Anthropic key', 'stack-blueprint' ); ?></p>
-				<ul class="sb-info__list">
-					<li><?php esc_html_e( 'Go to console.anthropic.com and sign in or create an account.', 'stack-blueprint' ); ?></li>
-					<li><?php esc_html_e( 'Navigate to API Keys → Create Key.', 'stack-blueprint' ); ?></li>
-					<li><?php esc_html_e( 'Copy the key and paste it in the field on the left.', 'stack-blueprint' ); ?></li>
-				</ul>
-			</div>
-
-			<div class="sb-info">
-				<p class="sb-info__title"><?php esc_html_e( 'Model guidance', 'stack-blueprint' ); ?></p>
-				<ul class="sb-info__list">
-					<li><strong style="color:var(--sb-accent)">Sonnet 4:</strong> <?php esc_html_e( 'Best balance of quality, speed, and cost for most conversions.', 'stack-blueprint' ); ?></li>
-					<li><strong style="color:var(--sb-accent)">Opus 4:</strong> <?php esc_html_e( 'Use for very complex multi-section prototypes. Slower.', 'stack-blueprint' ); ?></li>
-					<li><strong style="color:var(--sb-accent)">Haiku 4:</strong> <?php esc_html_e( 'Fast and cheap. Good for simple single-section conversions.', 'stack-blueprint' ); ?></li>
+					<li><strong style="color:var(--sb-accent)"><?php esc_html_e( 'Claude 3.5 Sonnet:', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'The absolute best model for frontend code interpretation and JSON generation.', 'stack-blueprint' ); ?></li>
+					<li><strong style="color:var(--sb-accent-2)"><?php esc_html_e( 'GPT-4o:', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'Highly capable and fast, great for standard conversions.', 'stack-blueprint' ); ?></li>
+					<li><strong style="color:#4285F4"><?php esc_html_e( 'Gemini 1.5 Pro:', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'Huge context window (up to 2M tokens), perfect for massive HTML pages that would otherwise require chunking.', 'stack-blueprint' ); ?></li>
 				</ul>
 			</div>
 

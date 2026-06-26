@@ -1,0 +1,340 @@
+{
+    "ok": true,
+    "source": "training-files\/inline css\/03-agency-portfolio-brutalist.html",
+    "strategy": "v2",
+    "outputs": {
+        "json": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint\/audit-output\/random-v2-audit-03-agency-portfolio-brutalist.json",
+        "css": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint\/audit-output\/random-v2-audit-03-agency-portfolio-brutalist.css",
+        "diagnostics": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint\/audit-output\/random-v2-audit-03-agency-portfolio-brutalist-diagnostics.json",
+        "report": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint\/audit-output\/random-v2-audit-03-agency-portfolio-brutalist-report.json"
+    },
+    "preview_like": {
+        "top_level_elements": 8,
+        "total_nodes": 46,
+        "containers": 19,
+        "widgets": 27,
+        "html_widgets": 10,
+        "widget_counts": {
+            "button": 3,
+            "heading": 8,
+            "html": 10,
+            "text-editor": 6
+        }
+    },
+    "coverage": {
+        "text": {
+            "source_phrase_count": 52,
+            "missing_count": 6,
+            "coverage_ratio": 0.8846,
+            "missing_samples": [
+                "Creative agency —",
+                "Our process is collaborative, fast, and built around results that outlast the trend cycle.",
+                "140+",
+                "years running",
+                "awards won",
+                "studio locations"
+            ]
+        },
+        "selectors": {
+            "source_contract_count": 12,
+            "missing_count": 6,
+            "coverage_ratio": 0.5,
+            "missing_ids": [
+                {
+                    "id": "cursor-dot",
+                    "reason": "source_js"
+                },
+                {
+                    "id": "cursor-ring",
+                    "reason": "source_js"
+                },
+                {
+                    "id": "para-bg",
+                    "reason": "source_js"
+                },
+                {
+                    "id": "cta-btn",
+                    "reason": "semantic_hook"
+                }
+            ],
+            "missing_classes": [
+                {
+                    "class": "nav-link",
+                    "reason": "semantic_hook"
+                },
+                {
+                    "class": "stat-num",
+                    "reason": "source_js"
+                }
+            ]
+        }
+    },
+    "bridges": {
+        "selector": {
+            "has_source_css": true,
+            "has_source_hook_candidates": true,
+            "has_bridge_targets": true,
+            "has_source_selector_hits": false,
+            "matched_rule_count": 0,
+            "has_output_css": false,
+            "source_has_pseudo": false,
+            "source_has_media": false,
+            "source_has_supports": false,
+            "source_has_hover": false,
+            "output_has_pseudo": false,
+            "output_has_media": false,
+            "output_has_supports": false,
+            "output_has_hover": false,
+            "candidate_classes": [],
+            "candidate_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "bridged_classes": [],
+            "bridged_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "widget_semantics": {
+                "icon-list": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "text": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "heading": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "button": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "image": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "media": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                }
+            }
+        },
+        "script": {
+            "has_source_js": true,
+            "has_source_hook_candidates": true,
+            "has_bridge_targets": true,
+            "has_source_selector_hits": true,
+            "has_rewrite": true,
+            "rewrite_count": 3,
+            "source_has_animation_api": true,
+            "source_has_selector_api": true,
+            "candidate_classes": [],
+            "candidate_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "bridged_classes": [],
+            "bridged_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "widget_semantics": {
+                "icon-list": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "text": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "heading": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "button": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "image": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "media": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                }
+            }
+        }
+    },
+    "assets": {
+        "global_setup": {
+            "has_canvas_source": false,
+            "has_cursor_source": true,
+            "has_canvas_output": false,
+            "has_cursor_output": true,
+            "has_source_js": true,
+            "has_script_bridge": true
+        },
+        "companion_css": {
+            "bytes": 17537,
+            "has_pseudo": true,
+            "has_hover": true
+        }
+    },
+    "sections": {
+        "summary": {
+            "detected_types": [
+                "hero",
+                "generic",
+                "gallery",
+                "contact",
+                "footer"
+            ],
+            "built_types": [
+                "hero",
+                "generic",
+                "gallery",
+                "contact",
+                "footer"
+            ],
+            "render_modes": {
+                "native_rebuilt": 3,
+                "fully_preserved_source": 1,
+                "native_hybrid_fragment": 1
+            }
+        },
+        "render_modes": [
+            {
+                "type": "hero",
+                "render_mode": "native_rebuilt",
+                "decision": "native",
+                "widget_counts": {
+                    "heading": 1,
+                    "text-editor": 1,
+                    "button": 1,
+                    "icon-list": 0,
+                    "image": 0,
+                    "video": 0,
+                    "html": 2,
+                    "container": 6
+                }
+            },
+            {
+                "type": "generic",
+                "render_mode": "native_rebuilt",
+                "decision": "native",
+                "widget_counts": {
+                    "heading": 0,
+                    "text-editor": 0,
+                    "button": 0,
+                    "icon-list": 0,
+                    "image": 0,
+                    "video": 0,
+                    "html": 1,
+                    "container": 1
+                }
+            },
+            {
+                "type": "generic",
+                "render_mode": "native_rebuilt",
+                "decision": "native",
+                "widget_counts": {
+                    "heading": 5,
+                    "text-editor": 5,
+                    "button": 0,
+                    "icon-list": 0,
+                    "image": 0,
+                    "video": 0,
+                    "html": 1,
+                    "container": 6
+                }
+            },
+            {
+                "type": "gallery",
+                "render_mode": "fully_preserved_source",
+                "decision": "html",
+                "widget_counts": {
+                    "heading": 0,
+                    "text-editor": 0,
+                    "button": 0,
+                    "icon-list": 0,
+                    "image": 0,
+                    "video": 0,
+                    "html": 1,
+                    "container": 1
+                }
+            },
+            {
+                "type": "contact",
+                "render_mode": "native_hybrid_fragment",
+                "decision": "native",
+                "widget_counts": {
+                    "heading": 2,
+                    "text-editor": 0,
+                    "button": 2,
+                    "icon-list": 0,
+                    "image": 0,
+                    "video": 0,
+                    "html": 2,
+                    "container": 2
+                }
+            },
+            {
+                "type": "footer",
+                "render_mode": "native_rebuilt",
+                "decision": "native",
+                "widget_counts": {
+                    "heading": 0,
+                    "text-editor": 0,
+                    "button": 0,
+                    "icon-list": 0,
+                    "image": 0,
+                    "video": 0,
+                    "html": 1,
+                    "container": 1
+                }
+            }
+        ]
+    },
+    "warnings": [
+        "Section 'generic': complex structure — original HTML preserved as widget. Review in Elementor editor.",
+        "Section 'gallery': complex structure — original HTML preserved as widget. Review in Elementor editor.",
+        "Coverage diagnostics: 6 of 52 meaningful source text phrases are missing from output.",
+        "Coverage diagnostics: 6 of 12 source selector\/behavior hooks are missing from output."
+    ]
+}

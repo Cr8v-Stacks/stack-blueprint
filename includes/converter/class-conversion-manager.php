@@ -8,8 +8,9 @@
 namespace StackBlueprint\Converter;
 
 use WP_Error;
-use StackBlueprint\Utilities\ApiClient;
+use StackBlueprint\Utilities\ApiManager;
 use StackBlueprint\Utilities\FileHandler;
+use StackBlueprint\Utilities\HtmlAnalyzer;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,11 +26,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class ConversionManager {
 
 	/**
-	 * @var ApiClient
-	 */
-	private ApiClient $api_client;
-
-	/**
 	 * @var FileHandler
 	 */
 	private FileHandler $file_handler;
@@ -38,7 +34,6 @@ class ConversionManager {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->api_client   = new ApiClient();
 		$this->file_handler = new FileHandler();
 	}
 
@@ -66,29 +61,28 @@ class ConversionManager {
 		// Merge companion CSS and JS if provided.
 		$merged = $this->merge_prototype( $html_content, $css_file, $js_file );
 
+		// Run HtmlAnalyzer to detect prefix, minify, and map SVGs
+		$processed = HtmlAnalyzer::process( $merged );
+		$merged = $processed['html'];
+		$svgs   = $processed['svgs'] ?? [];
+
+		// If user didn't explicitly set a prefix, use the detected one
+		if ( empty( $params['prefix'] ) || $params['prefix'] === 'sb' ) {
+			$params['prefix'] = rtrim($processed['prefix'], '-'); // ApiManager adds the hyphen
+		}
+
 		// Log conversion start.
 		$conversion_id = $this->log_conversion( $params, $merged );
 		if ( ! $conversion_id ) {
 			return new WP_Error( 'db_error', __( 'Failed to create conversion record.', 'stack-blueprint' ) );
 		}
 
-		// Run conversion synchronously (WP cron can be used for large files in future).
-		// Pre-validate HTML before running (AI engine only — native handles its own).
-		$pre_warnings = [];
-		if ( ($params['converter'] ?? 'ai') === 'ai' ) {
-			$validation   = $this->api_client->pre_validate( $merged );
-			$pre_warnings = $validation['warnings'] ?? [];
-		}
-
-		$result = $this->run_conversion( $merged, $params, $conversion_id );
+		$result = $this->run_conversion( $merged, $params, $conversion_id, $svgs );
 
 		if ( is_wp_error( $result ) ) {
 			$this->update_conversion_status( $conversion_id, 'failed', $result->get_error_message() );
 			return $result;
 		}
-
-		// Merge pre-validation warnings into result.
-		$result['warnings'] = array_merge( $pre_warnings, $result['warnings'] ?? [] );
 
 		return [
 			'conversion_id' => $conversion_id,
@@ -96,9 +90,10 @@ class ConversionManager {
 			'project_name'  => $params['project_name'],
 			'strategy'      => $params['strategy'],
 			'prefix'        => $params['prefix'],
-			'converter'     => $params['converter'] ?? 'ai',
+			'provider'      => $params['provider'] ?? 'anthropic',
 			'class_map'     => $result['class_map'] ?? [],
 			'warnings'      => $result['warnings'] ?? [],
+			'diagnostics'   => $result['diagnostics'] ?? [],
 		];
 	}
 
@@ -123,7 +118,6 @@ class ConversionManager {
 			}
 		}
 
-		// Inject before </body> if possible.
 		if ( str_contains( $html, '</body>' ) ) {
 			$html = str_replace( '</body>', $extra_css . $extra_js . '</body>', $html );
 		} else {
@@ -134,84 +128,55 @@ class ConversionManager {
 	}
 
 	/**
-	 * Execute the conversion — either via AI API or the native offline converter.
+	 * Execute the conversion via the AI API Manager.
 	 */
-	private function run_conversion( string $content, array $params, int $conversion_id ): array|WP_Error {
-		$converter_mode = $params['converter'] ?? 'ai'; // 'ai' | 'native'
+	private function run_conversion( string $content, array $params, int $conversion_id, array $svgs = [] ): array|WP_Error {
+		try {
+			$provider_name = sanitize_key( $params['provider'] ?? 'anthropic' );
+			$strategy      = sanitize_key( $params['strategy'] ?? 'v2' );
 
-		if ( 'native' === $converter_mode ) {
-			// Fully offline — no API call.
-			$native = new NativeConverter();
-			$result = $native->convert( $content, $params );
+			$api_manager = new ApiManager( $provider_name );
+			$parsed      = $api_manager->convert( $content, $params, $strategy );
 
-			if ( is_wp_error( $result ) ) {
-				return $result;
+			if ( is_wp_error( $parsed ) ) {
+				return $parsed;
 			}
 
-			$this->store_conversion_result( $conversion_id, $result );
-			return $result;
-		}
+			// Restore SVGs if any tokens were used
+			if ( ! empty( $svgs ) && ! empty( $parsed['json_template'] ) ) {
+				$json_string = wp_json_encode( $parsed['json_template'] );
+				
+				// Build a replacement array: '<svg data-token="SVG_TOKEN_XXX"></svg>' => '<svg>...</svg>'
+				$replacements = [];
+				foreach ( $svgs as $token => $svg_code ) {
+					// The AI might output the placeholder exact or unescaped depending on JSON encoding
+					$placeholder = '<svg data-token="' . $token . '"></svg>';
+					$replacements[ $placeholder ] = $svg_code;
+					
+					// Also replace just the token in case the AI messed up the tags
+					$replacements[ $token ] = $svg_code;
+				}
+				
+				$restored_string = strtr( $json_string, $replacements );
+				$restored_json   = json_decode( $restored_string, true );
+				
+				if ( json_last_error() === JSON_ERROR_NONE && is_array( $restored_json ) ) {
+					$parsed['json_template'] = $restored_json;
+				}
+			}
 
-		// AI path.
-		$strategy = $params['strategy'] ?? 'v2';
-
-		if ( 'v1' === $strategy ) {
-			$response = $this->api_client->convert_v1( $content, $params );
-		} else {
-			$response = $this->api_client->convert_v2( $content, $params );
-		}
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		$parsed = $this->parse_ai_response( $response['text'] );
-
-		if ( is_wp_error( $parsed ) ) {
+			$this->store_conversion_result( $conversion_id, $parsed );
 			return $parsed;
-		}
-
-		$this->store_conversion_result( $conversion_id, $parsed );
-		return $parsed;
-	}
-
-	/**
-	 * Parse and validate the JSON response from Claude.
-	 */
-	private function parse_ai_response( string $raw_text ): array|WP_Error {
-		// Strip any accidental markdown fences.
-		$clean = trim( preg_replace( '/^```(json)?\s*/m', '', preg_replace( '/```\s*$/m', '', $raw_text ) ) );
-
-		$data = json_decode( $clean, true );
-
-		if ( JSON_ERROR_NONE !== json_last_error() ) {
-			// Try to extract JSON from the response.
-			if ( preg_match( '/\{.*\}/s', $clean, $matches ) ) {
-				$data = json_decode( $matches[0], true );
-			}
-
-			if ( JSON_ERROR_NONE !== json_last_error() ) {
-				return new WP_Error(
-					'parse_error',
-					__( 'AI returned invalid JSON. Try again or simplify your prototype.', 'stack-blueprint' )
-				);
-			}
-		}
-
-		if ( empty( $data['json_template'] ) ) {
+		} catch ( \Throwable $e ) {
 			return new WP_Error(
-				'missing_template',
-				__( 'AI response did not contain a valid template. Try again.', 'stack-blueprint' )
+				'conversion_runtime_error',
+				sprintf(
+					/* translators: %s: runtime error message */
+					__( 'Conversion runtime failure: %s', 'stack-blueprint' ),
+					$e->getMessage()
+				)
 			);
 		}
-
-		return [
-			'json_template' => $data['json_template'],
-			'json_output'   => wp_json_encode( $data['json_template'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ),
-			'css_output'    => $data['companion_css'] ?? '',
-			'class_map'     => $data['class_map'] ?? [],
-			'warnings'      => $data['warnings'] ?? [],
-		];
 	}
 
 	/**
@@ -254,12 +219,12 @@ class ConversionManager {
 			[ '%d' ]
 		);
 
-		// Store large output in postmeta-style options to avoid column size limits.
 		update_option( 'sb_result_json_' . $id, $result['json_output'] ?? '', false );
 		update_option( 'sb_result_css_' . $id, $result['css_output'] ?? '', false );
 		update_option( 'sb_result_meta_' . $id, [
-			'class_map' => $result['class_map'] ?? [],
-			'warnings'  => $result['warnings'] ?? [],
+			'class_map'   => $result['class_map'] ?? [],
+			'warnings'    => $result['warnings'] ?? [],
+			'diagnostics' => $result['diagnostics'] ?? [],
 		], false );
 	}
 
@@ -285,47 +250,26 @@ class ConversionManager {
 	/**
 	 * Get a single conversion record with its outputs.
 	 */
-	public function get_conversion( int $id ): ?array {
+	public function get_conversion( int $id ): array|WP_Error {
 		global $wpdb;
 
-		$row = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sb_conversions WHERE id = %d",
-				$id
-			),
-			ARRAY_A
-		);
+		$record = $wpdb->get_row( $wpdb->prepare(
+			"SELECT * FROM {$wpdb->prefix}sb_conversions WHERE id = %d",
+			$id
+		), ARRAY_A );
 
-		if ( ! $row ) {
-			return null;
+		if ( ! $record ) {
+			return new WP_Error( 'not_found', __( 'Conversion not found.', 'stack-blueprint' ) );
 		}
 
-		$row['json_output'] = get_option( 'sb_result_json_' . $id, '' );
-		$row['css_output']  = get_option( 'sb_result_css_' . $id, '' );
-		$meta               = get_option( 'sb_result_meta_' . $id, [] );
-		$row['class_map']   = $meta['class_map'] ?? [];
-		$row['warnings']    = $meta['warnings'] ?? [];
+		$record['json_output'] = get_option( 'sb_result_json_' . $id, '' );
+		$record['css_output']  = get_option( 'sb_result_css_' . $id, '' );
+		$meta                  = get_option( 'sb_result_meta_' . $id, [] );
 
-		return $row;
-	}
+		$record['class_map']   = $meta['class_map'] ?? [];
+		$record['warnings']    = $meta['warnings'] ?? [];
+		$record['diagnostics'] = $meta['diagnostics'] ?? [];
 
-	/**
-	 * Get recent conversion history.
-	 */
-	public function get_history( int $limit = 20 ): array {
-		global $wpdb;
-
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT id, project_name, strategy, prefix, status, file_size, created_at, completed_at, error_message
-				FROM {$wpdb->prefix}sb_conversions
-				ORDER BY created_at DESC
-				LIMIT %d",
-				$limit
-			),
-			ARRAY_A
-		);
-
-		return $rows ?: [];
+		return $record;
 	}
 }

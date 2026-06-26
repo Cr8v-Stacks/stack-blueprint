@@ -1,0 +1,1073 @@
+{
+    "version": "0.4",
+    "title": "preview-audit",
+    "type": "page",
+    "content": [
+        {
+            "id": "fc27fdbe",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-global-setup preview-audi-section",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "0",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "_element_id": "preview-audi-global-setup"
+            },
+            "elements": [
+                {
+                    "id": "76715f11",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-global-setup-widget",
+                        "html": "<link rel=\"preconnect\" href=\"https:\/\/fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https:\/\/fonts.gstatic.com\" crossorigin><link href=\"https:\/\/fonts.googleapis.com\/css2?family=Bebas+Neue:wght@400;700&family=Overpass:wght@400;700;300&family=Overpass+Mono:wght@400;700&display=swap\" rel=\"stylesheet\">\n<span class=\"preview-audi-source-document-title\" style=\"display:none\">FORMA — Creative Agency<\/span>\n<style>\n:root{--preview-audi-bg:#0d0d0d;--preview-audi-accent:#f2efe8;--preview-audi-text:#f2efe8;--preview-audi-surface:rgba(242,239,232,0.04);--preview-audi-border:rgba(242,239,232,0.12);--preview-audi-fd:'system-ui',sans-serif;--preview-audi-fb:'Bebas Neue',sans-serif;--preview-audi-fm:'Overpass Mono',monospace;}\nbody,.elementor-page,#page,.site{background:#0d0d0d!important;color:#f2efe8;font-family:'Bebas Neue',sans-serif;overflow-x:hidden;}\nbody,a,button,.elementor-button{cursor:none!important;}\n.elementor-section,.e-con,.elementor-container{position:relative;z-index:2;}\n\n.preview-audi-reveal{opacity:1;transform:none;transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}\nhtml.preview-audi-motion-ready .preview-audi-reveal{opacity:0;transform:translateY(40px);}\nhtml.preview-audi-motion-ready .preview-audi-reveal.preview-audi-visible{opacity:1;transform:translateY(0);}\n.preview-audi-d1{transition-delay:.1s;}.preview-audi-d2{transition-delay:.2s;}.preview-audi-d3{transition-delay:.3s;}\n::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0d0d0d;}\n::-webkit-scrollbar-thumb{background:rgba(242,239,232,0.3);}::-webkit-scrollbar-thumb:hover{background:#f2efe8;}\n.elementor-editor-active .preview-audi-reveal, .elementor-editor-active [class*='reveal'], .elementor-editor-active [class*='hidden'] { opacity: 1 !important; visibility: visible !important; transform: none !important; transition: none !important; }\n@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }\n@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }\n<\/style>\n<script>\n(function(){\n'use strict';\ndocument.documentElement.classList.add('preview-audi-motion-ready');\nif(document.body){document.body.classList.add('preview-audi-page');}\nelse{document.addEventListener('DOMContentLoaded',function(){if(document.body){document.body.classList.add('preview-audi-page');}});}\n\/* ── Cursor ── *\/\nvar dot=document.createElement('div');dot.id='preview-audi-cursor-dot';\nvar ring=document.createElement('div');ring.id='preview-audi-cursor-ring';\nvar dSt='width:8px;height:8px;background:#f2efe8;border-radius:50%;position:fixed;top:0;left:0;transform:translate(-50%,-50%);pointer-events:none;z-index:99999;';\nvar rSt='width:36px;height:36px;border:1px solid rgba(242,239,232,0.5);border-radius:50%;position:fixed;top:0;left:0;transform:translate(-50%,-50%);pointer-events:none;z-index:99998;transition:all .15s ease;';\ndot.style.cssText=dSt;ring.style.cssText=rSt;\n\nfunction injectAssets(){\n  if(document.getElementById('preview-audi-cursor-dot') || document.getElementById('preview-audi-bg-canvas')) return;\n  document.body.appendChild(dot);document.body.appendChild(ring);\n}\nif(document.readyState==='complete'){injectAssets();}else{window.addEventListener('load',injectAssets);}\nvar mx=0,my=0,rx=0,ry=0;\ndocument.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});\ndocument.addEventListener('mouseover',function(e){if(e.target.closest('a,button')){ring.style.width='52px';ring.style.height='52px';}else{ring.style.width='36px';ring.style.height='36px';}});\n(function aC(){dot.style.left=mx+'px';dot.style.top=my+'px';rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(aC);})();\n\n\/* ── Scroll Reveal ── *\/\nvar sObs=new IntersectionObserver(function(entries){\n  entries.forEach(function(e){\n    if(e.isIntersecting || window.elementor) e.target.classList.add('preview-audi-visible');\n  });\n},{threshold:.1});\n\nfunction initR(){\n  var revs=document.querySelectorAll('.preview-audi-reveal');\n  revs.forEach(function(el){\n    \/\/ Safe reveal: if element is already in viewport or we are in Elementor editor\n    var rect=el.getBoundingClientRect();\n    if((rect.top<window.innerHeight&&rect.bottom>0)||window.elementor){\n      el.classList.add('preview-audi-visible');\n    }\n    sObs.observe(el);\n  });\n  \/\/ Fail-safe: show everything if JS fails or taking too long\n  setTimeout(function(){document.querySelectorAll('.preview-audi-reveal:not(.preview-audi-visible)').forEach(function(f){f.classList.add('preview-audi-visible');});},2500);\n}\nif(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initR);}else{initR();}\n\nfunction initStatCounters(){\n  var statCards=document.querySelectorAll('.preview-audi-stat-cell');\n  if(!statCards.length || !('IntersectionObserver' in window)){return;}\n  var seen=new WeakSet();\n  var parseValue=function(text){\n    var raw=(text||'').trim();\n    var match=raw.match(\/^([\\d.,]+)(.*)$\/);\n    if(!match){return null;}\n    var num=parseFloat(match[1].replace(\/,\/g,''));\n    if(isNaN(num)){return null;}\n    var decimals=(match[1].split('.')[1]||'').length;\n    return { value:num, decimals:decimals, suffix:(match[2]||'').trim() };\n  };\n  var obs=new IntersectionObserver(function(entries){\n    entries.forEach(function(entry){\n      if(!entry.isIntersecting || seen.has(entry.target)){return;}\n      seen.add(entry.target);\n      entry.target.classList.add('preview-audi-counted');\n      var heading=entry.target.querySelector('.preview-audi-stat-num .elementor-heading-title');\n      if(!heading){return;}\n      var parsed=parseValue(heading.textContent);\n      if(!parsed){return;}\n      var cur=0, steps=60, inc=parsed.value\/steps;\n      var iv=setInterval(function(){\n        cur+=inc;\n        if(cur>=parsed.value){cur=parsed.value;clearInterval(iv);}\n        heading.textContent=cur.toFixed(parsed.decimals)+parsed.suffix;\n      },30);\n    });\n  },{threshold:.3});\n  statCards.forEach(function(card){obs.observe(card);});\n}\ninitStatCounters();\n\n\/* ── Nav scroll class ── *\/\nwindow.addEventListener('scroll',function(){\nvar nav=document.getElementById('preview-audi-fixed-nav')||document.querySelector('[data-stack-blueprint-id=\"preview-audi-fixed-nav\"]')||document.querySelector('.preview-audi-nav');\nif(nav)nav.classList.toggle('preview-audi-scrolled',window.scrollY>60);\n},{passive:true});\n\n}());\n<\/script>\n<script>\n(function(){\n\/* ── Source Script Bridge ── *\/\ntry{\n(function(){\nvar __sbWinAdd=window.addEventListener;\nvar __sbDocAdd=document.addEventListener;\nvar __sbClassAliasMap=[];\nvar __sbIdAliasMap={\"studio\":\"#studio\",\"work\":\"#preview-audi-gallery\",\"contact\":\"#contact\",\"hero-main\":\"#preview-audi-hero\"};\nvar __sbApplySelectorAliases=function(selector){\n\tif(typeof selector!=='string'||!selector){return selector;}\n\tvar rewritten=selector;\n\tObject.keys(__sbIdAliasMap).forEach(function(sourceId){\n\t\tvar target=__sbIdAliasMap[sourceId];\n\t\tif(!target){return;}\n\t\tvar exactPattern=new RegExp('^#'+sourceId.replace(\/[.*+?^${}()|[\\\\]\\\\\\\\]\/g,'\\\\\\\\$&')+'$');\n\t\tif(exactPattern.test(rewritten)){rewritten=target;return;}\n\t\tvar tokenPattern=new RegExp('#'+sourceId.replace(\/[.*+?^${}()|[\\\\]\\\\\\\\]\/g,'\\\\\\\\$&')+'(?=[:.\\\\[#\\\\s>+~]|$)','g');\n\t\trewritten=rewritten.replace(tokenPattern,target);\n\t});\n\tObject.keys(__sbClassAliasMap).forEach(function(sourceClass){\n\t\tvar target=__sbClassAliasMap[sourceClass];\n\t\tif(!target){return;}\n\t\tvar exactPattern=new RegExp('^\\\\\\\\.'+sourceClass.replace(\/[.*+?^${}()|[\\\\]\\\\\\\\]\/g,'\\\\\\\\$&')+'$');\n\t\tif(exactPattern.test(rewritten)){rewritten=target;return;}\n\t\tvar tokenPattern=new RegExp('\\\\\\\\.'+sourceClass.replace(\/[.*+?^${}()|[\\\\]\\\\\\\\]\/g,'\\\\\\\\$&')+'(?=[:.\\\\[#\\\\s>+~]|$)','g');\n\t\trewritten=rewritten.replace(tokenPattern,target);\n\t});\n\treturn rewritten;\n};\nvar __sbRewriteReferenceString=function(value){\n\tif(typeof value!=='string'||!value){return value;}\n\tvar trimmed=value.trim();\n\tvar rewritten=__sbApplySelectorAliases(trimmed);\n\tif(rewritten!==trimmed){return rewritten;}\n\tif(__sbIdAliasMap[trimmed]){return String(__sbIdAliasMap[trimmed]).replace(\/^#\/,'');}\n\tif(__sbClassAliasMap[trimmed]){return String(__sbClassAliasMap[trimmed]).replace(\/^\\.\/,'');}\n\treturn value;\n};\nvar __sbRewritePayloadValue=function(value,seen){\n\tif(typeof value==='string'){return __sbRewriteReferenceString(value);}\n\tif(!value||typeof value!=='object'){return value;}\n\tseen=Array.isArray(seen)?seen:[];\n\tif(seen.indexOf(value)!==-1){return value;}\n\tseen.push(value);\n\tif(Array.isArray(value)){\n\t\treturn value.map(function(entry){return __sbRewritePayloadValue(entry,seen);});\n\t}\n\tvar output={};\n\tObject.keys(value).forEach(function(key){\n\t\toutput[key]=__sbRewritePayloadValue(value[key],seen);\n\t});\n\treturn output;\n};\nvar __sbWrapEventPayload=function(event){\n\tif(!event||typeof event!=='object'||typeof Proxy!=='function'){return event;}\n\ttry{\n\t\treturn new Proxy(event,{\n\t\t\tget:function(target,prop,receiver){\n\t\t\t\tvar current=Reflect.get(target,prop,receiver);\n\t\t\t\tif(prop==='detail'||prop==='data'||prop==='state'){\n\t\t\t\t\treturn __sbRewritePayloadValue(current,[]);\n\t\t\t\t}\n\t\t\t\treturn current;\n\t\t\t}\n\t\t});\n\t}catch(e){\n\t\treturn event;\n\t}\n};\nvar __sbWithAliasRuntime=function(fn){\n\tif(typeof fn!=='function'){return;}\n\tvar origDocGetId=document.getElementById;\n\tvar origDocQ=document.querySelector;\n\tvar origDocQA=document.querySelectorAll;\n\tvar origDocGetClass=document.getElementsByClassName;\n\tvar origElQ=Element.prototype.querySelector;\n\tvar origElQA=Element.prototype.querySelectorAll;\n\tvar origElClosest=Element.prototype.closest;\n\tvar origElMatches=Element.prototype.matches;\n\tvar origElGetClass=Element.prototype.getElementsByClassName;\n\tvar active=true;\n\tvar patchQuery=function(original){\n\t\treturn function(selector){\n\t\t\tvar found=original.call(this,selector);\n\t\t\tif((found&&found.length!==0)||!active||typeof selector!=='string'){return found;}\n\t\t\tvar rewritten=__sbApplySelectorAliases(selector);\n\t\t\tif(rewritten===selector){return found;}\n\t\t\treturn original.call(this,rewritten);\n\t\t};\n\t};\n\tdocument.getElementById=function(id){\n\t\tvar found=origDocGetId.call(document,id);\n\t\tif(found||!active||typeof id!=='string'){return found;}\n\t\tvar target=__sbIdAliasMap[id];\n\t\treturn target?origDocQ.call(document,target):found;\n\t};\n\tdocument.querySelector=patchQuery(origDocQ);\n\tdocument.querySelectorAll=patchQuery(origDocQA);\n\tdocument.getElementsByClassName=function(className){\n\t\tvar found=origDocGetClass.call(document,className);\n\t\tif((found&&found.length!==0)||!active||typeof className!=='string'){return found;}\n\t\tvar target=__sbClassAliasMap[className];\n\t\treturn target?origDocQA.call(document,target):found;\n\t};\n\tElement.prototype.querySelector=patchQuery(origElQ);\n\tElement.prototype.querySelectorAll=patchQuery(origElQA);\n\tElement.prototype.closest=patchQuery(origElClosest);\n\tElement.prototype.matches=function(selector){\n\t\tvar matched=origElMatches.call(this,selector);\n\t\tif(matched||!active||typeof selector!=='string'){return matched;}\n\t\tvar rewritten=__sbApplySelectorAliases(selector);\n\t\tif(rewritten===selector){return matched;}\n\t\treturn origElMatches.call(this,rewritten);\n\t};\n\tElement.prototype.getElementsByClassName=function(className){\n\t\tvar found=origElGetClass.call(this,className);\n\t\tif((found&&found.length!==0)||!active||typeof className!=='string'){return found;}\n\t\tvar target=__sbClassAliasMap[className];\n\t\treturn target?origElQA.call(this,target):found;\n\t};\n\ttry{\n\t\treturn fn();\n\t}finally{\n\t\tactive=false;\n\t\tdocument.getElementById=origDocGetId;\n\t\tdocument.querySelector=origDocQ;\n\t\tdocument.querySelectorAll=origDocQA;\n\t\tdocument.getElementsByClassName=origDocGetClass;\n\t\tElement.prototype.querySelector=origElQ;\n\t\tElement.prototype.querySelectorAll=origElQA;\n\t\tElement.prototype.closest=origElClosest;\n\t\tElement.prototype.matches=origElMatches;\n\t\tElement.prototype.getElementsByClassName=origElGetClass;\n\t}\n};\nvar __sbWrap=function(target,listener,label){\n\tif(typeof listener!=='function'){return listener;}\n\treturn function(event){\n\t\ttry{return __sbWithAliasRuntime(function(){return listener.call(this,__sbWrapEventPayload(event));}.bind(this));}\n\t\tcatch(e){console.warn('Stack Blueprint bridged '+label+' listener failed',e);}\n\t};\n};\nwindow.addEventListener=function(type,listener,options){\n\tvar wrapped=__sbWrap(window,listener,type);\n\tvar result=__sbWinAdd.call(window,type,wrapped,options);\n\tif(type==='load'&&document.readyState==='complete'&&typeof wrapped==='function'){\n\t\tsetTimeout(function(){wrapped.call(window,new Event('load'));},0);\n\t}\n\treturn result;\n};\ndocument.addEventListener=function(type,listener,options){\n\tvar wrapped=__sbWrap(document,listener,type);\n\tvar result=__sbDocAdd.call(document,type,wrapped,options);\n\tif(type==='DOMContentLoaded'&&document.readyState!=='loading'&&typeof wrapped==='function'){\n\t\tsetTimeout(function(){wrapped.call(document,new Event('DOMContentLoaded'));},0);\n\t}\n\treturn result;\n};\ntry{\n__sbWithAliasRuntime(function(){\n\n\n    \/\/ Custom cursor\n    const dot = document.getElementById('cursor-dot');\n    const ring = document.getElementById('cursor-ring');\n    let mouseX = 0, mouseY = 0;\n    let ringX = 0, ringY = 0;\n\n    document.addEventListener('mousemove', (e) => {\n      mouseX = e.clientX;\n      mouseY = e.clientY;\n      dot.style.left = mouseX + 'px';\n      dot.style.top = mouseY + 'px';\n    });\n\n    function animateRing() {\n      ringX += (mouseX - ringX) * 0.12;\n      ringY += (mouseY - ringY) * 0.12;\n      ring.style.left = ringX + 'px';\n      ring.style.top = ringY + 'px';\n      requestAnimationFrame(animateRing);\n    }\n    animateRing();\n\n    \/\/ Cursor expand on hoverable elements\n    document.querySelectorAll('a, button, .work-item').forEach(el => {\n      el.addEventListener('mouseenter', () => {\n        ring.style.width = '70px';\n        ring.style.height = '70px';\n        ring.style.opacity = '0.5';\n        dot.style.transform = 'translate(-50%,-50%) scale(1.5)';\n      });\n      el.addEventListener('mouseleave', () => {\n        ring.style.width = '40px';\n        ring.style.height = '40px';\n        ring.style.opacity = '1';\n        dot.style.transform = 'translate(-50%,-50%) scale(1)';\n      });\n    });\n\n    \/\/ Hero entrance\n    setTimeout(() => {\n      const h = document.getElementById('preview-audi-hero');\n      h.style.transition = 'opacity 1s ease, transform 1s ease';\n      h.style.opacity = '1';\n      h.style.transform = 'translateY(0)';\n    }, 300);\n\n    \/\/ Parallax background text\n    document.addEventListener('mousemove', (e) => {\n      const para = document.getElementById('para-bg');\n      const x = (e.clientX \/ window.innerWidth - 0.5) * 30;\n      const y = (e.clientY \/ window.innerHeight - 0.5) * 20;\n      para.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;\n    });\n\n    \/\/ Work item hover with project preview\n    const preview = document.getElementById('project-preview');\n    const labels = ['MERIDIAN', 'SONA', 'VOX', 'KELLER', 'DUNE'];\n    let currentLabel = '';\n\n    document.addEventListener('mousemove', (e) => {\n      if (preview.style.opacity === '1') {\n        preview.style.left = (e.clientX + 20) + 'px';\n        preview.style.top = (e.clientY - 100) + 'px';\n      }\n    });\n\n    function hoverWork(el, enter) {\n      const arrow = el.querySelector('.work-arrow');\n      if (enter) {\n        el.style.paddingLeft = '20px';\n        arrow.style.opacity = '1';\n        arrow.style.transform = 'translateX(0)';\n        preview.style.opacity = '1';\n        const idx = Array.from(document.querySelectorAll('.work-item')).indexOf(el);\n        document.getElementById('preview-label')?.textContent = labels[idx];\n      } else {\n        el.style.paddingLeft = '0';\n        arrow.style.opacity = '0';\n        arrow.style.transform = 'translateX(-10px)';\n        preview.style.opacity = '0';\n      }\n    }\n\n    \/\/ Scroll-triggered count-up for studio stats\n    const statsObserver = new IntersectionObserver((entries) => {\n      entries.forEach(entry => {\n        if (entry.isIntersecting) {\n          const targets = [140, 6, 23, 3];\n          const els = entry.target.querySelectorAll('.stat-num');\n          els.forEach((el, i) => {\n            let start = 0;\n            const end = targets[i];\n            const dur = 1500;\n            const startTime = performance.now();\n            function update(now) {\n              const t = Math.min((now - startTime) \/ dur, 1);\n              const ease = 1 - Math.pow(1 - t, 3);\n              el.textContent = Math.round(start + (end - start) * ease) + (i === 0 ? '+' : '');\n              if (t < 1) requestAnimationFrame(update);\n            }\n            requestAnimationFrame(update);\n          });\n          statsObserver.disconnect();\n        }\n      });\n    }, { threshold: 0.3 });\n\n    \/\/ Add stat-num class to studio stat numbers for observer\n    const statNums = document.querySelectorAll('body.preview-audi-page #studio p[style*=\"font-size:52px\"]');\n    statNums.forEach(el => el.classList.add('stat-num'));\n    if (statNums.length) statsObserver.observe(statNums[0].closest('section') || document.getElementById('studio'));\n\n    \/\/ Scroll-based hero text clip\n    window.addEventListener('scroll', () => {\n      const scrolled = window.scrollY;\n      const heroMain = document.getElementById('preview-audi-hero');\n      if (heroMain) {\n        heroMain.style.transform = `translateY(${scrolled * 0.2}px)`;\n        heroMain.style.opacity = Math.max(0, 1 - scrolled \/ 600);\n      }\n    });\n  \nif (typeof hoverWork === 'function') { window.hoverWork = hoverWork; }\n\n});\n}finally{\n\twindow.addEventListener=__sbWinAdd;\n\tdocument.addEventListener=__sbDocAdd;\n}\n}());\n}catch(e){console.warn('preview-audi source script bridge failed',e);}\n}());\n<\/script>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "cd69b2b8",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-nav-wrap preview-audi-section",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "0",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "_element_id": "preview-audi-nav"
+            },
+            "elements": [
+                {
+                    "id": "91f6343f",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-nav-widget",
+                        "html": "<style>\n.preview-audi-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all .4s;}\n.preview-audi-nav.preview-audi-scrolled{background:rgba(13,13,13,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:rgba(242,239,232,0.12);padding:16px 60px;}\n.preview-audi-nav-logo{font-family:'system-ui',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px;color:#f2efe8;text-decoration:none;}\n.preview-audi-nav-logo span,.preview-audi-nav-link span{color:#f2efe8;}\n.preview-audi-nav-links{display:flex;gap:40px;list-style:none;margin:0;padding:0;}\n.preview-audi-nav-link{font-size:13px;font-family:'Overpass Mono',monospace;color:rgba(242,239,232,0.5);text-decoration:none;letter-spacing:.05em;transition:color .2s;}\n.preview-audi-nav-link:hover{color:#f2efe8;}\n.preview-audi-nav-cta{font-family:'Overpass Mono',monospace;font-size:12px;letter-spacing:.08em;padding:10px 22px;background:#f2efe8;color:#0d0d0d;border:none;font-weight:700;transition:all .2s;}\n.preview-audi-nav-cta:hover{opacity:.85;transform:translateY(-1px);}\n@media(max-width:768px){.preview-audi-nav-links{display:none;}.preview-audi-nav{padding:16px 24px;}}\n<\/style>\n<nav class=\"preview-audi-nav\" id=\"preview-audi-fixed-nav\" data-stack-blueprint-id=\"preview-audi-fixed-nav\">\n  <a href=\"#\" class=\"preview-audi-nav-logo\"><\/a>\n  <ul class=\"preview-audi-nav-links\">\n<li><a href=\"#work\" class=\"preview-audi-nav-link\">Work<\/a><\/li>\n<li><a href=\"#studio\" class=\"preview-audi-nav-link\">Studio<\/a><\/li>\n<li><a href=\"#contact\" class=\"preview-audi-nav-link\">Contact<\/a><\/li>\n  <\/ul>\n  \n<\/nav>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "cdc81fe4",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-hero preview-audi-section preview-audi-reveal",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "min_height": {
+                    "unit": "vh",
+                    "size": 100
+                },
+                "min_height_type": "min-height",
+                "align_items": "flex-start",
+                "justify_content": "flex-end",
+                "background_background": "classic",
+                "background_color": "#0d0d0d",
+                "overflow": "hidden",
+                "padding": {
+                    "unit": "px",
+                    "top": "0",
+                    "right": "60",
+                    "bottom": "80",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "preview-audi-hero"
+            },
+            "elements": [
+                {
+                    "id": "8f00af35",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "preview-audi-hero-layout",
+                        "flex_direction": "row",
+                        "flex_wrap": "nowrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 80,
+                            "column": 80,
+                            "row": 48
+                        },
+                        "isInner": true,
+                        "align_items": "center",
+                        "justify_content": "space-between"
+                    },
+                    "elements": [
+                        {
+                            "id": "a55406c9",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "preview-audi-hero-copy src-id-hero-main",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 28,
+                                    "column": 28,
+                                    "row": 28
+                                },
+                                "isInner": true,
+                                "width": {
+                                    "unit": "%",
+                                    "size": 56
+                                },
+                                "align_items": "flex-start",
+                                "_element_id": "hero-main"
+                            },
+                            "elements": [
+                                {
+                                    "id": "e5b3293a",
+                                    "elType": "widget",
+                                    "widgetType": "html",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-eyebrow-widget",
+                                        "html": "<div class=\"preview-audi-eyebrow\">Lagos · London · Lisbon<\/div>"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "c71bd4f4",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-hero-headline",
+                                        "title": "WE BUILD<br>\n        <span style=\"color:transparent;-webkit-text-stroke:2px #0D0D0D;\">BRANDS<\/span><br>\n        THAT LAST.",
+                                        "header_size": "h1",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "system-ui",
+                                        "typography_font_weight": "800",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 120
+                                        },
+                                        "typography_letter_spacing": {
+                                            "unit": "px",
+                                            "size": -3
+                                        },
+                                        "typography_line_height": {
+                                            "unit": "em",
+                                            "size": 0.92
+                                        },
+                                        "title_color": "#f2efe8"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "9eb24cbb",
+                                    "elType": "container",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-hero-bottom",
+                                        "flex_direction": "row",
+                                        "flex_wrap": "nowrap",
+                                        "gap": {
+                                            "unit": "px",
+                                            "size": 40,
+                                            "column": 40,
+                                            "row": 40
+                                        },
+                                        "align_items": "flex-end",
+                                        "justify_content": "space-between"
+                                    },
+                                    "elements": [
+                                        {
+                                            "id": "5582f8cb",
+                                            "elType": "widget",
+                                            "widgetType": "text-editor",
+                                            "isInner": false,
+                                            "settings": {
+                                                "_css_classes": "preview-audi-hero-sub",
+                                                "editor": "<p>Strategy, identity, and digital experience for companies redefining their categories.<\/p>"
+                                            },
+                                            "elements": []
+                                        },
+                                        {
+                                            "id": "419ae781",
+                                            "elType": "container",
+                                            "isInner": false,
+                                            "settings": {
+                                                "_css_classes": "preview-audi-hero-actions",
+                                                "flex_direction": "column",
+                                                "flex_wrap": "nowrap",
+                                                "gap": {
+                                                    "unit": "px",
+                                                    "size": 12,
+                                                    "column": 12,
+                                                    "row": 12
+                                                },
+                                                "align_items": "flex-end"
+                                            },
+                                            "elements": [
+                                                {
+                                                    "id": "9b8a0145",
+                                                    "elType": "widget",
+                                                    "widgetType": "button",
+                                                    "isInner": false,
+                                                    "settings": {
+                                                        "_css_classes": "preview-audi-btn-primary preview-audi-btn-hero-primary",
+                                                        "text": "SEE OUR WORK →",
+                                                        "link": {
+                                                            "url": "#work",
+                                                            "is_external": false,
+                                                            "nofollow": false
+                                                        },
+                                                        "background_color": "#f2efe8",
+                                                        "button_text_color": "#0d0d0d",
+                                                        "typography_typography": "custom",
+                                                        "typography_font_family": "Overpass Mono",
+                                                        "typography_font_weight": "700",
+                                                        "typography_font_size": {
+                                                            "unit": "px",
+                                                            "size": 12
+                                                        },
+                                                        "typography_letter_spacing": {
+                                                            "unit": "em",
+                                                            "size": 0.1
+                                                        },
+                                                        "border_radius": {
+                                                            "unit": "px",
+                                                            "top": 0,
+                                                            "right": 0,
+                                                            "bottom": 0,
+                                                            "left": 0
+                                                        },
+                                                        "padding": {
+                                                            "unit": "px",
+                                                            "top": "18",
+                                                            "right": "36",
+                                                            "bottom": "18",
+                                                            "left": "36",
+                                                            "isLinked": false
+                                                        }
+                                                    },
+                                                    "elements": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "3c9efdca",
+                            "elType": "container",
+                            "isInner": true,
+                            "settings": {
+                                "_css_classes": "preview-audi-hero-visual-island",
+                                "flex_direction": "column",
+                                "flex_wrap": "nowrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "isInner": true,
+                                "width": {
+                                    "unit": "%",
+                                    "size": 44
+                                },
+                                "align_items": "stretch"
+                            },
+                            "elements": [
+                                {
+                                    "id": "1e0429aa",
+                                    "elType": "widget",
+                                    "widgetType": "html",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-hero-visual-widget",
+                                        "html": "<div style=\"position:absolute;top:120px;right:60px;text-align:right;\">\n      <p style=\"font-family:'Overpass Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;margin:0;text-transform:uppercase;\">Est. 2019<\/p>\n      <p style=\"font-family:'Overpass Mono',monospace;font-size:11px;letter-spacing:2px;color:#888;margin:4px 0 0;text-transform:uppercase;\">Lagos · London · Lisbon<\/p>\n    <\/div>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "e81cc98f",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-generic preview-audi-section preview-audi-preserved-source",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "0",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "_element_id": "preview-audi-generic"
+            },
+            "elements": [
+                {
+                    "id": "41680c09",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-generic-widget",
+                        "html": "<div style=\"background:#0D0D0D;padding:18px 0;overflow:hidden;white-space:nowrap;border-bottom:2px solid #0D0D0D;\">\n    <div id=\"marquee\" style=\"display:inline-block;animation:marquee 20s linear infinite;font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:4px;color:#F2EFE8;\">\n      BRAND IDENTITY  ·  DIGITAL EXPERIENCE  ·  MOTION DESIGN  ·  WEB DEVELOPMENT  ·  STRATEGY  ·  BRAND IDENTITY  ·  DIGITAL EXPERIENCE  ·  MOTION DESIGN  ·  WEB DEVELOPMENT  ·  STRATEGY  · \n    <\/div>\n  <\/div>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "04f7d4d5",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-generic preview-audi-section preview-audi-reveal src-id-studio",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0d0d0d",
+                "border_border": "solid",
+                "border_color": "rgba(242,239,232,0.12)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "studio"
+            },
+            "elements": [
+                {
+                    "id": "3500c0fb",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-section-tag-widget",
+                        "html": "<div class=\"preview-audi-section-tag\">clients served<\/div>"
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "beb7b16b",
+                    "elType": "widget",
+                    "widgetType": "heading",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-section-title",
+                        "title": "The studio",
+                        "header_size": "h2",
+                        "align": "left",
+                        "typography_typography": "custom",
+                        "typography_font_family": "system-ui",
+                        "typography_font_weight": "800",
+                        "typography_font_size": {
+                            "unit": "px",
+                            "size": 52
+                        },
+                        "title_color": "#f2efe8",
+                        "typography_letter_spacing": {
+                            "unit": "px",
+                            "size": -2
+                        }
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "5a6e9cfe",
+                    "elType": "widget",
+                    "widgetType": "text-editor",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-section-desc",
+                        "editor": "<p>FORMA is a 12-person creative studio working at the intersection of strategy and craft. We partner with ambitious companies to define and build their visual identity — from first sketch to final pixel.<\/p>"
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "2933b38d",
+                    "elType": "container",
+                    "isInner": true,
+                    "settings": {
+                        "_css_classes": "preview-audi-generic-grid",
+                        "container_type": "grid",
+                        "grid_columns_fr": "1fr 1fr 1fr",
+                        "gap": {
+                            "unit": "px",
+                            "size": 16,
+                            "column": 16,
+                            "row": 16
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "76d54401",
+                            "elType": "container",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-generic-card preview-audi-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "wrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(242,239,232,0.04)",
+                                "border_border": "solid",
+                                "border_color": "rgba(242,239,232,0.12)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "28",
+                                    "right": "28",
+                                    "bottom": "28",
+                                    "left": "28",
+                                    "isLinked": false
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "5c5497ba",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-title preview-audi-d1",
+                                        "title": "Brand Strategy",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "system-ui",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 20
+                                        },
+                                        "title_color": "#f2efe8"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "9562f90a",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-body",
+                                        "editor": "<p>Positioning, messaging architecture, competitive landscape analysis, and naming.<\/p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "397535c1",
+                            "elType": "container",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-generic-card preview-audi-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "wrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(242,239,232,0.04)",
+                                "border_border": "solid",
+                                "border_color": "rgba(242,239,232,0.12)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "28",
+                                    "right": "28",
+                                    "bottom": "28",
+                                    "left": "28",
+                                    "isLinked": false
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "ab1e9942",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-title preview-audi-d2",
+                                        "title": "Visual Identity",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "system-ui",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 20
+                                        },
+                                        "title_color": "#f2efe8"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "86cb4b42",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-body",
+                                        "editor": "<p>Logo systems, colour, typography, iconography, and full brand guidelines.<\/p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "fb98d4e8",
+                            "elType": "container",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-generic-card preview-audi-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "wrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(242,239,232,0.04)",
+                                "border_border": "solid",
+                                "border_color": "rgba(242,239,232,0.12)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "28",
+                                    "right": "28",
+                                    "bottom": "28",
+                                    "left": "28",
+                                    "isLinked": false
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "da11956a",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-title preview-audi-d3",
+                                        "title": "Digital Experience",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "system-ui",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 20
+                                        },
+                                        "title_color": "#f2efe8"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "d850dcb7",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-body",
+                                        "editor": "<p>Website design and development, interactive prototypes, and motion systems.<\/p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "3bf7d4d3",
+                            "elType": "container",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-generic-card preview-audi-reveal",
+                                "flex_direction": "column",
+                                "flex_wrap": "wrap",
+                                "gap": {
+                                    "unit": "px",
+                                    "size": 24,
+                                    "column": 24,
+                                    "row": 24
+                                },
+                                "background_background": "classic",
+                                "background_color": "rgba(242,239,232,0.04)",
+                                "border_border": "solid",
+                                "border_color": "rgba(242,239,232,0.12)",
+                                "border_width": {
+                                    "unit": "px",
+                                    "top": "1",
+                                    "right": "1",
+                                    "bottom": "1",
+                                    "left": "1",
+                                    "isLinked": false
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "28",
+                                    "right": "28",
+                                    "bottom": "28",
+                                    "left": "28",
+                                    "isLinked": false
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "1deef495",
+                                    "elType": "widget",
+                                    "widgetType": "heading",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-title preview-audi-d1",
+                                        "title": "Campaign & Content",
+                                        "header_size": "h3",
+                                        "align": "left",
+                                        "typography_typography": "custom",
+                                        "typography_font_family": "system-ui",
+                                        "typography_font_weight": "700",
+                                        "typography_font_size": {
+                                            "unit": "px",
+                                            "size": 20
+                                        },
+                                        "title_color": "#f2efe8"
+                                    },
+                                    "elements": []
+                                },
+                                {
+                                    "id": "f23c3553",
+                                    "elType": "widget",
+                                    "widgetType": "text-editor",
+                                    "isInner": false,
+                                    "settings": {
+                                        "_css_classes": "preview-audi-card-body",
+                                        "editor": "<p>Campaign concepting, art direction, social content, and print collateral.<\/p>"
+                                    },
+                                    "elements": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "3bb659e9",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-gallery preview-audi-section preview-audi-preserved-source src-id-work",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "0",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "_element_id": "preview-audi-gallery"
+            },
+            "elements": [
+                {
+                    "id": "41c84ec2",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-gallery-widget src-id-work",
+                        "html": "<section id=\"work\" style=\"padding:100px 60px;\">\n    <div style=\"display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px;\">\n      <h2 style=\"font-family:'Bebas Neue',cursive;font-size:80px;margin:0;letter-spacing:2px;line-height:1;\">Selected<br>work<\/h2>\n      <a href=\"#\" style=\"font-family:'Overpass Mono',monospace;font-size:12px;letter-spacing:2px;color:#888;text-decoration:none;text-transform:uppercase;transition:color 0.2s;\" onmouseover=\"this.style.color='#0D0D0D'\" onmouseout=\"this.style.color='#888'\">View all projects →<\/a>\n    <\/div>\n\n    <!-- Work items -->\n    <div id=\"work-grid\" style=\"display:flex;flex-direction:column;gap:2px;\">\n\n      <div class=\"work-item\" style=\"display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;\" onmouseover=\"hoverWork(this,true)\" onmouseout=\"hoverWork(this,false)\">\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:12px;color:#888;\">01<\/span>\n        <div>\n          <h3 style=\"font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;\">Meridian Capital<\/h3>\n          <p style=\"font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;\">Brand Identity · Visual System<\/p>\n        <\/div>\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;\">2024<\/span>\n        <span style=\"font-size:20px;opacity:0;transition:opacity 0.3s;transform:translateX(-10px);transition:all 0.3s;\" class=\"work-arrow\">→<\/span>\n      <\/div>\n\n      <div class=\"work-item\" style=\"display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;\" onmouseover=\"hoverWork(this,true)\" onmouseout=\"hoverWork(this,false)\">\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:12px;color:#888;\">02<\/span>\n        <div>\n          <h3 style=\"font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;\">Sona Health<\/h3>\n          <p style=\"font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;\">Web Experience · Motion<\/p>\n        <\/div>\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;\">2024<\/span>\n        <span style=\"font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);\" class=\"work-arrow\">→<\/span>\n      <\/div>\n\n      <div class=\"work-item\" style=\"display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;\" onmouseover=\"hoverWork(this,true)\" onmouseout=\"hoverWork(this,false)\">\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:12px;color:#888;\">03<\/span>\n        <div>\n          <h3 style=\"font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;\">Vox Architecture<\/h3>\n          <p style=\"font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;\">Brand Identity · Print · Digital<\/p>\n        <\/div>\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;\">2023<\/span>\n        <span style=\"font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);\" class=\"work-arrow\">→<\/span>\n      <\/div>\n\n      <div class=\"work-item\" style=\"display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid transparent;transition:all 0.3s;cursor:none;\" onmouseover=\"hoverWork(this,true)\" onmouseout=\"hoverWork(this,false)\">\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:12px;color:#888;\">04<\/span>\n        <div>\n          <h3 style=\"font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;\">Keller Spirits<\/h3>\n          <p style=\"font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;\">Packaging · Campaign · Social<\/p>\n        <\/div>\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;\">2023<\/span>\n        <span style=\"font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);\" class=\"work-arrow\">→<\/span>\n      <\/div>\n\n      <div class=\"work-item\" style=\"display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:40px;padding:28px 0;border-top:1px solid #D8D5CE;border-bottom:1px solid #D8D5CE;transition:all 0.3s;cursor:none;\" onmouseover=\"hoverWork(this,true)\" onmouseout=\"hoverWork(this,false)\">\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:12px;color:#888;\">05<\/span>\n        <div>\n          <h3 style=\"font-family:'Bebas Neue',cursive;font-size:36px;margin:0;letter-spacing:1px;\">Dune Fintech<\/h3>\n          <p style=\"font-size:13px;color:#888;margin:4px 0 0;font-family:'Overpass Mono',monospace;\">Full Brand · Product Design<\/p>\n        <\/div>\n        <span style=\"font-family:'Overpass Mono',monospace;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;\">2023<\/span>\n        <span style=\"font-size:20px;opacity:0;transition:all 0.3s;transform:translateX(-10px);\" class=\"work-arrow\">→<\/span>\n      <\/div>\n    <\/div>\n\n    <!-- Hover preview image (follows cursor) -->\n    <div id=\"project-preview\" style=\"position:fixed;width:280px;height:200px;background:#0D0D0D;border-radius:4px;pointer-events:none;z-index:400;opacity:0;transition:opacity 0.3s;overflow:hidden;display:flex;align-items:center;justify-content:center;\">\n      <span id=\"preview-label\" style=\"font-family:'Bebas Neue',cursive;font-size:32px;color:#F2EFE8;letter-spacing:2px;opacity:0.3;\">PROJECT<\/span>\n    <\/div>\n  <\/section>"
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "41898fbf",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-contact preview-audi-section preview-audi-reveal src-id-contact",
+                "flex_direction": "column",
+                "flex_wrap": "wrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0d0d0d",
+                "border_border": "solid",
+                "border_color": "rgba(242,239,232,0.12)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "120",
+                    "right": "60",
+                    "bottom": "120",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "contact"
+            },
+            "elements": [
+                {
+                    "id": "b71dff4a",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-section-tag-widget",
+                        "html": "<div class=\"preview-audi-section-tag\">Ready to start?<\/div>"
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "c6f1be57",
+                    "elType": "widget",
+                    "widgetType": "heading",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-section-title",
+                        "title": "Let's build<br>something.",
+                        "header_size": "h2",
+                        "align": "left",
+                        "typography_typography": "custom",
+                        "typography_font_family": "system-ui",
+                        "typography_font_weight": "800",
+                        "typography_font_size": {
+                            "unit": "px",
+                            "size": 52
+                        },
+                        "title_color": "#f2efe8",
+                        "typography_letter_spacing": {
+                            "unit": "px",
+                            "size": -2
+                        }
+                    },
+                    "elements": []
+                },
+                {
+                    "id": "e374dffe",
+                    "elType": "container",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-contact-flow preview-audi-reveal src-id-contact",
+                        "flex_direction": "column",
+                        "flex_wrap": "wrap",
+                        "gap": {
+                            "unit": "px",
+                            "size": 24,
+                            "column": 24,
+                            "row": 24
+                        },
+                        "background_background": "classic",
+                        "background_color": "transparent",
+                        "padding": {
+                            "unit": "px",
+                            "top": "0",
+                            "right": "0",
+                            "bottom": "0",
+                            "left": "0",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "f87faf75",
+                            "elType": "widget",
+                            "widgetType": "heading",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-card-title preview-audi-d1",
+                                "title": "Let's build<br>something.",
+                                "header_size": "h3",
+                                "align": "left",
+                                "typography_typography": "custom",
+                                "typography_font_family": "system-ui",
+                                "typography_font_weight": "700",
+                                "typography_font_size": {
+                                    "unit": "px",
+                                    "size": 20
+                                },
+                                "title_color": "#f2efe8"
+                            },
+                            "elements": []
+                        },
+                        {
+                            "id": "18c58614",
+                            "elType": "widget",
+                            "widgetType": "html",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-card-visual-widget preview-audi-card-visual",
+                                "html": "<a href=\"mailto:hello@forma.studio\" id=\"email-link\" style=\"display:inline-block;font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;color:#0D0D0D;text-decoration:none;border-bottom:3px solid #0D0D0D;padding-bottom:4px;transition:opacity 0.2s;\" onmouseover=\"this.style.opacity='0.5'\" onmouseout=\"this.style.opacity='1'\">HELLO@FORMA.STUDIO<\/a>"
+                            },
+                            "elements": []
+                        },
+                        {
+                            "id": "884371e7",
+                            "elType": "widget",
+                            "widgetType": "button",
+                            "isInner": false,
+                            "settings": {
+                                "_css_classes": "preview-audi-btn-primary",
+                                "text": "HELLO@FORMA.STUDIO",
+                                "link": {
+                                    "url": "mailto:hello@forma.studio",
+                                    "is_external": false,
+                                    "nofollow": false
+                                },
+                                "background_color": "#f2efe8",
+                                "button_text_color": "#0d0d0d",
+                                "typography_typography": "custom",
+                                "typography_font_family": "Overpass Mono",
+                                "typography_font_weight": "700",
+                                "typography_font_size": {
+                                    "unit": "px",
+                                    "size": 12
+                                },
+                                "typography_letter_spacing": {
+                                    "unit": "em",
+                                    "size": 0.1
+                                },
+                                "border_radius": {
+                                    "unit": "px",
+                                    "top": 0,
+                                    "right": 0,
+                                    "bottom": 0,
+                                    "left": 0
+                                },
+                                "padding": {
+                                    "unit": "px",
+                                    "top": "18",
+                                    "right": "36",
+                                    "bottom": "18",
+                                    "left": "36",
+                                    "isLinked": false
+                                }
+                            },
+                            "elements": []
+                        }
+                    ]
+                },
+                {
+                    "id": "6b0d2e23",
+                    "elType": "widget",
+                    "widgetType": "button",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-btn-primary",
+                        "text": "HELLO@FORMA.STUDIO",
+                        "link": {
+                            "url": "mailto:hello@forma.studio",
+                            "is_external": false,
+                            "nofollow": false
+                        },
+                        "background_color": "#f2efe8",
+                        "button_text_color": "#0d0d0d",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Overpass Mono",
+                        "typography_font_weight": "700",
+                        "typography_font_size": {
+                            "unit": "px",
+                            "size": 12
+                        },
+                        "typography_letter_spacing": {
+                            "unit": "em",
+                            "size": 0.1
+                        },
+                        "border_radius": {
+                            "unit": "px",
+                            "top": 0,
+                            "right": 0,
+                            "bottom": 0,
+                            "left": 0
+                        },
+                        "padding": {
+                            "unit": "px",
+                            "top": "18",
+                            "right": "36",
+                            "bottom": "18",
+                            "left": "36",
+                            "isLinked": false
+                        }
+                    },
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "id": "6de95adf",
+            "elType": "container",
+            "isInner": false,
+            "settings": {
+                "_css_classes": "preview-audi-footer preview-audi-section",
+                "flex_direction": "column",
+                "flex_wrap": "nowrap",
+                "gap": {
+                    "unit": "px",
+                    "size": 24,
+                    "column": 24,
+                    "row": 24
+                },
+                "background_background": "classic",
+                "background_color": "#0d0d0d",
+                "border_border": "solid",
+                "border_color": "rgba(242,239,232,0.12)",
+                "border_width": {
+                    "unit": "px",
+                    "top": "1",
+                    "right": "0",
+                    "bottom": "0",
+                    "left": "0",
+                    "isLinked": false
+                },
+                "padding": {
+                    "unit": "px",
+                    "top": "80",
+                    "right": "60",
+                    "bottom": "40",
+                    "left": "60",
+                    "isLinked": false
+                },
+                "_element_id": "preview-audi-footer"
+            },
+            "elements": [
+                {
+                    "id": "243ad2a5",
+                    "elType": "widget",
+                    "widgetType": "html",
+                    "isInner": false,
+                    "settings": {
+                        "_css_classes": "preview-audi-footer-bottom-widget",
+                        "html": "<div class=\"preview-audi-footer-bottom\"><span class=\"preview-audi-footer-copy\">© 2025 FORMA Studio<\/span><span class=\"preview-audi-footer-copy\">All rights reserved<\/span><\/div>"
+                    },
+                    "elements": []
+                }
+            ]
+        }
+    ],
+    "page_settings": {
+        "background_background": "classic",
+        "background_color": "#0d0d0d",
+        "hide_title": "yes"
+    }
+}

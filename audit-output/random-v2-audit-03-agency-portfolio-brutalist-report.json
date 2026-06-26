@@ -1,0 +1,235 @@
+{
+    "pass": 9,
+    "meta": {
+        "prefix": "preview-audi",
+        "strategy": "v2",
+        "project_name": "preview-audit"
+    },
+    "sections": {
+        "detected_types": [
+            "hero",
+            "generic",
+            "gallery",
+            "contact",
+            "footer"
+        ],
+        "built_types": [
+            "hero",
+            "generic",
+            "gallery",
+            "contact",
+            "footer"
+        ],
+        "render_modes": {
+            "native_rebuilt": 3,
+            "fully_preserved_source": 1,
+            "native_hybrid_fragment": 1
+        }
+    },
+    "hybrid": {
+        "sections_marked_hybrid": 1,
+        "events": {
+            "attached_total": 0,
+            "attached_to_subtree": 0,
+            "fragments_detected": 0
+        }
+    },
+    "bridges": {
+        "selector": {
+            "has_source_css": true,
+            "has_source_hook_candidates": true,
+            "has_bridge_targets": true,
+            "has_source_selector_hits": false,
+            "matched_rule_count": 0,
+            "has_output_css": false,
+            "source_has_pseudo": false,
+            "source_has_media": false,
+            "source_has_supports": false,
+            "source_has_hover": false,
+            "output_has_pseudo": false,
+            "output_has_media": false,
+            "output_has_supports": false,
+            "output_has_hover": false,
+            "candidate_classes": [],
+            "candidate_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "bridged_classes": [],
+            "bridged_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "widget_semantics": {
+                "icon-list": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "text": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "heading": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "button": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "image": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "media": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                }
+            }
+        },
+        "script": {
+            "has_source_js": true,
+            "has_source_hook_candidates": true,
+            "has_bridge_targets": true,
+            "has_source_selector_hits": true,
+            "has_rewrite": true,
+            "rewrite_count": 3,
+            "source_has_animation_api": true,
+            "source_has_selector_api": true,
+            "candidate_classes": [],
+            "candidate_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "bridged_classes": [],
+            "bridged_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "widget_semantics": {
+                "icon-list": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "text": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "heading": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "button": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "image": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "media": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                }
+            }
+        }
+    },
+    "coverage": {
+        "text": {
+            "source_phrase_count": 52,
+            "missing_count": 6,
+            "coverage_ratio": 0.8846,
+            "missing_samples": [
+                "Creative agency —",
+                "Our process is collaborative, fast, and built around results that outlast the trend cycle.",
+                "140+",
+                "years running",
+                "awards won",
+                "studio locations"
+            ]
+        },
+        "selectors": {
+            "source_contract_count": 12,
+            "missing_count": 6,
+            "coverage_ratio": 0.5,
+            "missing_ids": [
+                {
+                    "id": "cursor-dot",
+                    "reason": "source_js"
+                },
+                {
+                    "id": "cursor-ring",
+                    "reason": "source_js"
+                },
+                {
+                    "id": "para-bg",
+                    "reason": "source_js"
+                },
+                {
+                    "id": "cta-btn",
+                    "reason": "semantic_hook"
+                }
+            ],
+            "missing_classes": [
+                {
+                    "class": "nav-link",
+                    "reason": "semantic_hook"
+                },
+                {
+                    "class": "stat-num",
+                    "reason": "source_js"
+                }
+            ]
+        }
+    },
+    "assets": {
+        "global_setup": {
+            "has_canvas_source": false,
+            "has_cursor_source": true,
+            "has_canvas_output": false,
+            "has_cursor_output": true,
+            "has_source_js": true,
+            "has_script_bridge": true
+        },
+        "companion_css": {
+            "bytes": 17537,
+            "has_pseudo": true,
+            "has_hover": true
+        }
+    },
+    "output": {
+        "top_level_elements": 8
+    }
+}

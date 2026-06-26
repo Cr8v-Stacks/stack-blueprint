@@ -4,7 +4,7 @@ Tags:              elementor, page builder, template, html, converter, ai, desig
 Requires at least: 6.3
 Tested up to:      6.7
 Requires PHP:      8.1
-Stable tag:        1.0.0
+Stable tag:        1.1.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,14 @@ Partially. Stack Blueprint will attempt the conversion, but the AI works best wi
 
 == Changelog ==
 
+= 1.1.0 =
+* Added live converter preview with desktop, tablet, mobile, refresh, and fullscreen inspection controls
+* Added preview-side audit badges and sanitization diagnostics so stripped content is visible during review
+* Added DB-free verifier and preview audit tooling for repeatable conversion inspection outside Elementor
+* Improved runtime conversion stability and error handling for native conversion failures
+* Expanded native widget interpretation, bridge diagnostics, and conversion review workflow
+* Documented the architecture pivot toward a browser-truth fidelity path because heuristic-only native reconstruction is not meeting the required fidelity target
+
 = 1.0.0 =
 * Initial release
 * V1 (HTML Fidelity) and V2 (Native Components) conversion strategies
@@ -91,6 +99,9 @@ Partially. Stack Blueprint will attempt the conversion, but the AI works best wi
 * Fully custom dark admin UI
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+This release adds preview and audit tooling, improves native conversion stability, and records the current pivot toward a browser-truth conversion architecture for high-fidelity work.
 
 = 1.0.0 =
 Initial release. No upgrade steps required.

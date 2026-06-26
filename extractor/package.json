@@ -1,0 +1,14 @@
+{
+  "name": "stack-blueprint-browser-extractor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser-truth extractor for Stack Blueprint using Playwright.",
+  "main": "extract.js",
+  "scripts": {
+    "setup": "npx playwright install chromium",
+    "extract": "node extract.js"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
+  }
+}

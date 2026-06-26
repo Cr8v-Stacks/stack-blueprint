@@ -1,0 +1,1102 @@
+[
+    {
+        "code": "strategy_policy",
+        "message": "Strategy policy locked for this run.",
+        "context": {
+            "pass": 1,
+            "strategy": "v2",
+            "policy": {
+                "id": "v2_editable_native_first",
+                "html_threshold": 7,
+                "preserve_on_animation": false,
+                "preserve_on_inline_script": false,
+                "preserve_on_grid_span": false,
+                "preserve_on_absolute_layering": false,
+                "never_force_html_types": [
+                    "marquee",
+                    "stats",
+                    "cta"
+                ]
+            }
+        }
+    },
+    {
+        "code": "tailwind_detection",
+        "message": "Tailwind-like utility markup not detected.",
+        "context": {
+            "pass": 1
+        }
+    },
+    {
+        "code": "simulation_knowledge_coverage",
+        "message": "Compiled hard-rule coverage: 5 rules, 5 unique IDs.",
+        "context": {
+            "pass": 1,
+            "rule_count": 5,
+            "rule_ids": [
+                "RULE-001",
+                "RULE-002",
+                "RULE-003",
+                "RULE-004",
+                "RULE-005"
+            ],
+            "missing_ids": []
+        }
+    },
+    {
+        "code": "supported_input_shape_audit",
+        "message": "Supported-input-shape audit recorded.",
+        "context": {
+            "pass": 1,
+            "dashboard_score": 0,
+            "matched_keywords": [],
+            "strong_keyword_hits": [],
+            "dashboard_structure_count": 0,
+            "app_shell": false,
+            "marketing_page_cues": true,
+            "structural_signals": {
+                "tables": 0,
+                "forms": 0,
+                "asides": 0,
+                "panels": 0,
+                "nav_items": 3,
+                "footers": 1,
+                "headings": 9
+            }
+        }
+    },
+    {
+        "code": "source_theme_precedence_applied",
+        "message": "Source-derived theme hints were applied before template defaults.",
+        "context": {
+            "pass": 6,
+            "bg": "#0d0d0d",
+            "text": "#f2efe8",
+            "accent": "#f2efe8",
+            "font_body": "Bebas Neue",
+            "font_display": "system-ui",
+            "font_mono": "Overpass Mono"
+        }
+    },
+    {
+        "code": "strategy_complexity_score",
+        "message": "Generic subtree complexity scored for native-vs-html strategy.",
+        "context": {
+            "pass": 3,
+            "type": "hero",
+            "score": 4,
+            "threshold_html": 7,
+            "signals": {
+                "absolute_layering": true,
+                "behavior_coupling": true
+            },
+            "policy": "v2_editable_native_first"
+        }
+    },
+    {
+        "code": "v2_native_affinity",
+        "message": "V2 primitive-first affinity calculated before preserve decision.",
+        "context": {
+            "pass": 3,
+            "type": "hero",
+            "score": 8,
+            "signals": {
+                "headings": 1,
+                "text": 4,
+                "buttons": 1,
+                "images": 0,
+                "lists": 0,
+                "tables": 0,
+                "forms": 0,
+                "scripts": 0,
+                "interactive": 0,
+                "containers": 8
+            }
+        }
+    },
+    {
+        "code": "hero_payload_extracted",
+        "message": "Hero payload extracted for native copy plus in-place visual island assembly.",
+        "context": {
+            "pass": 7,
+            "has_copy_hook": true,
+            "has_visual_html": true
+        }
+    },
+    {
+        "code": "section_render_mode",
+        "message": "Section \"hero\" rendered as native_rebuilt.",
+        "context": {
+            "type": "hero",
+            "render_mode": "native_rebuilt",
+            "decision": "native",
+            "tag": "section",
+            "has_children": true,
+            "payload_keys": [
+                "project_name",
+                "source_class",
+                "source_id",
+                "tag",
+                "title",
+                "desc",
+                "eyebrow",
+                "headline",
+                "sub",
+                "cta_primary",
+                "cta_primary_url",
+                "cta_secondary",
+                "cta_secondary_url",
+                "copy_source_id",
+                "copy_source_class",
+                "copy_source_hooks",
+                "visual_html"
+            ],
+            "preserved_source": false,
+            "widget_counts": {
+                "heading": 1,
+                "text-editor": 1,
+                "button": 1,
+                "icon-list": 0,
+                "image": 0,
+                "video": 0,
+                "html": 2,
+                "container": 6
+            },
+            "matrix_checks": [
+                {
+                    "rule": "matrix_icon_list_for_real_lists",
+                    "ok": true,
+                    "message": "Source has real list structure but output has neither icon-list nor preserved HTML list fragment."
+                },
+                {
+                    "rule": "matrix_button_for_cta",
+                    "ok": true,
+                    "message": "Source has CTA\/link\/button signals but output lacks button widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_heading_for_heading_tags",
+                    "ok": true,
+                    "message": "Source has heading tags but output lacks heading widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_inline_markup_survival",
+                    "ok": true,
+                    "message": "Source has inline markup emphasis but output has no obvious native\/preserved carrier for inline markup."
+                }
+            ]
+        }
+    },
+    {
+        "code": "strategy_complexity_score",
+        "message": "Generic subtree complexity scored for native-vs-html strategy.",
+        "context": {
+            "pass": 3,
+            "type": "generic",
+            "score": 3,
+            "threshold_html": 7,
+            "signals": {
+                "behavior_coupling": true
+            },
+            "policy": "v2_editable_native_first"
+        }
+    },
+    {
+        "code": "v2_native_affinity",
+        "message": "V2 primitive-first affinity calculated before preserve decision.",
+        "context": {
+            "pass": 3,
+            "type": "generic",
+            "score": 0,
+            "signals": {
+                "headings": 0,
+                "text": 0,
+                "buttons": 0,
+                "images": 0,
+                "lists": 0,
+                "tables": 0,
+                "forms": 0,
+                "scripts": 0,
+                "interactive": 0,
+                "containers": 1
+            }
+        }
+    },
+    {
+        "code": "strategy_interactive_hybrid_preferred",
+        "message": "V2 prefers native + in-place hybrid fragments for interactive\/behavioral structures.",
+        "context": {
+            "pass": 3,
+            "type": "generic"
+        }
+    },
+    {
+        "code": "section_render_mode",
+        "message": "Section \"generic\" rendered as native_rebuilt.",
+        "context": {
+            "type": "generic",
+            "render_mode": "native_rebuilt",
+            "decision": "native",
+            "tag": "div",
+            "has_children": true,
+            "payload_keys": [
+                "project_name",
+                "source_class",
+                "source_id",
+                "tag",
+                "title",
+                "desc"
+            ],
+            "preserved_source": false,
+            "widget_counts": {
+                "heading": 0,
+                "text-editor": 0,
+                "button": 0,
+                "icon-list": 0,
+                "image": 0,
+                "video": 0,
+                "html": 1,
+                "container": 1
+            },
+            "matrix_checks": [
+                {
+                    "rule": "matrix_icon_list_for_real_lists",
+                    "ok": true,
+                    "message": "Source has real list structure but output has neither icon-list nor preserved HTML list fragment."
+                },
+                {
+                    "rule": "matrix_button_for_cta",
+                    "ok": true,
+                    "message": "Source has CTA\/link\/button signals but output lacks button widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_heading_for_heading_tags",
+                    "ok": true,
+                    "message": "Source has heading tags but output lacks heading widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_inline_markup_survival",
+                    "ok": true,
+                    "message": "Source has inline markup emphasis but output has no obvious native\/preserved carrier for inline markup."
+                }
+            ]
+        }
+    },
+    {
+        "code": "strategy_complexity_score",
+        "message": "Generic subtree complexity scored for native-vs-html strategy.",
+        "context": {
+            "pass": 3,
+            "type": "generic",
+            "score": 8,
+            "threshold_html": 7,
+            "signals": {
+                "container_density": 17,
+                "container_depth": 6,
+                "grid_span_complexity": true,
+                "behavior_coupling": true
+            },
+            "policy": "v2_editable_native_first"
+        }
+    },
+    {
+        "code": "v2_native_affinity",
+        "message": "V2 primitive-first affinity calculated before preserve decision.",
+        "context": {
+            "pass": 3,
+            "type": "generic",
+            "score": 12,
+            "signals": {
+                "headings": 5,
+                "text": 14,
+                "buttons": 0,
+                "images": 0,
+                "lists": 0,
+                "tables": 0,
+                "forms": 0,
+                "scripts": 0,
+                "interactive": 0,
+                "containers": 17
+            }
+        }
+    },
+    {
+        "code": "section_render_mode",
+        "message": "Section \"generic\" rendered as native_rebuilt.",
+        "context": {
+            "type": "generic",
+            "render_mode": "native_rebuilt",
+            "decision": "native",
+            "tag": "section",
+            "has_children": true,
+            "payload_keys": [
+                "project_name",
+                "source_class",
+                "source_id",
+                "tag",
+                "title",
+                "desc"
+            ],
+            "preserved_source": false,
+            "widget_counts": {
+                "heading": 5,
+                "text-editor": 5,
+                "button": 0,
+                "icon-list": 0,
+                "image": 0,
+                "video": 0,
+                "html": 1,
+                "container": 6
+            },
+            "matrix_checks": [
+                {
+                    "rule": "matrix_icon_list_for_real_lists",
+                    "ok": true,
+                    "message": "Source has real list structure but output has neither icon-list nor preserved HTML list fragment."
+                },
+                {
+                    "rule": "matrix_button_for_cta",
+                    "ok": true,
+                    "message": "Source has CTA\/link\/button signals but output lacks button widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_heading_for_heading_tags",
+                    "ok": true,
+                    "message": "Source has heading tags but output lacks heading widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_inline_markup_survival",
+                    "ok": true,
+                    "message": "Source has inline markup emphasis but output has no obvious native\/preserved carrier for inline markup."
+                }
+            ]
+        }
+    },
+    {
+        "code": "priority_rule_match",
+        "message": "Priority rule RULE-001 forced html strategy.",
+        "context": {
+            "pass": 3,
+            "type": "gallery",
+            "rule": "RULE-001",
+            "reason": "Compiled: fixed position requires HTML preservation path."
+        }
+    },
+    {
+        "code": "section_render_mode",
+        "message": "Section \"gallery\" rendered as fully_preserved_source.",
+        "context": {
+            "type": "gallery",
+            "render_mode": "fully_preserved_source",
+            "decision": "html",
+            "tag": "section",
+            "has_children": true,
+            "payload_keys": [
+                "project_name",
+                "source_class",
+                "source_id",
+                "tag",
+                "title",
+                "desc"
+            ],
+            "preserved_source": false,
+            "widget_counts": {
+                "heading": 0,
+                "text-editor": 0,
+                "button": 0,
+                "icon-list": 0,
+                "image": 0,
+                "video": 0,
+                "html": 1,
+                "container": 1
+            },
+            "matrix_checks": [
+                {
+                    "rule": "matrix_icon_list_for_real_lists",
+                    "ok": true,
+                    "message": "Source has real list structure but output has neither icon-list nor preserved HTML list fragment."
+                },
+                {
+                    "rule": "matrix_button_for_cta",
+                    "ok": true,
+                    "message": "Source has CTA\/link\/button signals but output lacks button widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_heading_for_heading_tags",
+                    "ok": true,
+                    "message": "Source has heading tags but output lacks heading widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_inline_markup_survival",
+                    "ok": true,
+                    "message": "Source has inline markup emphasis but output has no obvious native\/preserved carrier for inline markup."
+                }
+            ]
+        }
+    },
+    {
+        "code": "strategy_complexity_score",
+        "message": "Generic subtree complexity scored for native-vs-html strategy.",
+        "context": {
+            "pass": 3,
+            "type": "contact",
+            "score": 3,
+            "threshold_html": 7,
+            "signals": {
+                "behavior_coupling": true
+            },
+            "policy": "v2_editable_native_first"
+        }
+    },
+    {
+        "code": "v2_native_affinity",
+        "message": "V2 primitive-first affinity calculated before preserve decision.",
+        "context": {
+            "pass": 3,
+            "type": "contact",
+            "score": 3,
+            "signals": {
+                "headings": 1,
+                "text": 1,
+                "buttons": 1,
+                "images": 0,
+                "lists": 0,
+                "tables": 0,
+                "forms": 0,
+                "scripts": 0,
+                "interactive": 0,
+                "containers": 0
+            }
+        }
+    },
+    {
+        "code": "strategy_interactive_hybrid_preferred",
+        "message": "V2 prefers native + in-place hybrid fragments for interactive\/behavioral structures.",
+        "context": {
+            "pass": 3,
+            "type": "contact"
+        }
+    },
+    {
+        "code": "section_render_mode",
+        "message": "Section \"contact\" rendered as native_hybrid_fragment.",
+        "context": {
+            "type": "contact",
+            "render_mode": "native_hybrid_fragment",
+            "decision": "native",
+            "tag": "section",
+            "has_children": true,
+            "payload_keys": [
+                "project_name",
+                "source_class",
+                "source_id",
+                "tag",
+                "title",
+                "desc"
+            ],
+            "preserved_source": false,
+            "widget_counts": {
+                "heading": 2,
+                "text-editor": 0,
+                "button": 2,
+                "icon-list": 0,
+                "image": 0,
+                "video": 0,
+                "html": 2,
+                "container": 2
+            },
+            "matrix_checks": [
+                {
+                    "rule": "matrix_icon_list_for_real_lists",
+                    "ok": true,
+                    "message": "Source has real list structure but output has neither icon-list nor preserved HTML list fragment."
+                },
+                {
+                    "rule": "matrix_button_for_cta",
+                    "ok": true,
+                    "message": "Source has CTA\/link\/button signals but output lacks button widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_heading_for_heading_tags",
+                    "ok": true,
+                    "message": "Source has heading tags but output lacks heading widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_inline_markup_survival",
+                    "ok": true,
+                    "message": "Source has inline markup emphasis but output has no obvious native\/preserved carrier for inline markup."
+                }
+            ]
+        }
+    },
+    {
+        "code": "strategy_complexity_score",
+        "message": "Generic subtree complexity scored for native-vs-html strategy.",
+        "context": {
+            "pass": 3,
+            "type": "footer",
+            "score": 3,
+            "threshold_html": 7,
+            "signals": {
+                "behavior_coupling": true
+            },
+            "policy": "v2_editable_native_first"
+        }
+    },
+    {
+        "code": "v2_native_affinity",
+        "message": "V2 primitive-first affinity calculated before preserve decision.",
+        "context": {
+            "pass": 3,
+            "type": "footer",
+            "score": 0,
+            "signals": {
+                "headings": 0,
+                "text": 0,
+                "buttons": 0,
+                "images": 0,
+                "lists": 0,
+                "tables": 0,
+                "forms": 0,
+                "scripts": 0,
+                "interactive": 0,
+                "containers": 0
+            }
+        }
+    },
+    {
+        "code": "strategy_interactive_hybrid_preferred",
+        "message": "V2 prefers native + in-place hybrid fragments for interactive\/behavioral structures.",
+        "context": {
+            "pass": 3,
+            "type": "footer"
+        }
+    },
+    {
+        "code": "section_render_mode",
+        "message": "Section \"footer\" rendered as native_rebuilt.",
+        "context": {
+            "type": "footer",
+            "render_mode": "native_rebuilt",
+            "decision": "native",
+            "tag": "footer",
+            "has_children": true,
+            "payload_keys": [
+                "project_name",
+                "source_class",
+                "source_id",
+                "tag",
+                "title",
+                "desc",
+                "cols",
+                "bottom_texts"
+            ],
+            "preserved_source": false,
+            "widget_counts": {
+                "heading": 0,
+                "text-editor": 0,
+                "button": 0,
+                "icon-list": 0,
+                "image": 0,
+                "video": 0,
+                "html": 1,
+                "container": 1
+            },
+            "matrix_checks": [
+                {
+                    "rule": "matrix_icon_list_for_real_lists",
+                    "ok": true,
+                    "message": "Source has real list structure but output has neither icon-list nor preserved HTML list fragment."
+                },
+                {
+                    "rule": "matrix_button_for_cta",
+                    "ok": true,
+                    "message": "Source has CTA\/link\/button signals but output lacks button widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_heading_for_heading_tags",
+                    "ok": true,
+                    "message": "Source has heading tags but output lacks heading widget and preserved HTML fallback."
+                },
+                {
+                    "rule": "matrix_inline_markup_survival",
+                    "ok": true,
+                    "message": "Source has inline markup emphasis but output has no obvious native\/preserved carrier for inline markup."
+                }
+            ]
+        }
+    },
+    {
+        "code": "source_script_bridge",
+        "message": "Source script bridge analysis recorded.",
+        "context": {
+            "has_source_js": true,
+            "has_source_hook_candidates": true,
+            "has_bridge_targets": true,
+            "has_source_selector_hits": true,
+            "has_rewrite": true,
+            "rewrite_count": 3,
+            "source_has_animation_api": true,
+            "source_has_selector_api": true,
+            "candidate_classes": [],
+            "candidate_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "bridged_classes": [],
+            "bridged_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "widget_semantics": {
+                "icon-list": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "text": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "heading": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "button": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "image": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "media": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                }
+            }
+        }
+    },
+    {
+        "code": "source_selector_bridge",
+        "message": "Source selector bridge analysis recorded.",
+        "context": {
+            "has_source_css": true,
+            "has_source_hook_candidates": true,
+            "has_bridge_targets": true,
+            "has_source_selector_hits": false,
+            "matched_rule_count": 0,
+            "has_output_css": false,
+            "source_has_pseudo": false,
+            "source_has_media": false,
+            "source_has_supports": false,
+            "source_has_hover": false,
+            "output_has_pseudo": false,
+            "output_has_media": false,
+            "output_has_supports": false,
+            "output_has_hover": false,
+            "candidate_classes": [],
+            "candidate_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "bridged_classes": [],
+            "bridged_ids": [
+                "studio",
+                "work",
+                "contact",
+                "hero-main"
+            ],
+            "widget_semantics": {
+                "icon-list": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "text": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "heading": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "button": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "image": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                },
+                "media": {
+                    "source": false,
+                    "output": false,
+                    "pseudo_source": false,
+                    "pseudo_output": false
+                }
+            }
+        }
+    },
+    {
+        "code": "companion_css_coverage",
+        "message": "Companion CSS diagnostics recorded.",
+        "context": {
+            "unresolved_pseudo_hosts": [],
+            "missing_keyframes": []
+        }
+    },
+    {
+        "code": "emitted_hook_inventory",
+        "message": "Emitted hook inventory collected for output validation.",
+        "context": {
+            "class_count": 54,
+            "id_count": 18,
+            "missing_hooks": []
+        }
+    },
+    {
+        "code": "global_setup_asset_inventory",
+        "message": "Global setup asset diagnostics recorded.",
+        "context": {
+            "has_canvas_source": false,
+            "has_cursor_source": true,
+            "has_canvas_output": false,
+            "has_cursor_output": true,
+            "has_source_js": true,
+            "has_script_bridge": true
+        }
+    },
+    {
+        "code": "source_output_coverage",
+        "message": "Source-vs-output text and selector coverage diagnostics recorded.",
+        "context": {
+            "text": {
+                "source_phrase_count": 52,
+                "missing_count": 6,
+                "coverage_ratio": 0.8846,
+                "missing_samples": [
+                    "Creative agency —",
+                    "Our process is collaborative, fast, and built around results that outlast the trend cycle.",
+                    "140+",
+                    "years running",
+                    "awards won",
+                    "studio locations"
+                ]
+            },
+            "selectors": {
+                "source_contract_count": 12,
+                "missing_count": 6,
+                "coverage_ratio": 0.5,
+                "missing_ids": [
+                    {
+                        "id": "cursor-dot",
+                        "reason": "source_js"
+                    },
+                    {
+                        "id": "cursor-ring",
+                        "reason": "source_js"
+                    },
+                    {
+                        "id": "para-bg",
+                        "reason": "source_js"
+                    },
+                    {
+                        "id": "cta-btn",
+                        "reason": "semantic_hook"
+                    }
+                ],
+                "missing_classes": [
+                    {
+                        "class": "nav-link",
+                        "reason": "semantic_hook"
+                    },
+                    {
+                        "class": "stat-num",
+                        "reason": "source_js"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "code": "architecture_article_compliance",
+        "message": "Runtime architecture-article compliance checklist generated.",
+        "context": {
+            "pass": 9,
+            "statuses": {
+                "problem_layers": "done",
+                "pass_architecture_integrity": "done",
+                "hybrid_boundary_correctness": "done",
+                "global_setup_handling": "done",
+                "css_js_carryover_fidelity": "partial",
+                "validation_truthfulness": "done",
+                "edge_case_posture": "done"
+            }
+        }
+    },
+    {
+        "code": "conversion_run_report",
+        "message": "Conversion run report recorded (pass ownership summary).",
+        "context": {
+            "pass": 9,
+            "meta": {
+                "prefix": "preview-audi",
+                "strategy": "v2",
+                "project_name": "preview-audit"
+            },
+            "sections": {
+                "detected_types": [
+                    "hero",
+                    "generic",
+                    "gallery",
+                    "contact",
+                    "footer"
+                ],
+                "built_types": [
+                    "hero",
+                    "generic",
+                    "gallery",
+                    "contact",
+                    "footer"
+                ],
+                "render_modes": {
+                    "native_rebuilt": 3,
+                    "fully_preserved_source": 1,
+                    "native_hybrid_fragment": 1
+                }
+            },
+            "hybrid": {
+                "sections_marked_hybrid": 1,
+                "events": {
+                    "attached_total": 0,
+                    "attached_to_subtree": 0,
+                    "fragments_detected": 0
+                }
+            },
+            "bridges": {
+                "selector": {
+                    "has_source_css": true,
+                    "has_source_hook_candidates": true,
+                    "has_bridge_targets": true,
+                    "has_source_selector_hits": false,
+                    "matched_rule_count": 0,
+                    "has_output_css": false,
+                    "source_has_pseudo": false,
+                    "source_has_media": false,
+                    "source_has_supports": false,
+                    "source_has_hover": false,
+                    "output_has_pseudo": false,
+                    "output_has_media": false,
+                    "output_has_supports": false,
+                    "output_has_hover": false,
+                    "candidate_classes": [],
+                    "candidate_ids": [
+                        "studio",
+                        "work",
+                        "contact",
+                        "hero-main"
+                    ],
+                    "bridged_classes": [],
+                    "bridged_ids": [
+                        "studio",
+                        "work",
+                        "contact",
+                        "hero-main"
+                    ],
+                    "widget_semantics": {
+                        "icon-list": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "text": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "heading": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "button": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "image": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "media": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        }
+                    }
+                },
+                "script": {
+                    "has_source_js": true,
+                    "has_source_hook_candidates": true,
+                    "has_bridge_targets": true,
+                    "has_source_selector_hits": true,
+                    "has_rewrite": true,
+                    "rewrite_count": 3,
+                    "source_has_animation_api": true,
+                    "source_has_selector_api": true,
+                    "candidate_classes": [],
+                    "candidate_ids": [
+                        "studio",
+                        "work",
+                        "contact",
+                        "hero-main"
+                    ],
+                    "bridged_classes": [],
+                    "bridged_ids": [
+                        "studio",
+                        "work",
+                        "contact",
+                        "hero-main"
+                    ],
+                    "widget_semantics": {
+                        "icon-list": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "text": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "heading": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "button": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "image": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        },
+                        "media": {
+                            "source": false,
+                            "output": false,
+                            "pseudo_source": false,
+                            "pseudo_output": false
+                        }
+                    }
+                }
+            },
+            "coverage": {
+                "text": {
+                    "source_phrase_count": 52,
+                    "missing_count": 6,
+                    "coverage_ratio": 0.8846,
+                    "missing_samples": [
+                        "Creative agency —",
+                        "Our process is collaborative, fast, and built around results that outlast the trend cycle.",
+                        "140+",
+                        "years running",
+                        "awards won",
+                        "studio locations"
+                    ]
+                },
+                "selectors": {
+                    "source_contract_count": 12,
+                    "missing_count": 6,
+                    "coverage_ratio": 0.5,
+                    "missing_ids": [
+                        {
+                            "id": "cursor-dot",
+                            "reason": "source_js"
+                        },
+                        {
+                            "id": "cursor-ring",
+                            "reason": "source_js"
+                        },
+                        {
+                            "id": "para-bg",
+                            "reason": "source_js"
+                        },
+                        {
+                            "id": "cta-btn",
+                            "reason": "semantic_hook"
+                        }
+                    ],
+                    "missing_classes": [
+                        {
+                            "class": "nav-link",
+                            "reason": "semantic_hook"
+                        },
+                        {
+                            "class": "stat-num",
+                            "reason": "source_js"
+                        }
+                    ]
+                }
+            },
+            "assets": {
+                "global_setup": {
+                    "has_canvas_source": false,
+                    "has_cursor_source": true,
+                    "has_canvas_output": false,
+                    "has_cursor_output": true,
+                    "has_source_js": true,
+                    "has_script_bridge": true
+                },
+                "companion_css": {
+                    "bytes": 17537,
+                    "has_pseudo": true,
+                    "has_hover": true
+                }
+            },
+            "output": {
+                "top_level_elements": 8
+            }
+        }
+    }
+]

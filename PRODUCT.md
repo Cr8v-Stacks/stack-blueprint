@@ -2,7 +2,7 @@
 
 **Author:** Cr8v Stacks | cr8vstacks.com
 **Plugin slug:** stack-blueprint
-**Version:** 1.0.0
+**Version:** 1.1.0
 
 ---
 
@@ -43,7 +43,7 @@ V2 is itself a hybrid: native containers and widgets for everything editable, HT
 
 ---
 
-## What It Does Well (v1.0.0)
+## What It Does Well (v1.1.0)
 
 - **Structured AI prompting:** Both conversion strategies use carefully engineered system prompts encoding the lessons of real build sessions — the canvas injection pattern, the class naming convention, the global setup widget structure, the companion CSS organisation. The AI is not making ad hoc decisions; it is following a proven blueprint.
 
@@ -63,11 +63,31 @@ V2 is itself a hybrid: native containers and widgets for everything editable, HT
 
 ---
 
-## Known Limitations (v1.0.0)
+## Known Limitations (v1.1.0)
 
 **AI output reliability:** A full Elementor JSON template with 40+ uniquely identified elements, grid settings, typography objects, and responsive keys is the most complex single-turn output request that can be made of a large language model. Claude handles it well, but output consistency across very large or structurally unusual prototypes is not guaranteed. Some conversions will require manual review and repair.
 
-**Responsive configuration:** The companion CSS includes breakpoint rules, but Elementor's responsive *panel* settings — column direction, per-breakpoint padding, per-breakpoint font sizes — are not written into the JSON. These must be configured manually in the Elementor editor after import. This is a deliberate scope decision for v1.0.0; it is more reliable than having the AI attempt to produce correct Elementor responsive key syntax.
+**Responsive configuration:** The companion CSS includes breakpoint rules, but Elementor's responsive *panel* settings — column direction, per-breakpoint padding, per-breakpoint font sizes — are not written into the JSON. These must be configured manually in the Elementor editor after import. This is a deliberate scope decision for v1.1.0; it is more reliable than having the AI attempt to produce correct Elementor responsive key syntax.
+
+## Current Direction (2026-04-25)
+
+The product direction has been updated around a hard fidelity gate: if a conversion path cannot realistically reach browser-truth output and near-total fidelity against uploaded HTML, it should not remain the primary architecture.
+
+The current native heuristic path produced useful infrastructure:
+
+- conversion diagnostics
+- preview and audit tooling
+- bridge and selector analysis
+- stronger native container and widget baselines
+
+But it has not been sufficient for the required fidelity target on arbitrary uploads.
+
+The next architecture direction is therefore a browser-truth pivot:
+
+- render uploaded HTML in a real browser environment
+- extract final DOM, computed styles, layout boxes, and runtime-resolved structure
+- map that browser truth into Elementor containers and widgets
+- keep preserve-source output truthful when native reconstruction cannot meet fidelity
 
 **Bento/asymmetric grid fidelity:** HTML prototypes using `grid-row: span` create variable-height bento cards naturally. Elementor's Grid container does not. V2 output equalises card heights per row. The fix (setting minimum heights per card) is documented in the companion CSS and in the plugin UI, but it is a manual step.
 

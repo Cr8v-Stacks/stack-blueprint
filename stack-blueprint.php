@@ -3,7 +3,7 @@
  * Plugin Name: Stack Blueprint
  * Plugin URI:  https://cr8vstacks.com/stack-blueprint
  * Description: Convert custom HTML/CSS/JS prototypes into importable Elementor page templates using AI. Design freely, convert precisely.
- * Version:     1.0.0
+ * Version:     1.1.0
  * Requires at least: 6.3
  * Requires PHP: 8.1
  * Author:      Cr8v Stacks
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'SB_VERSION',      '1.0.0' );
+define( 'SB_VERSION',      '1.1.0' );
 define( 'SB_FILE',         __FILE__ );
 define( 'SB_PATH',         plugin_dir_path( __FILE__ ) );
 define( 'SB_URL',          plugin_dir_url( __FILE__ ) );

@@ -1,0 +1,59 @@
+{
+    "summary": {
+        "browser_sections": 6,
+        "elementor_sections": 8,
+        "browser_nodes": 114,
+        "elementor_nodes": 63,
+        "browser_headings": 13,
+        "elementor_headings": 18,
+        "browser_text_blocks": 43,
+        "elementor_text_blocks": 53,
+        "browser_actions": 6,
+        "elementor_buttons": 9,
+        "browser_lists": 0,
+        "elementor_lists": 1,
+        "browser_media": 0,
+        "elementor_media": 0,
+        "browser_behavior_islands": 8,
+        "elementor_html_widgets": 10,
+        "native_widget_ratio": 0.7222
+    },
+    "missing": {
+        "ids": [],
+        "classes": [],
+        "section_kinds": []
+    },
+    "browser_kinds": [
+        "hero",
+        "marquee",
+        "gallery",
+        "studio",
+        "contact",
+        "footer"
+    ],
+    "elementor_kinds": [
+        "global-setup",
+        "nav",
+        "hero",
+        "marquee",
+        "gallery",
+        "studio",
+        "contact",
+        "footer"
+    ],
+    "section_role_gaps": [
+        {
+            "kind": "hero",
+            "message": "Section `hero` has more browser-truth text blocks (6) than Elementor output (3)."
+        },
+        {
+            "kind": "studio",
+            "message": "Section `studio` has more browser-truth text blocks (18) than Elementor output (9)."
+        }
+    ],
+    "deductions": [
+        "Elementor output still preserves more HTML widgets (10) than the browser model suggests are likely behavior islands (8).",
+        "Section `hero` has more browser-truth text blocks (6) than Elementor output (3).",
+        "Section `studio` has more browser-truth text blocks (18) than Elementor output (9)."
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "version": "0.1.0",
+    "plugin_root": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint",
+    "extractor_root": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint\\extractor",
+    "extract_script": "C:\\Users\\HP\\Local Sites\\devplayground\\app\\public\\wp-content\\plugins\\stack-blueprint\\extractor\\extract.js",
+    "node_available": true,
+    "node_version": "v22.11.0",
+    "npm_available": true,
+    "npm_version": "10.9.0",
+    "script_present": true,
+    "package_present": true,
+    "playwright_present": true,
+    "browser_present": true,
+    "browser_executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "available": true
+}

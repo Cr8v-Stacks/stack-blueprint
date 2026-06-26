@@ -25,6 +25,9 @@
 		jsFile:   null,
 		strategy: 'v2',
 		engine:   'ai',
+		previewDevice: 'desktop',
+		previewExpanded: false,
+		previewSanitizeDiagnostics: [],
 		extractedTokens: { colors: {}, fonts: [] },
 	};
 
@@ -57,6 +60,7 @@
 		initStrategyCards();
 		initDropzone();
 		initMiniUploads();
+		initLivePreview();
 
 		qs('#sb-form')?.addEventListener('submit', async e => {
 			e.preventDefault();
@@ -136,6 +140,11 @@
 		zone?.classList.add('has-file');
 		const nameEl = qs('#sb-file-name');
 		if (nameEl) nameEl.textContent = `${file.name} (${fmtBytes(file.size)})`;
+		const projectInput = qs('#sb-project-name');
+		if (projectInput) {
+			projectInput.value = projectNameFromFile(file.name);
+			projectInput.classList.add('auto');
+		}
 
 		// Read file to auto-detect prefix and extract tokens.
 		readText(file).then(html => {
@@ -153,6 +162,16 @@
 			S.extractedTokens = tokens;
 			renderTokenWidget(tokens);
 		}).catch(() => {});
+	}
+
+	function projectNameFromFile(filename) {
+		const base = String(filename || '')
+			.replace(/\.[^.]+$/, '')
+			.replace(/[_\s]+/g, '-')
+			.replace(/[^a-zA-Z0-9-]+/g, '-')
+			.replace(/-+/g, '-')
+			.replace(/^-|-$/g, '');
+		return base || 'my-project';
 	}
 
 	/**
@@ -388,9 +407,628 @@
 				tbody.appendChild(tr);
 			});
 		}
+
+		renderLivePreview(record);
 	}
 
-	function hideResult() { qs('#sb-result')?.classList.remove('show'); }
+	function hideResult() {
+		qs('#sb-result')?.classList.remove('show');
+		resetLivePreview();
+	}
+
+	function initLivePreview() {
+		qsa('.sb-preview-device').forEach(btn => {
+			btn.addEventListener('click', () => {
+				setPreviewDevice(btn.dataset.previewDevice || 'desktop');
+			});
+		});
+
+		qs('#sb-preview-expand')?.addEventListener('click', () => {
+			togglePreviewExpanded();
+		});
+
+		qs('#sb-preview-refresh')?.addEventListener('click', () => {
+			if (!S.convData) {
+				toast('No converted JSON available yet.', 'err');
+				return;
+			}
+			renderLivePreview(S.convData);
+			toast('Live preview refreshed.', 'inf');
+		});
+
+		setPreviewDevice(S.previewDevice);
+		setPreviewExpandedButton();
+		resetLivePreview();
+	}
+
+	function setPreviewDevice(device) {
+		S.previewDevice = ['desktop', 'tablet', 'mobile'].includes(device) ? device : 'desktop';
+		const wrap = qs('#sb-preview-frame-wrap');
+		if (wrap) {
+			wrap.classList.remove('is-desktop', 'is-tablet', 'is-mobile');
+			wrap.classList.add(`is-${S.previewDevice}`);
+		}
+		qsa('.sb-preview-device').forEach(btn => {
+			btn.classList.toggle('is-active', btn.dataset.previewDevice === S.previewDevice);
+		});
+	}
+
+	function resetLivePreview() {
+		const frame = qs('#sb-preview-frame');
+		if (frame) frame.removeAttribute('srcdoc');
+		S.previewSanitizeDiagnostics = [];
+		setPreviewStatus('Awaiting conversion');
+		setPreviewMeta('Sandboxed preview of the converted Elementor JSON with companion CSS.');
+		renderPreviewAuditBadges(null);
+		renderPreviewSanitizeDiagnostics();
+		togglePreviewEmpty(true, 'Run a conversion to inspect the generated layout here without opening Elementor.');
+	}
+
+	function togglePreviewExpanded(force = null) {
+		S.previewExpanded = typeof force === 'boolean' ? force : !S.previewExpanded;
+		qs('#sb-live-preview-card')?.classList.toggle('is-expanded', S.previewExpanded);
+		document.body.classList.toggle('sb-preview-open', S.previewExpanded);
+		setPreviewExpandedButton();
+	}
+
+	function setPreviewExpandedButton() {
+		const btn = qs('#sb-preview-expand');
+		if (btn) btn.textContent = S.previewExpanded ? 'Close Fullscreen' : 'Fullscreen';
+	}
+
+	function renderLivePreview(record) {
+		const frame = qs('#sb-preview-frame');
+		if (!frame) return;
+
+		let template;
+		try {
+			template = JSON.parse(record?.json_output || '{}');
+		} catch (e) {
+			togglePreviewEmpty(true, 'Preview unavailable because the generated JSON could not be parsed.');
+			setPreviewStatus('Preview error');
+			setPreviewMeta('The latest conversion record returned JSON that the preview renderer could not parse.');
+			return;
+		}
+
+		const doc = buildLivePreviewDocument(template, record?.css_output || '');
+		frame.srcdoc = doc;
+
+		const topLevel = Array.isArray(template?.content) ? template.content.length : 0;
+		const warningCount = Array.isArray(record?.warnings) ? record.warnings.length : 0;
+		const audit = extractPreviewAuditSummary(record);
+		setPreviewStatus('Preview ready');
+		setPreviewMeta(`${topLevel} top-level elements rendered. ${warningCount} warnings in this conversion. Device: ${S.previewDevice}.`);
+		renderPreviewAuditBadges(audit);
+		renderPreviewSanitizeDiagnostics();
+		togglePreviewEmpty(false);
+	}
+
+	function setPreviewStatus(text) {
+		const el = qs('#sb-preview-status');
+		if (el) el.textContent = text;
+	}
+
+	function setPreviewMeta(text) {
+		const el = qs('#sb-preview-meta');
+		if (el) el.textContent = text;
+	}
+
+	function togglePreviewEmpty(show, message = '') {
+		const empty = qs('#sb-preview-empty');
+		if (!empty) return;
+		if (message) {
+			const desc = empty.querySelector('.sb-preview-empty__desc');
+			if (desc) desc.textContent = message;
+		}
+		empty.hidden = !show;
+	}
+
+	function renderPreviewAuditBadges(audit) {
+		const wrap = qs('#sb-preview-audits');
+		if (!wrap) return;
+
+		if (!audit) {
+			wrap.innerHTML = `
+				<span class="sb-preview-badge">Content pending</span>
+				<span class="sb-preview-badge">Selectors pending</span>
+				<span class="sb-preview-badge">Bridge pending</span>`;
+			return;
+		}
+
+		const textState = audit.missingTextCount > 0 ? (audit.missingTextCount > 5 ? 'err' : 'warn') : 'ok';
+		const selectorState = audit.missingSelectorCount > 0 ? (audit.missingSelectorCount > 3 ? 'err' : 'warn') : 'ok';
+		const bridgeState = audit.hasOutputCss ? 'ok' : (audit.hasSourceCss ? 'warn' : 'ok');
+
+		wrap.innerHTML = `
+			<span class="sb-preview-badge ${textState}">Content miss ${audit.missingTextCount}/${audit.sourceTextCount}</span>
+			<span class="sb-preview-badge ${selectorState}">Selector miss ${audit.missingSelectorCount}/${audit.sourceSelectorCount}</span>
+			<span class="sb-preview-badge ${bridgeState}">CSS bridge ${audit.hasOutputCss ? 'active' : (audit.hasSourceCss ? 'thin' : 'none')}</span>
+			<span class="sb-preview-badge ${S.previewSanitizeDiagnostics.length ? 'warn' : 'ok'}">Preview strips ${S.previewSanitizeDiagnostics.length}</span>`;
+	}
+
+	function renderPreviewSanitizeDiagnostics() {
+		const wrap = qs('#sb-preview-sanitize-report');
+		if (!wrap) return;
+		const items = Array.isArray(S.previewSanitizeDiagnostics) ? S.previewSanitizeDiagnostics.slice(0, 6) : [];
+		if (!items.length) {
+			wrap.innerHTML = '';
+			return;
+		}
+
+		wrap.innerHTML = items.map(item => {
+			const bits = [];
+			if (item.removedScripts) bits.push(`${item.removedScripts} script tags`);
+			if (item.removedBlockedTags) bits.push(`${item.removedBlockedTags} blocked tags`);
+			if (item.removedUnknownTags) bits.push(`${item.removedUnknownTags} unsupported tags`);
+			if (item.removedEventAttrs) bits.push(`${item.removedEventAttrs} inline handlers`);
+			if (item.removedUnsafeUrls) bits.push(`${item.removedUnsafeUrls} javascript: URLs`);
+			if (item.cleanedStyleAttrs) bits.push(`${item.cleanedStyleAttrs} style attrs`);
+			if (item.cssSanitized) bits.push('CSS sanitized');
+			const meta = bits.length ? bits.join(' • ') : 'Content sanitized for preview safety.';
+			return `<div class="sb-preview-sanitize-item"><p class="sb-preview-sanitize-title">${escHtmlAttr(item.label || 'Preview content')}</p><p class="sb-preview-sanitize-meta">${escHtmlAttr(meta)}</p></div>`;
+		}).join('');
+	}
+
+	function extractPreviewAuditSummary(record) {
+		const diagnostics = Array.isArray(record?.diagnostics) ? record.diagnostics : [];
+		const report = diagnostics.find(item => item?.code === 'conversion_run_report')?.context || {};
+		const coverage = report.coverage || {};
+		const selectorBridge = report.bridges?.selector || {};
+
+		return {
+			sourceTextCount: Number(coverage.text?.source_phrase_count || 0),
+			missingTextCount: Number(coverage.text?.missing_count || 0),
+			sourceSelectorCount: Number(coverage.selectors?.source_contract_count || 0),
+			missingSelectorCount: Number(coverage.selectors?.missing_count || 0),
+			hasSourceCss: Boolean(selectorBridge.has_source_css),
+			hasOutputCss: Boolean(selectorBridge.has_output_css),
+		};
+	}
+
+	function buildLivePreviewDocument(template, cssOutput) {
+		S.previewSanitizeDiagnostics = [];
+		const content = Array.isArray(template?.content) ? template.content : [];
+		const markup = content.map(renderPreviewElement).join('');
+		const title = escHtmlAttr(template?.title || 'Stack Blueprint Preview');
+		const sanitizedCss = sanitizePreviewCss(cssOutput || '', 'Companion CSS');
+
+		return `<!doctype html>
+<html class="sb-preview-root" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: http: https:; media-src data: blob: http: https:; frame-src data: blob: http: https:; child-src data: blob: http: https:; style-src 'unsafe-inline' data: blob:; font-src data: blob: http: https:;">
+<title>${title}</title>
+<style>
+html,body{margin:0;padding:0;min-height:100%;background:#ffffff;color:#111827}
+body{font-family:Arial,sans-serif;line-height:1.5}
+*,*::before,*::after{box-sizing:border-box}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+.elementor,.elementor-page{width:100%}
+.e-con{display:flex;position:relative;width:100%}
+.e-con-inner{display:flex;width:100%}
+.elementor-widget{width:100%;position:relative}
+.elementor-widget-container{width:100%}
+.elementor-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:8px;border:0;background:#111827;color:#fff;font:inherit;cursor:pointer}
+.elementor-heading-title{margin:0}
+.elementor-icon-list-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.elementor-icon-list-item{display:flex;align-items:flex-start;gap:8px}
+.elementor-html{width:100%}
+.sb-preview-page{width:100%;min-height:100vh;overflow-x:hidden}
+${sanitizedCss}
+</style>
+</head>
+<body class="elementor-page">
+<div class="elementor elementor-page sb-preview-page">
+${markup || '<div style="padding:32px;font-family:Arial,sans-serif;color:#475569">No previewable content in generated JSON.</div>'}
+</div>
+</body>
+</html>`;
+	}
+
+	function renderPreviewElement(node) {
+		if (!node || typeof node !== 'object') return '';
+
+		if (node.elType === 'container') {
+			const attrs = buildPreviewAttributes(node, ['e-con', 'sb-preview-container']);
+			const styles = buildPreviewStyles(node.settings || {}, true);
+			const children = Array.isArray(node.elements) ? node.elements.map(renderPreviewElement).join('') : '';
+			return `<section ${attrs} style="${escHtmlAttr(styles)}">${children}</section>`;
+		}
+
+		if (node.elType === 'widget') {
+			return renderPreviewWidget(node);
+		}
+
+		return '';
+	}
+
+	function renderPreviewWidget(node) {
+		const settings = node.settings || {};
+		const type = String(node.widgetType || '').toLowerCase();
+		const attrs = buildPreviewAttributes(node, [`elementor-widget`, `elementor-widget-${type || 'unknown'}`]);
+		const styles = buildPreviewStyles(settings, false);
+		const label = buildPreviewNodeLabel(node);
+
+		if (type === 'heading') {
+			const tag = sanitizeTagName(settings.header_size || 'h2', ['h1','h2','h3','h4','h5','h6','div']);
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container"><${tag} class="elementor-heading-title">${sanitizePreviewInlineHtml(settings.title || '', `${label} title`)}</${tag}></div></div>`;
+		}
+
+		if (type === 'text-editor') {
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container">${sanitizePreviewHtml(settings.editor || settings.text || '', label)}</div></div>`;
+		}
+
+		if (type === 'button') {
+			const url = sanitizePreviewUrl(settings.link?.url || settings.url || '#');
+			const text = settings.text || settings.button_text || settings.title || 'Button';
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container"><a class="elementor-button" href="${escHtmlAttr(url)}"><span class="elementor-button-text">${sanitizePreviewInlineHtml(text, `${label} text`)}</span></a></div></div>`;
+		}
+
+		if (type === 'image') {
+			const imageUrl = sanitizePreviewUrl(settings.image?.url || settings.url || '');
+			const alt = settings.image?.alt || settings.alt || '';
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container">${imageUrl ? `<img src="${escHtmlAttr(imageUrl)}" alt="${escHtmlAttr(alt)}">` : ''}</div></div>`;
+		}
+
+		if (type === 'icon-list') {
+			const items = Array.isArray(settings.icon_list) ? settings.icon_list : [];
+			const listHtml = items.map((item, index) => {
+				const text = sanitizePreviewInlineHtml(item.text || '', `${label} item ${index + 1}`);
+				const href = sanitizePreviewUrl(item.link?.url || '#');
+				return `<li class="elementor-icon-list-item"><span class="elementor-icon-list-text"><a href="${escHtmlAttr(href)}">${text}</a></span></li>`;
+			}).join('');
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container"><ul class="elementor-icon-list-items">${listHtml}</ul></div></div>`;
+		}
+
+		if (type === 'video') {
+			const source = sanitizePreviewUrl(settings.youtube_url || settings.vimeo_url || settings.link || settings.video_url || '');
+			const mediaHtml = source ? renderPreviewVideo(source) : '';
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container">${mediaHtml}</div></div>`;
+		}
+
+		if (type === 'html') {
+			return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container elementor-html">${sanitizePreviewHtml(settings.html || '', label)}</div></div>`;
+		}
+
+		const fallback = sanitizePreviewHtml(settings.editor || settings.text || settings.title || settings.html || '', `${label} fallback`);
+		return `<div ${attrs} style="${escHtmlAttr(styles)}"><div class="elementor-widget-container">${fallback}</div></div>`;
+	}
+
+	function buildPreviewNodeLabel(node) {
+		const settings = node?.settings || {};
+		const type = String(node?.widgetType || node?.elType || 'element').toLowerCase();
+		const elementId = settings._element_id || '';
+		const cssClasses = String(settings._css_classes || '').trim().split(/\s+/).filter(Boolean);
+		const hook = elementId || cssClasses[0] || node?.id || 'preview-node';
+		return `${type} ${hook}`;
+	}
+
+	function renderPreviewVideo(source) {
+		const safeSource = escHtmlAttr(source);
+		if (/youtube\.com|youtu\.be|vimeo\.com/i.test(source)) {
+			return `<iframe src="${safeSource}" style="width:100%;min-height:320px;border:0" allowfullscreen loading="lazy"></iframe>`;
+		}
+		return `<video src="${safeSource}" style="width:100%;height:auto" controls></video>`;
+	}
+
+	function buildPreviewAttributes(node, extraClasses = []) {
+		const settings = node.settings || {};
+		const classes = [];
+		if (Array.isArray(extraClasses)) classes.push(...extraClasses);
+		if (settings._css_classes) classes.push(String(settings._css_classes));
+		const attrs = [];
+		if (classes.length) attrs.push(`class="${escHtmlAttr(classes.join(' ').trim())}"`);
+		if (settings._element_id) attrs.push(`id="${escHtmlAttr(settings._element_id)}"`);
+		if (node.id) attrs.push(`data-elementor-id="${escHtmlAttr(node.id)}"`);
+		if (node.widgetType) attrs.push(`data-widget-type="${escHtmlAttr(node.widgetType)}"`);
+		return attrs.join(' ');
+	}
+
+	function buildPreviewStyles(settings, isContainer) {
+		const styles = [];
+
+		if (isContainer) {
+			styles.push('display:flex');
+			styles.push(`flex-direction:${settings.flex_direction || 'column'}`);
+			styles.push(`flex-wrap:${settings.flex_wrap || 'nowrap'}`);
+			if (settings.justify_content) styles.push(`justify-content:${settings.justify_content}`);
+			if (settings.align_items) styles.push(`align-items:${settings.align_items}`);
+		}
+
+		const gap = cssGap(settings.gap);
+		if (gap) styles.push(`gap:${gap}`);
+
+		const padding = cssBoxValue(settings.padding);
+		if (padding) styles.push(`padding:${padding}`);
+
+		const margin = cssBoxValue(settings.margin);
+		if (margin) styles.push(`margin:${margin}`);
+
+		const minHeight = cssSizeValue(settings.min_height);
+		if (minHeight) styles.push(`min-height:${minHeight}`);
+
+		const width = cssSizeValue(settings.width);
+		if (width) styles.push(`width:${width}`);
+
+		const maxWidth = cssSizeValue(settings.max_width);
+		if (maxWidth) styles.push(`max-width:${maxWidth}`);
+
+		if (settings.background_color) styles.push(`background:${settings.background_color}`);
+		if (settings.title_color) styles.push(`color:${settings.title_color}`);
+		else if (settings.text_color) styles.push(`color:${settings.text_color}`);
+		else if (settings.color) styles.push(`color:${settings.color}`);
+		if (settings.overflow) styles.push(`overflow:${settings.overflow}`);
+		if (settings.align) styles.push(`text-align:${settings.align}`);
+		if (settings.border_border) styles.push(`border-style:${settings.border_border}`);
+		if (settings.border_color) styles.push(`border-color:${settings.border_color}`);
+
+		const borderWidth = cssBoxValue(settings.border_width);
+		if (borderWidth) styles.push(`border-width:${borderWidth}`);
+
+		const borderRadius = cssBoxValue(settings.border_radius);
+		if (borderRadius) styles.push(`border-radius:${borderRadius}`);
+
+		appendTypographyStyles(styles, settings);
+
+		return styles.join(';');
+	}
+
+	function appendTypographyStyles(styles, settings) {
+		const families = [
+			settings.typography_font_family,
+			settings.content_typography_font_family,
+		].filter(Boolean);
+		if (families[0]) styles.push(`font-family:${families[0]}`);
+
+		const weights = [
+			settings.typography_font_weight,
+			settings.content_typography_font_weight,
+		].filter(Boolean);
+		if (weights[0]) styles.push(`font-weight:${weights[0]}`);
+
+		const fontSize = cssSizeValue(settings.typography_font_size || settings.content_typography_font_size);
+		if (fontSize) styles.push(`font-size:${fontSize}`);
+
+		const lineHeight = cssSizeValue(settings.typography_line_height || settings.content_typography_line_height);
+		if (lineHeight) styles.push(`line-height:${lineHeight}`);
+
+		const letterSpacing = cssSizeValue(settings.typography_letter_spacing || settings.content_typography_letter_spacing);
+		if (letterSpacing) styles.push(`letter-spacing:${letterSpacing}`);
+
+		if (settings.typography_text_transform) styles.push(`text-transform:${settings.typography_text_transform}`);
+	}
+
+	function cssGap(value) {
+		if (!value || typeof value !== 'object') return '';
+		const row = cssNumericValue(value.row, value.unit || 'px');
+		const column = cssNumericValue(value.column, value.unit || 'px');
+		const size = cssNumericValue(value.size, value.unit || 'px');
+		if (row && column) return `${row} ${column}`;
+		return size || row || column || '';
+	}
+
+	function cssBoxValue(value) {
+		if (!value) return '';
+		if (typeof value === 'string' || typeof value === 'number') return cssNumericValue(value, 'px');
+		if (typeof value !== 'object') return '';
+
+		const unit = value.unit || 'px';
+		const top = cssNumericValue(value.top, unit) || '0';
+		const right = cssNumericValue(value.right, unit) || top;
+		const bottom = cssNumericValue(value.bottom, unit) || top;
+		const left = cssNumericValue(value.left, unit) || right;
+		return `${top} ${right} ${bottom} ${left}`;
+	}
+
+	function cssSizeValue(value) {
+		if (!value && value !== 0) return '';
+		if (typeof value === 'string' || typeof value === 'number') return cssNumericValue(value, 'px');
+		if (typeof value !== 'object') return '';
+		return cssNumericValue(value.size, value.unit || 'px');
+	}
+
+	function cssNumericValue(value, unit = 'px') {
+		if (value === '' || value === null || typeof value === 'undefined') return '';
+		if (typeof value === 'string' && /[a-z%]+$/i.test(value.trim())) return value.trim();
+		return `${value}${unit || 'px'}`;
+	}
+
+	function sanitizeTagName(tag, allowed) {
+		const normalized = String(tag || '').toLowerCase();
+		return allowed.includes(normalized) ? normalized : allowed[0];
+	}
+
+	function sanitizePreviewHtml(html, contextLabel = '') {
+		return sanitizePreviewMarkup(html, {
+			allowedTags: new Set([
+				'a','abbr','article','aside','b','blockquote','br','button','caption','code','div','em','figcaption','figure',
+				'h1','h2','h3','h4','h5','h6','hr','i','iframe','img','li','main','ol','p','picture','pre','section','small',
+				'source','span','strong','sub','sup','svg','path','g','circle','rect','line','polyline','polygon','ellipse',
+				'table','tbody','thead','tfoot','tr','th','td','u','ul','video'
+			]),
+			unwrapUnknown: true,
+			contextLabel,
+		});
+	}
+
+	function sanitizePreviewInlineHtml(html, contextLabel = '') {
+		return sanitizePreviewMarkup(html, {
+			allowedTags: new Set(['span','strong','em','b','i','small','sup','sub','u','br','mark','code']),
+			unwrapUnknown: true,
+			contextLabel,
+		});
+	}
+
+	function sanitizePreviewMarkup(html, options = {}) {
+		const source = String(html || '');
+		if (!source) return '';
+
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(`<div>${source}</div>`, 'text/html');
+		const root = doc.body.firstElementChild;
+		if (!root) return '';
+
+		const allowedTags = options.allowedTags instanceof Set ? options.allowedTags : new Set();
+		const unwrapUnknown = options.unwrapUnknown !== false;
+		const contextLabel = String(options.contextLabel || '').trim();
+		const blockedTags = new Set(['script', 'style', 'link', 'meta', 'base', 'object', 'embed', 'form', 'input', 'textarea', 'select']);
+		const meta = {
+			label: contextLabel || 'Preview content',
+			removedScripts: (source.match(/<script\b/gi) || []).length,
+			removedEventAttrs: (source.match(/\s+on[a-z-]+\s*=/gi) || []).length,
+			removedUnsafeUrls: (source.match(/\b(?:href|src|xlink:href)\s*=\s*("javascript:[^"]*"|'javascript:[^']*'|javascript:[^\s>]+)/gi) || []).length,
+			removedBlockedTags: 0,
+			removedUnknownTags: 0,
+			cleanedStyleAttrs: 0,
+		};
+		const walker = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+		const elements = [];
+		let current = walker.nextNode();
+		while (current) {
+			elements.push(current);
+			current = walker.nextNode();
+		}
+
+		elements.forEach(el => {
+			const tag = String(el.tagName || '').toLowerCase();
+			if (blockedTags.has(tag)) {
+				meta.removedBlockedTags += 1;
+				el.remove();
+				return;
+			}
+
+			if (allowedTags.size && !allowedTags.has(tag)) {
+				meta.removedUnknownTags += 1;
+				if (unwrapUnknown) {
+					while (el.firstChild) {
+						el.parentNode?.insertBefore(el.firstChild, el);
+					}
+				}
+				el.remove();
+				return;
+			}
+
+			Array.from(el.attributes).forEach(attr => {
+				const name = String(attr.name || '').toLowerCase();
+				const value = String(attr.value || '');
+				if (name.startsWith('on')) {
+					el.removeAttribute(attr.name);
+					return;
+				}
+
+				if ((name === 'href' || name === 'src' || name === 'xlink:href') && /^\s*javascript:/i.test(value)) {
+					el.setAttribute(attr.name, '#');
+					return;
+				}
+
+				if (name === 'style') {
+					const safeStyle = sanitizePreviewStyleAttribute(value);
+					if (safeStyle !== String(value || '').trim()) {
+						meta.cleanedStyleAttrs += 1;
+					}
+					if (safeStyle) el.setAttribute('style', safeStyle);
+					else el.removeAttribute('style');
+					return;
+				}
+
+				if (!isAllowedPreviewAttribute(name, tag)) {
+					el.removeAttribute(attr.name);
+				}
+			});
+		});
+
+		const sanitized = root.innerHTML;
+		recordPreviewSanitizeDiagnostic(meta, source, sanitized);
+		return sanitized;
+	}
+
+	function isAllowedPreviewAttribute(name, tag) {
+		if (['class', 'id', 'title', 'role', 'aria-label', 'aria-hidden', 'alt', 'width', 'height', 'viewbox', 'fill', 'stroke', 'stroke-width', 'd', 'cx', 'cy', 'r', 'x', 'y', 'x1', 'x2', 'y1', 'y2', 'points', 'preserveaspectratio', 'style', 'controls', 'poster', 'loading', 'allowfullscreen', 'frameborder'].includes(name)) {
+			return true;
+		}
+
+		if (name.startsWith('data-') || name.startsWith('aria-')) {
+			return true;
+		}
+
+		if ((name === 'href' || name === 'target' || name === 'rel') && tag === 'a') {
+			return true;
+		}
+
+		if ((name === 'src' || name === 'srcset' || name === 'sizes') && ['img', 'iframe', 'source', 'video'].includes(tag)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	function sanitizePreviewStyleAttribute(style) {
+		return String(style || '')
+			.replace(/expression\s*\([^)]*\)/gi, '')
+			.replace(/url\s*\(\s*(['"]?)\s*javascript:[^)]+\)/gi, 'none')
+			.replace(/<\/?style[^>]*>/gi, '')
+			.trim();
+	}
+
+	function sanitizePreviewCss(css, contextLabel = '') {
+		const source = String(css || '');
+		const sanitized = source
+			.replace(/<\/style/gi, '<\\/style')
+			.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+			.replace(/expression\s*\([^)]*\)/gi, '')
+			.replace(/url\s*\(\s*(['"]?)\s*javascript:[^)]+\)/gi, 'url(#)')
+			.replace(/@import\s+url\(\s*(['"]?)\s*javascript:[^)]+\);?/gi, '')
+			.replace(/@import\s+['"]\s*javascript:[^'"]+['"];?/gi, '');
+		recordPreviewSanitizeDiagnostic({
+			label: contextLabel || 'Preview CSS',
+			cssSanitized: sanitized !== source,
+			removedScripts: (source.match(/<script\b/gi) || []).length,
+			removedUnsafeUrls: (source.match(/javascript:/gi) || []).length,
+			cleanedStyleAttrs: 0,
+			removedBlockedTags: 0,
+			removedUnknownTags: 0,
+			removedEventAttrs: 0,
+		}, source, sanitized);
+		return sanitized;
+	}
+
+	function recordPreviewSanitizeDiagnostic(meta, original, sanitized) {
+		if (!meta || String(original || '') === String(sanitized || '')) return;
+		const key = JSON.stringify([
+			meta.label || '',
+			meta.removedScripts || 0,
+			meta.removedBlockedTags || 0,
+			meta.removedUnknownTags || 0,
+			meta.removedEventAttrs || 0,
+			meta.removedUnsafeUrls || 0,
+			meta.cleanedStyleAttrs || 0,
+			meta.cssSanitized ? 1 : 0,
+		]);
+		if (!Array.isArray(S.previewSanitizeDiagnostics)) {
+			S.previewSanitizeDiagnostics = [];
+		}
+		if (S.previewSanitizeDiagnostics.some(item => item._key === key)) {
+			return;
+		}
+		S.previewSanitizeDiagnostics.push({ ...meta, _key: key });
+	}
+
+	function sanitizePreviewUrl(url) {
+		const value = String(url || '').trim();
+		if (!value) return '';
+		if (/^javascript:/i.test(value)) return '#';
+		return value;
+	}
+
+	function escHtmlAttr(value) {
+		return String(value ?? '')
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;');
+	}
 
 	// ── Blob Downloads ────────────────────────────────────────
 	/**
@@ -703,16 +1341,51 @@
 
 	// ── Settings Page ─────────────────────────────────────────
 	async function initSettings() {
-		await loadSettings();
+		// Tab Switching
+		qsa('.sb-tab-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				qsa('.sb-tab-btn').forEach(b => b.classList.remove('active'));
+				qsa('.sb-tab-content').forEach(c => c.classList.remove('active'));
+				btn.classList.add('active');
+				const target = qs(`#${btn.dataset.target}`);
+				if (target) target.classList.add('active');
+			});
+		});
 
-		qsa('.sb-mode-tab').forEach(tab => {
-			tab.addEventListener('click', () => {
-				qsa('.sb-mode-tab').forEach(t => t.classList.remove('is-active'));
-				qsa('.sb-mode-panel').forEach(p => p.classList.remove('is-active'));
-				tab.classList.add('is-active');
-				qs(`#sb-mode-${tab.dataset.mode}`)?.classList.add('is-active');
-				const hid = qs('#sb-api-mode-val');
-				if (hid) hid.value = tab.dataset.mode;
+		// Toggle Password Visibility
+		qsa('.sb-toggle-password').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const wrap = btn.closest('.sb-key-wrap');
+				const input = wrap ? wrap.querySelector('input') : null;
+				if (input) {
+					input.type = input.type === 'password' ? 'text' : 'password';
+				}
+			});
+		});
+
+		// Change Key (hide configured text, show input)
+		qsa('.sb-change-key-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const provider = btn.dataset.provider;
+				const configured = qs(`#sb-${getProviderPrefix(provider)}-configured`);
+				const edit = qs(`#sb-${getProviderPrefix(provider)}-edit`);
+				if (configured) configured.style.display = 'none';
+				if (edit) edit.style.display = 'block';
+			});
+		});
+
+		// Remove Key (hide configured text, show input, clear input)
+		qsa('.sb-remove-key-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const provider = btn.dataset.provider;
+				const prefix = getProviderPrefix(provider);
+				const configured = qs(`#sb-${prefix}-configured`);
+				const edit = qs(`#sb-${prefix}-edit`);
+				const input = qs(getProviderInputId(provider));
+				
+				if (input) input.value = '';
+				if (configured) configured.style.display = 'none';
+				if (edit) edit.style.display = 'block';
 			});
 		});
 
@@ -723,67 +1396,47 @@
 			catch (e) { toast(e.message, 'err'); }
 			btnLoad(btn, false);
 		});
-
-		qs('#sb-test-key')?.addEventListener('click', async () => {
-			const btn = qs('#sb-test-key');
-			btnLoad(btn, true);
-			try {
-				await api('/test-api', { method: 'POST', body: JSON.stringify({}) });
-				toast('API key valid ✓', 'ok');
-				setApiStatus(true);
-			} catch (e) {
-				toast('API key invalid: ' + e.message, 'err');
-				setApiStatus(false);
-			}
-			btnLoad(btn, false);
-		});
-
-		qs('.sb-key-toggle')?.addEventListener('click', () => {
-			const inp = qs('#sb-api-key');
-			if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-		});
 	}
 
-	async function loadSettings() {
-		try {
-			const d = await api('/settings');
-			const set = (id, val) => { const el = qs(`#${id}`); if (el && val !== undefined) el.value = val; };
-			set('sb-api-model',       d.api_model       || '');
-			set('sb-default-strategy', d.default_strategy || 'v2');
-			set('sb-max-size',         d.max_file_size    || 5);
-			if (d.api_key_set) { set('sb-api-key', d.api_key || ''); setApiStatus(true); }
+	function getProviderPrefix(provider) {
+		if (provider === 'anthropic') return 'ant';
+		if (provider === 'openai') return 'oai';
+		if (provider === 'gemini') return 'gem';
+		return '';
+	}
 
-			// Set mode tabs.
-			if (d.api_mode) {
-				qsa('.sb-mode-tab').forEach(t => t.classList.toggle('is-active', t.dataset.mode === d.api_mode));
-				qsa('.sb-mode-panel').forEach(p => p.classList.toggle('is-active', p.id === `sb-mode-${d.api_mode}`));
-				const hid = qs('#sb-api-mode-val');
-				if (hid) hid.value = d.api_mode;
-			}
-		} catch (e) { /* silent on settings load */ }
+	function getProviderInputId(provider) {
+		if (provider === 'anthropic') return '#sb-api-key';
+		if (provider === 'openai') return '#sb-openai-key';
+		if (provider === 'gemini') return '#sb-gemini-key';
+		return '';
 	}
 
 	async function saveSettings() {
-		const val  = id => qs(`#${id}`)?.value;
-		const key  = val('sb-api-key');
-		const mode = qs('#sb-api-mode-val')?.value || 'own';
+		const val = id => qs(`#${id}`)?.value;
 		await api('/settings', {
 			method: 'POST',
 			body: JSON.stringify({
-				api_key:          key?.includes('•') ? undefined : key,
+				api_key:          val('sb-api-key'),
+				openai_key:       val('sb-openai-key'),
+				gemini_key:       val('sb-gemini-key'),
 				api_model:        val('sb-api-model'),
-				api_mode:         mode,
+				openai_model:     val('sb-openai-model'),
+				gemini_model:     val('sb-gemini-model'),
 				default_strategy: val('sb-default-strategy'),
 				max_file_size:    parseInt(val('sb-max-size') || '5', 10),
 			}),
 		});
+		
+		// Optional: If saved successfully, you could reload the page to refresh the "configured" states.
+		setTimeout(() => window.location.reload(), 600);
 	}
 
 	function setApiStatus(ok) {
 		const dot = qs('#sb-api-dot');
 		const txt = qs('#sb-api-status-txt');
 		if (dot) dot.className = 'sb-conn-dot' + (ok ? ' live' : '');
-		if (txt) txt.textContent = ok ? 'Connected' : 'Not connected';
+		if (txt) txt.textContent = ok ? 'Keys Configured' : 'No Keys Configured';
 	}
 
 	// ── Token Extraction ──────────────────────────────────────

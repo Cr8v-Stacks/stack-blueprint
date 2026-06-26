@@ -10,9 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $sb_page      = 'converter';
 require_once SB_ADMIN_PATH . 'partials/layout-open.php';
 
-$api_set      = ! empty( get_option( 'sb_api_key' ) );
-$api_mode     = (string) get_option( 'sb_api_mode', 'own' );
-$api_ready    = $api_set || 'builtin' === $api_mode;
+$ant_key = get_option( 'sb_api_key', '' );
+$oai_key = get_option( 'sb_openai_key', '' );
+$gem_key = get_option( 'sb_gemini_key', '' );
+$has_any_key = ! empty($ant_key) || ! empty($oai_key) || ! empty($gem_key);
+
 $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 ?>
 
@@ -21,7 +23,7 @@ $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 	<div class="sb-page-header">
 		<p class="sb-eyebrow"><?php esc_html_e( 'Stack Blueprint', 'stack-blueprint' ); ?></p>
 		<h1 class="sb-page-title"><?php esc_html_e( 'HTML to Elementor', 'stack-blueprint' ); ?></h1>
-		<p class="sb-page-desc"><?php esc_html_e( 'Upload your HTML prototype and get a ready-to-import Elementor JSON template with companion CSS.', 'stack-blueprint' ); ?></p>
+		<p class="sb-page-desc"><?php esc_html_e( 'Upload your HTML prototype and let AI convert it to a ready-to-import Elementor JSON template.', 'stack-blueprint' ); ?></p>
 	</div>
 
 	<div class="sb-conv-grid">
@@ -31,45 +33,35 @@ $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 			<form id="sb-form" enctype="multipart/form-data">
 				<?php wp_nonce_field( 'sb_convert', 'sb_nonce' ); ?>
 
-				<!-- Engine Selector -->
-				<div class="sb-engine-tabs">
-					<button type="button" class="sb-engine-tab is-active" data-engine="ai">
+				<!-- Provider Selector -->
+				<div class="sb-engine-tabs" style="grid-template-columns: 1fr 1fr 1fr;">
+					<button type="button" class="sb-engine-tab is-active" data-provider="anthropic">
 						<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M4 6h4M6 4v4"/></svg>
-						<?php esc_html_e( 'AI Converter', 'stack-blueprint' ); ?>
-						<span class="sb-engine-tab__note"><?php esc_html_e( 'Claude API', 'stack-blueprint' ); ?></span>
+						<?php esc_html_e( 'Claude', 'stack-blueprint' ); ?>
 					</button>
-					<button type="button" class="sb-engine-tab" data-engine="native">
-						<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="4.5" height="4.5" rx="0.5"/><rect x="6.5" y="1" width="4.5" height="2" rx="0.5"/><rect x="6.5" y="4.5" width="4.5" height="2" rx="0.5"/><rect x="1" y="6.5" width="4.5" height="4.5" rx="0.5"/><rect x="6.5" y="7.5" width="4.5" height="3" rx="0.5"/></svg>
-						<?php esc_html_e( 'Native Converter', 'stack-blueprint' ); ?>
-						<span class="sb-engine-tab__note"><?php esc_html_e( 'Offline, no API', 'stack-blueprint' ); ?></span>
+					<button type="button" class="sb-engine-tab" data-provider="openai">
+						<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M4 6h4M6 4v4"/></svg>
+						<?php esc_html_e( 'ChatGPT', 'stack-blueprint' ); ?>
+					</button>
+					<button type="button" class="sb-engine-tab" data-provider="gemini">
+						<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M4 6h4M6 4v4"/></svg>
+						<?php esc_html_e( 'Gemini', 'stack-blueprint' ); ?>
 					</button>
 				</div>
-				<input type="hidden" id="sb-engine" name="converter" value="ai">
+				<input type="hidden" id="sb-provider" name="provider" value="anthropic">
 
-				<!-- Engine info banners -->
-				<div class="sb-engine-info" id="sb-info-ai">
-					<?php if ( ! $api_ready ) : ?>
+				<!-- API info banners -->
+				<div class="sb-engine-info">
+					<?php if ( ! $has_any_key ) : ?>
 					<div class="sb-notice sb-notice--warn" style="margin-bottom:16px">
 						<svg class="sb-notice__icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 1l5.8 11H1.2L7 1z"/><line x1="7" y1="5.5" x2="7" y2="8"/><circle cx="7" cy="10" r="0.5" fill="currentColor"/></svg>
-						<div class="sb-notice__body"><strong><?php esc_html_e( 'API not configured', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'Add your Anthropic key in Settings or switch to Native Converter.', 'stack-blueprint' ); ?></div>
+						<div class="sb-notice__body"><strong><?php esc_html_e( 'API not configured', 'stack-blueprint' ); ?></strong> <?php esc_html_e( 'Please add at least one API key in the Settings page.', 'stack-blueprint' ); ?></div>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=stack-blueprint-settings' ) ); ?>" class="sb-btn sb-btn--ghost sb-btn--sm sb-notice__cta"><?php esc_html_e( 'Settings', 'stack-blueprint' ); ?></a>
-					</div>
-					<?php else : ?>
-					<div class="sb-notice sb-notice--info" style="margin-bottom:16px">
-						<svg class="sb-notice__icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="5.8"/><line x1="7" y1="5" x2="7" y2="9"/><circle cx="7" cy="3.5" r=".5" fill="currentColor"/></svg>
-						<div class="sb-notice__body"><?php esc_html_e( 'Claude AI analyses your HTML and produces a highly accurate native component template. Best output quality.', 'stack-blueprint' ); ?></div>
 					</div>
 					<?php endif; ?>
 				</div>
 
-				<div class="sb-engine-info" id="sb-info-native" style="display:none">
-					<div class="sb-notice sb-notice--info" style="margin-bottom:16px">
-						<svg class="sb-notice__icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="5.8"/><line x1="7" y1="5" x2="7" y2="9"/><circle cx="7" cy="3.5" r=".5" fill="currentColor"/></svg>
-						<div class="sb-notice__body"><?php esc_html_e( 'Fully offline — no API key needed. Detects 20+ section types. V1: complex sections preserved as HTML widgets with extracted CSS/JS. V2: maximum native widget conversion. Both strategies fully supported.', 'stack-blueprint' ); ?></div>
-					</div>
-				</div>
-
-				<!-- Strategy selector — only relevant for AI engine -->
+				<!-- Strategy selector -->
 				<div id="sb-strategy-area">
 					<div class="sb-strategy-grid">
 						<label class="sb-strategy-card<?php echo 'v1' === $def_strategy ? ' is-selected' : ''; ?>" data-strategy="v1">
@@ -98,7 +90,7 @@ $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 							<path d="M16 22V10M11 15l5-5 5 5"/><rect x="4" y="4" width="24" height="24" rx="4"/>
 						</svg>
 						<p class="sb-dropzone__title"><?php esc_html_e( 'Drop your HTML prototype here', 'stack-blueprint' ); ?></p>
-						<p class="sb-dropzone__hint"><?php esc_html_e( 'or click to browse &middot; .html / .htm &middot; max 5 MB', 'stack-blueprint' ); ?></p>
+						<p class="sb-dropzone__hint"><?php esc_html_e( 'or click to browse &middot; .html / .htm', 'stack-blueprint' ); ?></p>
 					</div>
 					<div class="sb-dropzone__file">
 						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2h6l3 3v7H2z"/></svg>
@@ -126,40 +118,26 @@ $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 					</div>
 				</div>
 
-				<!-- Project Name + CSS Prefix (auto-detected) -->
-				<div class="sb-field-row">
-					<div class="sb-field">
-						<label class="sb-label" for="sb-project-name"><?php esc_html_e( 'Project Name', 'stack-blueprint' ); ?></label>
-						<input type="text" id="sb-project-name" name="project_name" class="sb-input" placeholder="<?php esc_attr_e( 'my-landing-page', 'stack-blueprint' ); ?>" value="my-project">
-					</div>
-					<input type="hidden" id="sb-prefix" name="prefix" value="">
-				</div>
-
 				<!-- Convert CTA -->
 				<button type="submit" id="sb-convert-btn" class="sb-btn sb-btn--primary sb-btn--full sb-btn--lg">
 					<span class="sb-btn__spin"></span>
 					<span class="sb-btn__lbl">
 						<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-right:5px;vertical-align:middle"><polyline points="1,6.5 4.5,3 4.5,5 8.5,5"/><polyline points="12,6.5 8.5,10 8.5,8 4.5,8"/></svg>
-						<?php esc_html_e( 'Convert to Elementor', 'stack-blueprint' ); ?>
+						<?php esc_html_e( 'Convert with AI', 'stack-blueprint' ); ?>
 					</span>
 				</button>
 
 			</form>
 
-			<!-- Progress — 9-Pass Pipeline -->
+			<!-- Progress -->
 			<div id="sb-progress" class="sb-progress">
-				<p class="sb-progress__lbl"><?php esc_html_e( 'Processing', 'stack-blueprint' ); ?></p>
+				<p class="sb-progress__lbl"><?php esc_html_e( 'AI Processing', 'stack-blueprint' ); ?></p>
 				<div class="sb-progress__track"><div class="sb-progress__fill" id="sb-prog-fill"></div></div>
 				<div class="sb-progress__steps">
-					<div class="sb-progress__step" id="sb-step-1"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 1 — Document Intelligence', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-2"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 2 — Layout Analysis', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-3"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 3 — Content Classification', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-4"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 4 — Style Resolution', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-5"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 5 — Class & ID Generation', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-6"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 6 — Global Setup Synthesis', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-7"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 7 — JSON Assembly', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-8"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 8 — Companion CSS', 'stack-blueprint' ); ?></div>
-					<div class="sb-progress__step" id="sb-step-9"><span class="sb-progress__dot"></span><?php esc_html_e( 'Pass 9 — Validation & Repair', 'stack-blueprint' ); ?></div>
+					<div class="sb-progress__step" id="sb-step-1"><span class="sb-progress__dot"></span><?php esc_html_e( 'Analyzing DOM & Prefix...', 'stack-blueprint' ); ?></div>
+					<div class="sb-progress__step" id="sb-step-2"><span class="sb-progress__dot"></span><?php esc_html_e( 'Sending to AI Provider...', 'stack-blueprint' ); ?></div>
+					<div class="sb-progress__step" id="sb-step-3"><span class="sb-progress__dot"></span><?php esc_html_e( 'Generating Elementor Tree...', 'stack-blueprint' ); ?></div>
+					<div class="sb-progress__step" id="sb-step-4"><span class="sb-progress__dot"></span><?php esc_html_e( 'Assembling CSS & Output...', 'stack-blueprint' ); ?></div>
 				</div>
 			</div>
 
@@ -170,7 +148,7 @@ $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 					<div class="sb-panel__head">
 						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--sb-green)" stroke-width="1.4"><circle cx="7" cy="7" r="5.8"/><polyline points="4.5,7 6.2,8.8 9.5,5.5"/></svg>
 						<p class="sb-panel__title"><?php esc_html_e( 'Conversion Complete', 'stack-blueprint' ); ?></p>
-						<span class="sb-panel__sub" id="sb-result-engine-badge"></span>
+						<span class="sb-panel__sub" id="sb-result-engine-badge">AI Engine</span>
 					</div>
 					<div class="sb-panel__body">
 						<div class="sb-result-actions">
@@ -216,11 +194,43 @@ $def_strategy = (string) get_option( 'sb_default_strategy', 'v2' );
 		<!-- ── Right: Sidebar ── -->
 		<div id="sb-sidebar-panel">
 
+			<div id="sb-live-preview-card" class="sb-panel sb-preview-card">
+				<div class="sb-panel__head">
+					<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="2" width="10" height="8.5" rx="1.2"/><path d="M4 1v2M9 1v2M1.5 4.5h10"/></svg>
+					<p class="sb-panel__title"><?php esc_html_e( 'Live Preview', 'stack-blueprint' ); ?></p>
+					<span class="sb-panel__sub" id="sb-preview-status"><?php esc_html_e( 'Awaiting conversion', 'stack-blueprint' ); ?></span>
+				</div>
+				<div class="sb-panel__body">
+					<div class="sb-preview-toolbar">
+						<div class="sb-preview-devices" role="tablist" aria-label="<?php esc_attr_e( 'Preview device size', 'stack-blueprint' ); ?>">
+							<button type="button" class="sb-preview-device is-active" data-preview-device="desktop"><?php esc_html_e( 'Desktop', 'stack-blueprint' ); ?></button>
+							<button type="button" class="sb-preview-device" data-preview-device="tablet"><?php esc_html_e( 'Tablet', 'stack-blueprint' ); ?></button>
+							<button type="button" class="sb-preview-device" data-preview-device="mobile"><?php esc_html_e( 'Mobile', 'stack-blueprint' ); ?></button>
+						</div>
+						<div class="sb-preview-actions">
+							<button type="button" id="sb-preview-expand" class="sb-btn sb-btn--ghost sb-btn--sm"><?php esc_html_e( 'Fullscreen', 'stack-blueprint' ); ?></button>
+							<button type="button" id="sb-preview-refresh" class="sb-btn sb-btn--ghost sb-btn--sm"><?php esc_html_e( 'Refresh', 'stack-blueprint' ); ?></button>
+						</div>
+					</div>
+					<p id="sb-preview-meta" class="sb-preview-meta"><?php esc_html_e( 'Sandboxed preview of the converted Elementor JSON with companion CSS.', 'stack-blueprint' ); ?></p>
+					<div id="sb-preview-audits" class="sb-preview-audits"></div>
+					<div id="sb-preview-sanitize-report" class="sb-preview-sanitize-report"></div>
+					<div class="sb-preview-frame-wrap is-desktop" id="sb-preview-frame-wrap">
+						<div id="sb-preview-empty" class="sb-preview-empty">
+							<p class="sb-preview-empty__title"><?php esc_html_e( 'No preview yet', 'stack-blueprint' ); ?></p>
+							<p class="sb-preview-empty__desc"><?php esc_html_e( 'Run a conversion to inspect the generated layout here without opening Elementor.', 'stack-blueprint' ); ?></p>
+						</div>
+						<iframe id="sb-preview-frame" class="sb-preview-frame" title="<?php esc_attr_e( 'Converted template preview', 'stack-blueprint' ); ?>" sandbox></iframe>
+					</div>
+				</div>
+			</div>
+
 			<div class="sb-info">
-				<p class="sb-info__title"><?php esc_html_e( 'Which engine?', 'stack-blueprint' ); ?></p>
+				<p class="sb-info__title"><?php esc_html_e( 'AI Provider Notes', 'stack-blueprint' ); ?></p>
 				<ul class="sb-info__list">
-					<li><strong style="color:var(--sb-accent)">AI:</strong> <?php esc_html_e( 'Claude reads your design intent and maps it precisely to native Elementor widgets. Highest accuracy.', 'stack-blueprint' ); ?></li>
-					<li><strong style="color:var(--sb-accent-2)">Native:</strong> <?php esc_html_e( 'Offline rule-based engine. Detects 20+ section types from HTML structure. No API key needed. Ideal for clean semantic markup.', 'stack-blueprint' ); ?></li>
+					<li><strong style="color:var(--sb-accent)">Claude:</strong> <?php esc_html_e( 'Unmatched accuracy in JSON formatting and Elementor tree structure.', 'stack-blueprint' ); ?></li>
+					<li><strong style="color:var(--sb-accent-2)">OpenAI:</strong> <?php esc_html_e( 'Very fast, highly reliable text extraction.', 'stack-blueprint' ); ?></li>
+					<li><strong style="color:#4285F4">Gemini:</strong> <?php esc_html_e( 'Best for extremely large HTML files due to its massive context window.', 'stack-blueprint' ); ?></li>
 				</ul>
 			</div>
 

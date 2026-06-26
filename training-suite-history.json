@@ -394,5 +394,787 @@
                 "max_fail_runs"
             ]
         }
+    },
+    {
+        "timestamp": "2026-04-23T12:45:53+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 12,
+            "fail": 10
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5454545454545454,
+            "selector_output_css_ratio": 0.16666666666666666,
+            "script_rewrite_ratio": 0.6666666666666666,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T13:05:18+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 12,
+            "fail": 10
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5454545454545454,
+            "selector_output_css_ratio": 0.16666666666666666,
+            "script_rewrite_ratio": 0.6666666666666666,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T13:14:25+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 12,
+            "fail": 10
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5454545454545454,
+            "selector_output_css_ratio": 0.16666666666666666,
+            "script_rewrite_ratio": 0.6666666666666666,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T13:32:54+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 12,
+            "fail": 10
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5454545454545454,
+            "selector_output_css_ratio": 0.25,
+            "script_rewrite_ratio": 0.6666666666666666,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T14:52:57+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 11,
+            "fail": 11
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5,
+            "selector_output_css_ratio": 0.18181818181818182,
+            "script_rewrite_ratio": 0.45454545454545453,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v1.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T14:53:21+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 11,
+            "fail": 11
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.5,
+            "selector_output_css_ratio": 0.18181818181818182,
+            "script_rewrite_ratio": 0.45454545454545453,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": false,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "script_rewrite_ratio_min",
+                "v1.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T14:58:49+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 18,
+            "fail": 4
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.8181818181818182,
+            "selector_output_css_ratio": 0.2222222222222222,
+            "script_rewrite_ratio": 0.5555555555555556,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs",
+                "v2.selector_output_css_ratio_min",
+                "v2.script_rewrite_ratio_min"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-23T15:11:11+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-23T15:52:36+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.7272727272727273,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-23T15:55:16+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-23T16:02:59+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T08:55:14+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T09:03:34+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T09:07:09+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.6363636363636364,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T09:18:29+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T09:20:09+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T09:51:28+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T09:58:57+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T11:08:26+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T11:15:55+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T11:26:37+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T11:34:47+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-24T12:31:00+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-25T14:49:38+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 20,
+            "fail": 2
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.9090909090909091,
+            "selector_output_css_ratio": 0.4,
+            "script_rewrite_ratio": 0.85,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-25T14:51:34+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 20,
+            "fail": 2
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.9090909090909091,
+            "selector_output_css_ratio": 0.4,
+            "script_rewrite_ratio": 0.85,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-25T14:52:55+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 16,
+            "fail": 6
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.7272727272727273,
+            "selector_output_css_ratio": 0.3125,
+            "script_rewrite_ratio": 0.875,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-25T14:53:39+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 20,
+            "fail": 2
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.9090909090909091,
+            "selector_output_css_ratio": 0.4,
+            "script_rewrite_ratio": 0.85,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-25T14:54:57+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 20,
+            "fail": 2
+        },
+        "quality_metrics": {
+            "run_success_rate": 0.9090909090909091,
+            "selector_output_css_ratio": 0.4,
+            "script_rewrite_ratio": 0.85,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": false,
+            "breaches": [
+                "min_run_success_rate",
+                "max_fail_runs"
+            ]
+        }
+    },
+    {
+        "timestamp": "2026-04-25T14:56:05+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-25T20:20:25+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.2727272727272727,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-25T20:34:04+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-26T07:49:35+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-27T08:49:37+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-27T08:58:36+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-27T09:13:52+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-27T09:25:35+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
+    },
+    {
+        "timestamp": "2026-04-27T09:26:54+00:00",
+        "profile": "balanced",
+        "summary": {
+            "runs": 22,
+            "ok": 22,
+            "fail": 0
+        },
+        "quality_metrics": {
+            "run_success_rate": 1,
+            "selector_output_css_ratio": 0.36363636363636365,
+            "script_rewrite_ratio": 0.8181818181818182,
+            "global_script_bridge_ratio": 1
+        },
+        "quality_floor": {
+            "enabled": true,
+            "passed": true,
+            "breaches": []
+        }
     }
 ]

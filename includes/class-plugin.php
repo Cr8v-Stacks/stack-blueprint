@@ -56,20 +56,18 @@ final class Plugin {
 		// Core utilities.
 		require_once SB_INCLUDES_PATH . 'utilities/class-helpers.php';
 		require_once SB_INCLUDES_PATH . 'utilities/class-file-handler.php';
-		require_once SB_INCLUDES_PATH . 'utilities/class-api-client.php';
+		require_once SB_INCLUDES_PATH . 'utilities/class-html-analyzer.php';
+		require_once SB_INCLUDES_PATH . 'utilities/providers/class-provider-base.php';
+		require_once SB_INCLUDES_PATH . 'utilities/providers/class-provider-anthropic.php';
+		require_once SB_INCLUDES_PATH . 'utilities/providers/class-provider-openai.php';
+		require_once SB_INCLUDES_PATH . 'utilities/providers/class-provider-gemini.php';
+		require_once SB_INCLUDES_PATH . 'utilities/class-api-manager.php';
 
 		// Elementor integration.
 		require_once SB_INCLUDES_PATH . 'elementor/class-template-builder.php';
 		require_once SB_INCLUDES_PATH . 'elementor/class-widget-registry.php';
 
 		// Converter engines.
-		require_once SB_INCLUDES_PATH . 'converter/class-css-resolver.php';
-		require_once SB_INCLUDES_PATH . 'converter/class-template-library.php';
-		require_once SB_INCLUDES_PATH . 'converter/passes/class-pass-document-intelligence.php';
-		require_once SB_INCLUDES_PATH . 'converter/class-html-parser.php';
-		require_once SB_INCLUDES_PATH . 'converter/class-converter-v1.php';
-		require_once SB_INCLUDES_PATH . 'converter/class-converter-v2.php';
-		require_once SB_INCLUDES_PATH . 'converter/class-native-converter.php';
 		require_once SB_INCLUDES_PATH . 'converter/class-conversion-manager.php';
 
 		// Admin.

@@ -1,0 +1,481 @@
+{
+    "source": "browser",
+    "title": "FORMA — Creative Agency",
+    "primary_viewport": "desktop",
+    "fonts": [
+        "Times New Roman",
+        "Overpass",
+        "Bebas Neue",
+        "Overpass Mono"
+    ],
+    "keyframes": [
+        "bob",
+        "marquee"
+    ],
+    "document_metrics": {
+        "scrollWidth": 1440,
+        "scrollHeight": 3547,
+        "bodyWidth": 1440,
+        "bodyHeight": 3547
+    },
+    "counts": {
+        "total_nodes": 114,
+        "containers": 41,
+        "headings": 13,
+        "text_blocks": 43,
+        "actions": 6,
+        "lists": 0,
+        "media": 0,
+        "fixed": 3,
+        "behavior_nodes": 8
+    },
+    "sections": [
+        {
+            "kind": "hero",
+            "tag": "section",
+            "id": "",
+            "classes": [],
+            "box": {
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 962,
+                "top": 0,
+                "right": 1440,
+                "bottom": 962,
+                "left": 0
+            },
+            "counts": {
+                "total_nodes": 18,
+                "containers": 5,
+                "headings": 1,
+                "text_blocks": 6,
+                "actions": 1,
+                "lists": 0,
+                "media": 0,
+                "fixed": 0,
+                "behavior_nodes": 4
+            },
+            "heading_samples": [
+                "WE BUILD BRANDS THAT LAST."
+            ],
+            "action_samples": [
+                "SEE OUR WORK →"
+            ],
+            "text_samples": [
+                "FORMA",
+                "EST. 2019",
+                "LAGOS · LONDON · LISBON",
+                "CREATIVE AGENCY —"
+            ],
+            "hooks": {
+                "ids": [
+                    "para-bg",
+                    "scroll-indicator",
+                    "hero-main",
+                    "cta-btn"
+                ],
+                "classes": []
+            },
+            "behavior_nodes": 4,
+            "role_profile": {
+                "heading_count": 1,
+                "text_count": 6,
+                "action_count": 1,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [
+                    "SEE OUR WORK →"
+                ],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "marquee",
+            "tag": "div",
+            "id": "",
+            "classes": [],
+            "box": {
+                "x": 0,
+                "y": 962,
+                "width": 1440,
+                "height": 69,
+                "top": 962,
+                "right": 1440,
+                "bottom": 1031,
+                "left": 0
+            },
+            "counts": {
+                "total_nodes": 2,
+                "containers": 1,
+                "headings": 0,
+                "text_blocks": 0,
+                "actions": 0,
+                "lists": 0,
+                "media": 0,
+                "fixed": 0,
+                "behavior_nodes": 1
+            },
+            "heading_samples": [],
+            "action_samples": [],
+            "text_samples": [],
+            "hooks": {
+                "ids": [
+                    "marquee"
+                ],
+                "classes": []
+            },
+            "behavior_nodes": 1,
+            "role_profile": {
+                "heading_count": 0,
+                "text_count": 0,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "gallery",
+            "tag": "section",
+            "id": "work",
+            "classes": [],
+            "box": {
+                "x": 0,
+                "y": 1031,
+                "width": 1440,
+                "height": 1053,
+                "top": 1031,
+                "right": 1440,
+                "bottom": 2084,
+                "left": 0
+            },
+            "counts": {
+                "total_nodes": 36,
+                "containers": 13,
+                "headings": 6,
+                "text_blocks": 15,
+                "actions": 1,
+                "lists": 0,
+                "media": 0,
+                "fixed": 0,
+                "behavior_nodes": 0
+            },
+            "heading_samples": [
+                "Selected work",
+                "Meridian Capital",
+                "Sona Health",
+                "Vox Architecture"
+            ],
+            "action_samples": [
+                "VIEW ALL PROJECTS →"
+            ],
+            "text_samples": [
+                "01",
+                "Brand Identity · Visual System",
+                "2024",
+                "02"
+            ],
+            "hooks": {
+                "ids": [
+                    "work",
+                    "work-grid"
+                ],
+                "classes": [
+                    "work-item"
+                ]
+            },
+            "behavior_nodes": 0,
+            "role_profile": {
+                "heading_count": 6,
+                "text_count": 12,
+                "action_count": 1,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [
+                    "VIEW ALL PROJECTS →"
+                ],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "studio",
+            "tag": "section",
+            "id": "studio",
+            "classes": [],
+            "box": {
+                "x": 0,
+                "y": 2084,
+                "width": 1440,
+                "height": 810,
+                "top": 2084,
+                "right": 1440,
+                "bottom": 2894,
+                "left": 0
+            },
+            "counts": {
+                "total_nodes": 41,
+                "containers": 18,
+                "headings": 5,
+                "text_blocks": 18,
+                "actions": 0,
+                "lists": 0,
+                "media": 0,
+                "fixed": 0,
+                "behavior_nodes": 0
+            },
+            "heading_samples": [
+                "The studio",
+                "Brand Strategy",
+                "Visual Identity",
+                "Digital Experience"
+            ],
+            "action_samples": [],
+            "text_samples": [
+                "FORMA is a 12-person creative studio working at the intersection of strategy and craft. We partner with ambitious companies to define and...",
+                "Our process is collaborative, fast, and built around results that outlast the trend cycle.",
+                "140+",
+                "clients served"
+            ],
+            "hooks": {
+                "ids": [
+                    "studio"
+                ],
+                "classes": [
+                    "stat-num"
+                ]
+            },
+            "behavior_nodes": 0,
+            "role_profile": {
+                "heading_count": 5,
+                "text_count": 18,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "contact",
+            "tag": "section",
+            "id": "contact",
+            "classes": [],
+            "box": {
+                "x": 0,
+                "y": 2894,
+                "width": 1440,
+                "height": 574,
+                "top": 2894,
+                "right": 1440,
+                "bottom": 3468,
+                "left": 0
+            },
+            "counts": {
+                "total_nodes": 5,
+                "containers": 1,
+                "headings": 1,
+                "text_blocks": 1,
+                "actions": 1,
+                "lists": 0,
+                "media": 0,
+                "fixed": 0,
+                "behavior_nodes": 0
+            },
+            "heading_samples": [
+                "Let's build something."
+            ],
+            "action_samples": [
+                "HELLO@FORMA.STUDIO"
+            ],
+            "text_samples": [
+                "READY TO START?"
+            ],
+            "hooks": {
+                "ids": [
+                    "contact",
+                    "email-link"
+                ],
+                "classes": []
+            },
+            "behavior_nodes": 0,
+            "role_profile": {
+                "heading_count": 1,
+                "text_count": 1,
+                "action_count": 1,
+                "nav_link_count": 0,
+                "email_link_count": 1,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [
+                    "HELLO@FORMA.STUDIO"
+                ],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        },
+        {
+            "kind": "footer",
+            "tag": "footer",
+            "id": "",
+            "classes": [],
+            "box": {
+                "x": 0,
+                "y": 3468,
+                "width": 1440,
+                "height": 79,
+                "top": 3468,
+                "right": 1440,
+                "bottom": 3547,
+                "left": 0
+            },
+            "counts": {
+                "total_nodes": 3,
+                "containers": 1,
+                "headings": 0,
+                "text_blocks": 2,
+                "actions": 0,
+                "lists": 0,
+                "media": 0,
+                "fixed": 0,
+                "behavior_nodes": 0
+            },
+            "heading_samples": [],
+            "action_samples": [],
+            "text_samples": [
+                "© 2025 FORMA Studio",
+                "All rights reserved"
+            ],
+            "hooks": {
+                "ids": [],
+                "classes": []
+            },
+            "behavior_nodes": 0,
+            "role_profile": {
+                "heading_count": 0,
+                "text_count": 2,
+                "action_count": 0,
+                "nav_link_count": 0,
+                "email_link_count": 0,
+                "service_item_count": 0,
+                "stat_pair_count": 0,
+                "cta_labels": [],
+                "nav_labels": [],
+                "service_labels": [],
+                "stat_labels": []
+            }
+        }
+    ],
+    "section_kinds": [
+        "hero",
+        "marquee",
+        "gallery",
+        "studio",
+        "contact",
+        "footer"
+    ],
+    "hooks": {
+        "ids": [
+            "cursor-dot",
+            "cursor-ring",
+            "para-bg",
+            "scroll-indicator",
+            "hero-main",
+            "cta-btn",
+            "marquee",
+            "work",
+            "work-grid",
+            "studio",
+            "contact",
+            "email-link"
+        ],
+        "classes": [
+            "nav-link",
+            "work-item",
+            "stat-num"
+        ]
+    },
+    "behavior_islands": [
+        {
+            "tag": "div",
+            "id": "cursor-dot",
+            "class": "FIXED"
+        },
+        {
+            "tag": "div",
+            "id": "cursor-ring",
+            "class": "FIXED"
+        },
+        {
+            "tag": "nav",
+            "id": "",
+            "class": "FIXED"
+        },
+        {
+            "tag": "div",
+            "id": "para-bg",
+            "class": "TEXT"
+        },
+        {
+            "tag": "div",
+            "id": "",
+            "class": "FLEX_COLUMN"
+        },
+        {
+            "tag": "div",
+            "id": "scroll-indicator",
+            "class": "HTML_WIDGET"
+        },
+        {
+            "tag": "div",
+            "id": "hero-main",
+            "class": "CONTAINER"
+        },
+        {
+            "tag": "div",
+            "id": "marquee",
+            "class": "HTML_WIDGET"
+        }
+    ],
+    "viewports": {
+        "desktop": {
+            "width": 1440,
+            "height": 900,
+            "scroll_width": 1440,
+            "scroll_height": 3547,
+            "total_nodes": 114
+        },
+        "tablet": {
+            "width": 1024,
+            "height": 1366,
+            "scroll_width": 1024,
+            "scroll_height": 4021,
+            "total_nodes": 114
+        },
+        "mobile": {
+            "width": 390,
+            "height": 844,
+            "scroll_width": 587,
+            "scroll_height": 4316,
+            "total_nodes": 114
+        }
+    }
+}
